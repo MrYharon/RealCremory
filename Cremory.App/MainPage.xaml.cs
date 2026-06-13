@@ -102,9 +102,6 @@ namespace Cremory.App
             }
         }
 
-        private async void OnViewStocksClicked(object sender, EventArgs e)
-        {
-            await Shell.Current.GoToAsync("InventoryPage");
-        }
+        
     }
 }

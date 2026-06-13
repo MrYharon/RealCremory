@@ -6,8 +6,8 @@
         {
             InitializeComponent();
 
-            // This sets your main page with a clean navigation header bar wrapper
-            MainPage = new NavigationPage(new MainPage());
+            // This line activates the hamburger menu globally!
+            MainPage = new AppShell();
         }
     }
 }

@@ -13,9 +13,7 @@
                 <Label Text="Live Order Monitor" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
                 <Label Text="Real-time Kitchen Display System" FontSize="14" TextColor="{StaticResource Gray500}" Margin="0,4,0,0"/>
             </VerticalStackLayout>
-            <Button Grid.Column="1" Text="View Stocks" Clicked="OnViewStocksClicked" 
-                    BackgroundColor="{StaticResource Primary}" TextColor="White" 
-                    HeightRequest="40" VerticalOptions="End" FontAttributes="Bold" Padding="16,0"/>
+            
         </Grid>
 
         <!-- Analytics Cards Row -->
