@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Cremory.App.FinancesPage"
+             Title="Analytics"
+             BackgroundColor="{StaticResource Gray50}">
+
+    <Grid RowDefinitions="Auto, *" Padding="20" RowSpacing="20">
+
+        <!-- Header -->
+        <VerticalStackLayout Grid.Row="0" Spacing="6">
+            <Label Text="Analytics" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
+            <Label Text="Financial insights and sales trends" FontSize="13" TextColor="{StaticResource Gray500}"/>
+        </VerticalStackLayout>
+
+        <!-- Content -->
+        <VerticalStackLayout Grid.Row="1" Spacing="16" VerticalOptions="Center" HorizontalOptions="Center">
+
+            <!-- Coming Soon Card -->
+            <Border StrokeShape="RoundRectangle 12" BackgroundColor="White" Padding="24" Stroke="Transparent"
+                   WidthRequest="300">
+                <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                    <Label Text="Analytics Dashboard" FontSize="20" FontAttributes="Bold" 
+                           TextColor="{StaticResource Gray900}" HorizontalOptions="Center"/>
+                    <Label Text="Advanced reporting, charts, and financial metrics coming soon" 
+                           FontSize="13" TextColor="{StaticResource Gray600}" 
+                           LineBreakMode="WordWrap" HorizontalTextAlignment="Center"/>
+
+                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="12" Margin="0,16,0,0">
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Primary}" 
+                               Padding="12">
+                            <Label Text="Sales" FontSize="11" FontAttributes="Bold" TextColor="White" 
+                                  HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                        <Border Grid.Column="1" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Success}" 
+                               Padding="12">
+                            <Label Text="Trends" FontSize="11" FontAttributes="Bold" TextColor="White" 
+                                  HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                        <Border Grid.Column="2" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Info}" 
+                               Padding="12">
+                            <Label Text="Reports" FontSize="11" FontAttributes="Bold" TextColor="White" 
+                                  HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </Grid>
+
+</ContentPage>

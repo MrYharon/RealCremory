@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Cremory.App.OrderArchivesPage"
+             Title="Order History"
+             BackgroundColor="{StaticResource Gray50}">
+
+    <Grid RowDefinitions="Auto, Auto, *" Padding="20" RowSpacing="16">
+
+        <!-- Header -->
+        <VerticalStackLayout Grid.Row="0" Spacing="6">
+            <Label Text="Order History" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
+            <Label Text="View completed and archived orders" FontSize="13" TextColor="{StaticResource Gray500}"/>
+        </VerticalStackLayout>
+
+        <!-- Filter Bar -->
+        <Border Grid.Row="1" StrokeShape="RoundRectangle 10" BackgroundColor="White" 
+               Padding="12" StrokeThickness="1" Stroke="{StaticResource Gray200}">
+            <Grid ColumnDefinitions="*, *, Auto" ColumnSpacing="12">
+                <Picker Grid.Column="0" Title="Date Range" TextColor="{StaticResource Gray900}" 
+                       TitleColor="{StaticResource Gray500}" BackgroundColor="{StaticResource Gray50}"/>
+                <Picker Grid.Column="1" Title="Status" TextColor="{StaticResource Gray900}" 
+                       TitleColor="{StaticResource Gray500}" BackgroundColor="{StaticResource Gray50}"/>
+                <Button Grid.Column="2" Text="Search" BackgroundColor="{StaticResource Primary}" 
+                       TextColor="White" HeightRequest="40" Padding="12,0" VerticalOptions="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- Order List -->
+        <VerticalStackLayout Grid.Row="2" Spacing="16" VerticalOptions="Center" HorizontalOptions="Center">
+
+            <!-- Coming Soon Card -->
+            <Border StrokeShape="RoundRectangle 12" BackgroundColor="White" Padding="24" Stroke="Transparent"
+                   WidthRequest="320">
+                <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                    <Label Text="Order History" FontSize="20" FontAttributes="Bold" 
+                           TextColor="{StaticResource Gray900}" HorizontalOptions="Center"/>
+                    <Label Text="Search, filter, and download historical order data with full details and timestamps" 
+                           FontSize="13" TextColor="{StaticResource Gray600}" 
+                           LineBreakMode="WordWrap" HorizontalTextAlignment="Center"/>
+
+                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="12" Margin="0,16,0,0">
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Primary}" 
+                               Padding="12">
+                            <Label Text="Filter" FontSize="11" FontAttributes="Bold" TextColor="White" 
+                                  HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                        <Border Grid.Column="1" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Info}" 
+                               Padding="12">
+                            <Label Text="Export" FontSize="11" FontAttributes="Bold" TextColor="White" 
+                                  HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                        <Border Grid.Column="2" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Success}" 
+                               Padding="12">
+                            <Label Text="Print" FontSize="11" FontAttributes="Bold" TextColor="White" 
+                                  HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </Grid>
+
+</ContentPage>

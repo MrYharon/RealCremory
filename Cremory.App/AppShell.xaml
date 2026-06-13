@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="Cremory.App.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:Cremory.App"
+    Title="Cremory"
+    FlyoutBackgroundColor="{StaticResource White}"
+    FlyoutBehavior="Locked">
+
+    <Shell.FlyoutHeader>
+        <Grid Padding="0" Margin="0" BackgroundColor="{StaticResource Primary}" HeightRequest="160">
+            <VerticalStackLayout Padding="20" VerticalOptions="Center" Spacing="12">
+                <Label Text="Cremory" FontSize="36" FontAttributes="Bold" TextColor="White"/>
+                <Label Text="Bakery Management System" FontSize="13" TextColor="{StaticResource PrimaryVeryLight}"/>
+                <BoxView HeightRequest="2" BackgroundColor="{StaticResource Info}" Margin="0,8,0,0"/>
+            </VerticalStackLayout>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <FlyoutItem Title="Live Orders" Icon="home.png" Route="MainPage">
+        <ShellContent
+            Title="Live Orders"
+            ContentTemplate="{DataTemplate local:MainPage}"
+            Route="MainPage" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Stocks" Icon="shopping_cart.png" Route="InventoryPage">
+        <ShellContent
+            Title="Stocks"
+            ContentTemplate="{DataTemplate local:InventoryPage}"
+            Route="InventoryPage" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Orders Management" Icon="edit.png" Route="IngredientsManagementPage">
+        <ShellContent
+            Title="Orders Management"
+            ContentTemplate="{DataTemplate local:IngredientsManagementPage}"
+            Route="IngredientsManagementPage" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Analytics" Icon="trending_up.png" Route="FinancesPage">
+        <ShellContent
+            Title="Analytics"
+            ContentTemplate="{DataTemplate local:FinancesPage}"
+            Route="FinancesPage" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Order History" Icon="archive.png" Route="OrderArchivesPage">
+        <ShellContent
+            Title="Order History"
+            ContentTemplate="{DataTemplate local:OrderArchivesPage}"
+            Route="OrderArchivesPage" />
+    </FlyoutItem>
+
+    <Shell.FlyoutFooter>
+        <Grid Padding="20" HeightRequest="60" BackgroundColor="{StaticResource Gray50}">
+            <Label Text="v1.0.0 | Connected" FontSize="11" TextColor="{StaticResource Gray500}" 
+                   VerticalOptions="Center" HorizontalOptions="Center"/>
+        </Grid>
+    </Shell.FlyoutFooter>
+
+</Shell>

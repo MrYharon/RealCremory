@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Cremory.App.IngredientsManagementPage"
+             Title="Orders Management"
+             BackgroundColor="{StaticResource Gray50}">
+
+    <Grid RowDefinitions="Auto, *" Padding="20" RowSpacing="20">
+
+        <!-- Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" ColumnSpacing="12">
+            <VerticalStackLayout>
+                <Label Text="Orders Management" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
+                <Label Text="Manage ingredients and reorder points" FontSize="13" TextColor="{StaticResource Gray500}" Margin="0,4,0,0"/>
+            </VerticalStackLayout>
+            <Button Grid.Column="1" Text="Add Item" BackgroundColor="{StaticResource Success}" 
+                    TextColor="White" VerticalOptions="End" FontAttributes="Bold" HeightRequest="40" Padding="16,0"/>
+        </Grid>
+
+        <!-- Content -->
+        <VerticalStackLayout Grid.Row="1" Spacing="16" VerticalOptions="Center" HorizontalOptions="Center">
+
+            <!-- Coming Soon Card -->
+            <Border StrokeShape="RoundRectangle 12" BackgroundColor="White" Padding="24" Stroke="Transparent"
+                   WidthRequest="300">
+                <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                    <Label Text="Inventory Control" FontSize="20" FontAttributes="Bold" 
+                           TextColor="{StaticResource Gray900}" HorizontalOptions="Center"/>
+                    <Label Text="Manage stock levels, set reorder points, and track ingredient usage" 
+                           FontSize="13" TextColor="{StaticResource Gray600}" 
+                           LineBreakMode="WordWrap" HorizontalTextAlignment="Center"/>
+
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12" Margin="0,16,0,0">
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Primary}" 
+                               Padding="12">
+                            <Label Text="Add Items" FontSize="11" FontAttributes="Bold" TextColor="White" 
+                                  HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                        <Border Grid.Column="1" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Info}" 
+                               Padding="12">
+                            <Label Text="Edit Stock" FontSize="11" FontAttributes="Bold" TextColor="White" 
+                                  HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </Grid>
+
+</ContentPage>
