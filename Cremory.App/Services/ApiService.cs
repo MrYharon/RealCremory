@@ -1,5 +1,4 @@
-﻿using Cremory.App.Models; // Change "API" to "App"
-
+﻿using Cremory.App.Models;
 using System.Net.Http.Json;
 
 namespace Cremory.App.Services
@@ -8,14 +7,13 @@ namespace Cremory.App.Services
     {
         private readonly HttpClient _httpClient;
 
-        // CRITICAL: Match this base address to your Swagger URL port!
-        // For Windows Machine execution, localhost works perfectly.
-        // Change it back to localhost for Windows execution
-        private const string BaseUrl = "http://localhost:5105/api/";
+        // Dynamically switch the URL based on the device running the app
+        private static string BaseUrl = DeviceInfo.Platform == DevicePlatform.Android
+            ? "http://10.0.2.2:5105/api/"
+            : "http://localhost:5105/api/";
 
         public ApiService()
         {
-            // Simple handler configuration to bypass local SSL certificate complaints during dev testing
             var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
