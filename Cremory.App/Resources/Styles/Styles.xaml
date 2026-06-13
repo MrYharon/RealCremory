@@ -6,6 +6,7 @@
 
     <Color x:Key="MidnightBlue">#191970</Color>
     <Color x:Key="Secondary">#FFB6C1</Color>
+    <Color x:Key="Magenta">#D81B60</Color>
 
     <Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />

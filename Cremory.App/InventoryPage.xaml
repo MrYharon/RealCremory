@@ -52,7 +52,7 @@
                                                VerticalOptions="Center"/>
                                     <Label Grid.Column="1" Text="{Binding StockPercentage, StringFormat='{0:P0}'}" 
                                            FontSize="11" TextColor="{StaticResource Gray600}" 
-                                           HorizontalOptions="End" VerticalOptions="Center"/>.
+                                           HorizontalOptions="End" VerticalOptions="Center"/>
                                 </Grid>
                             </Border>
                         </Grid>
