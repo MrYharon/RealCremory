@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Cremory.App.ProductFormPage"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource Gray50}">
+
+    <Grid RowDefinitions="*, Auto" Padding="20" RowSpacing="16">
+        <ScrollView>
+            <VerticalStackLayout Spacing="16">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Product Name" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="12,8" Stroke="{StaticResource Gray200}">
+                        <Entry x:Name="NameEntry" Placeholder="e.g. Basque Cheesecake" FontSize="15"
+                               TextColor="{StaticResource Gray900}" PlaceholderColor="{StaticResource Gray400}"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Variant" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="12,8" Stroke="{StaticResource Gray200}">
+                        <Entry x:Name="VariantEntry" Placeholder="e.g. Solo, Box of 4" FontSize="15"
+                               TextColor="{StaticResource Gray900}" PlaceholderColor="{StaticResource Gray400}"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Flavor" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="12,8" Stroke="{StaticResource Gray200}">
+                        <Entry x:Name="FlavorEntry" Placeholder="e.g. Original, Ube, Matcha" FontSize="15"
+                               TextColor="{StaticResource Gray900}" PlaceholderColor="{StaticResource Gray400}"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Base Price (₱)" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="12,8" Stroke="{StaticResource Gray200}">
+                        <Entry x:Name="PriceEntry" Placeholder="0" Keyboard="Numeric" FontSize="15"
+                               TextColor="{StaticResource Gray900}" PlaceholderColor="{StaticResource Gray400}"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Category" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="4,0" Stroke="{StaticResource Gray200}">
+                        <Picker x:Name="CategoryPicker" Title="Select category"
+                                TextColor="{StaticResource Gray900}" TitleColor="{StaticResource Gray400}"
+                                BackgroundColor="White"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <Grid ColumnDefinitions="*, Auto" Padding="0,8">
+                    <Label Text="Active" FontSize="15" TextColor="{StaticResource Gray900}" VerticalOptions="Center"/>
+                    <Switch x:Name="ActiveSwitch" Grid.Column="1" IsToggled="True" OnColor="{StaticResource Success}"/>
+                </Grid>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, *" ColumnSpacing="12">
+            <Button Text="Cancel" Clicked="OnCancelClicked"
+                    BackgroundColor="{StaticResource Gray200}" TextColor="{StaticResource Gray700}"
+                    FontAttributes="Bold" HeightRequest="48"/>
+            <Button Grid.Column="1" Text="Save" Clicked="OnSaveClicked"
+                    BackgroundColor="{StaticResource Success}" TextColor="White"
+                    FontAttributes="Bold" HeightRequest="48"/>
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -16,27 +16,73 @@ namespace Cremory.API.Controllers
             _context = context;
         }
 
-        // GET: api/ingredients
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients()
         {
-            // Pulls the ingredients straight from your Oracle Database table
-            var ingredients = await _context.Ingredients.ToListAsync();
-            return Ok(ingredients);
+            return await _context.Ingredients.ToListAsync();
         }
 
-        // GET: api/ingredients/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Ingredient>> GetIngredient(int id)
         {
             var ingredient = await _context.Ingredients.FindAsync(id);
-
             if (ingredient == null)
-            {
                 return NotFound(new { message = $"Ingredient with ID {id} not found." });
-            }
 
             return Ok(ingredient);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Ingredient>> CreateIngredient(Ingredient ingredient)
+        {
+            try
+            {
+                _context.Ingredients.Add(ingredient);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction(nameof(GetIngredient), new { id = ingredient.IngredientId }, ingredient);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.InnerException?.Message ?? ex.Message });
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateIngredient(int id, Ingredient ingredient)
+        {
+            if (id != ingredient.IngredientId)
+                return BadRequest(new { message = "ID mismatch." });
+
+            var existing = await _context.Ingredients.FindAsync(id);
+            if (existing == null)
+                return NotFound(new { message = $"Ingredient with ID {id} not found." });
+
+            existing.Name = ingredient.Name;
+            existing.StockQuantity = ingredient.StockQuantity;
+            existing.Unit = ingredient.Unit;
+            existing.ReorderLevel = ingredient.ReorderLevel;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.InnerException?.Message ?? ex.Message });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteIngredient(int id)
+        {
+            var ingredient = await _context.Ingredients.FindAsync(id);
+            if (ingredient == null)
+                return NotFound(new { message = $"Ingredient with ID {id} not found." });
+
+            _context.Ingredients.Remove(ingredient);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

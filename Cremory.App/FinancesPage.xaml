@@ -1,51 +1,107 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Cremory.App.Models"
              x:Class="Cremory.App.FinancesPage"
-             Title="Analytics"
+             Title="Finances"
              BackgroundColor="{StaticResource Gray50}">
 
-    <Grid RowDefinitions="Auto, *" Padding="20" RowSpacing="20">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Finances" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
+                <Label Text="Revenue totals and transaction history" FontSize="13" TextColor="{StaticResource Gray500}"/>
+            </VerticalStackLayout>
 
-        <!-- Header -->
-        <VerticalStackLayout Grid.Row="0" Spacing="6">
-            <Label Text="Analytics" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
-            <Label Text="Financial insights and sales trends" FontSize="13" TextColor="{StaticResource Gray500}"/>
-        </VerticalStackLayout>
+            <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto"
+                  ColumnSpacing="12" RowSpacing="12">
+                <Border Grid.Row="0" Grid.Column="0" StrokeShape="RoundRectangle 12"
+                        BackgroundColor="{StaticResource White}" Padding="16" Stroke="{StaticResource Gray200}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Today's Revenue" FontSize="12" TextColor="{StaticResource Gray500}"/>
+                        <Label x:Name="TodayRevenue" Text="₱0.00" FontSize="24" FontAttributes="Bold"
+                               TextColor="{StaticResource Success}"/>
+                        <Label x:Name="TodayOrdersLabel" Text="0 orders" FontSize="11" TextColor="{StaticResource Gray500}"/>
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Row="0" Grid.Column="1" StrokeShape="RoundRectangle 12"
+                        BackgroundColor="{StaticResource White}" Padding="16" Stroke="{StaticResource Gray200}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="This Week" FontSize="12" TextColor="{StaticResource Gray500}"/>
+                        <Label x:Name="WeekRevenue" Text="₱0.00" FontSize="24" FontAttributes="Bold"
+                               TextColor="{StaticResource Gray900}"/>
+                        <Label x:Name="WeekAverageLabel" Text="" FontSize="11" TextColor="{StaticResource Gray500}"/>
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="0" StrokeShape="RoundRectangle 12"
+                        BackgroundColor="{StaticResource White}" Padding="16" Stroke="{StaticResource Gray200}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="This Month" FontSize="12" TextColor="{StaticResource Gray500}"/>
+                        <Label x:Name="MonthRevenue" Text="₱0.00" FontSize="24" FontAttributes="Bold"
+                               TextColor="{StaticResource Gray900}"/>
+                        <Label x:Name="MonthOrdersLabel" Text="" FontSize="11" TextColor="{StaticResource Gray500}"/>
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="1" StrokeShape="RoundRectangle 12"
+                        BackgroundColor="{StaticResource White}" Padding="16" Stroke="{StaticResource Gray200}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Avg Order Value" FontSize="12" TextColor="{StaticResource Gray500}"/>
+                        <Label x:Name="AvgOrderLabel" Text="₱0.00" FontSize="24" FontAttributes="Bold"
+                               TextColor="{StaticResource Primary}"/>
+                        <Label Text="This month" FontSize="11" TextColor="{StaticResource Gray500}"/>
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
 
-        <!-- Content -->
-        <VerticalStackLayout Grid.Row="1" Spacing="16" VerticalOptions="Center" HorizontalOptions="Center">
-
-            <!-- Coming Soon Card -->
-            <Border StrokeShape="RoundRectangle 12" BackgroundColor="White" Padding="24" Stroke="Transparent"
-                   WidthRequest="300">
-                <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
-                    <Label Text="Analytics Dashboard" FontSize="20" FontAttributes="Bold" 
-                           TextColor="{StaticResource Gray900}" HorizontalOptions="Center"/>
-                    <Label Text="Advanced reporting, charts, and financial metrics coming soon" 
-                           FontSize="13" TextColor="{StaticResource Gray600}" 
-                           LineBreakMode="WordWrap" HorizontalTextAlignment="Center"/>
-
-                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="12" Margin="0,16,0,0">
-                        <Border Grid.Column="0" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Primary}" 
-                               Padding="12">
-                            <Label Text="Sales" FontSize="11" FontAttributes="Bold" TextColor="White" 
-                                  HorizontalOptions="Center" VerticalOptions="Center"/>
-                        </Border>
-                        <Border Grid.Column="1" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Success}" 
-                               Padding="12">
-                            <Label Text="Trends" FontSize="11" FontAttributes="Bold" TextColor="White" 
-                                  HorizontalOptions="Center" VerticalOptions="Center"/>
-                        </Border>
-                        <Border Grid.Column="2" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Info}" 
-                               Padding="12">
-                            <Label Text="Reports" FontSize="11" FontAttributes="Bold" TextColor="White" 
-                                  HorizontalOptions="Center" VerticalOptions="Center"/>
-                        </Border>
-                    </Grid>
+            <Border StrokeShape="RoundRectangle 12" BackgroundColor="White" Padding="16"
+                    Stroke="{StaticResource Gray200}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Recent Transactions" FontSize="16" FontAttributes="Bold"
+                           TextColor="{StaticResource Gray900}"/>
+                    <BoxView HeightRequest="1" Color="{StaticResource Gray100}"/>
+                    <CollectionView x:Name="TransactionsCollection" HeightRequest="240">
+                        <CollectionView.EmptyView>
+                            <Label Text="No recent transactions" FontSize="13" TextColor="{StaticResource Gray400}"
+                                   HorizontalTextAlignment="Center" Padding="0,20"/>
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:RecentTransactionDto">
+                                <Grid ColumnDefinitions="*, Auto, Auto" Padding="0,6" ColumnSpacing="12">
+                                    <Label Text="{Binding CustomerName}" FontSize="13"
+                                           TextColor="{StaticResource Gray800}"/>
+                                    <Label Grid.Column="1" Text="{Binding TotalPrice, StringFormat='₱{0:N0}'}"
+                                           FontSize="13" FontAttributes="Bold"
+                                           TextColor="{StaticResource Success}" HorizontalOptions="End"/>
+                                    <Label Grid.Column="2" Text="{Binding Timestamp}" FontSize="11"
+                                           TextColor="{StaticResource Gray400}" VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
                 </VerticalStackLayout>
             </Border>
-        </VerticalStackLayout>
-    </Grid>
 
+            <Border StrokeShape="RoundRectangle 12" BackgroundColor="{StaticResource Primary}"
+                    Padding="20" Stroke="Transparent">
+                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="16">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Profit Margin" FontSize="12" TextColor="White" Opacity="0.85"/>
+                        <Label x:Name="ProfitMarginLabel" Text="0%" FontSize="36" FontAttributes="Bold" TextColor="White"/>
+                        <Label Text="Estimated" FontSize="11" TextColor="White" Opacity="0.75"/>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4" HorizontalOptions="End">
+                        <Label Text="Net Profit" FontSize="12" TextColor="White" Opacity="0.85"/>
+                        <Label x:Name="NetProfitLabel" Text="₱0" FontSize="20" FontAttributes="Bold" TextColor="White"
+                               HorizontalOptions="End"/>
+                        <Label Text="This month" FontSize="11" TextColor="White" Opacity="0.75"
+                               HorizontalOptions="End"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <ActivityIndicator x:Name="LoadingIndicator" IsRunning="False" IsVisible="False"
+                               Color="{StaticResource Primary}" VerticalOptions="Center" HorizontalOptions="Center"
+                               Margin="0,40"/>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

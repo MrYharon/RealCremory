@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Oracle XE database files
+database/
+
+# AI conversation artifacts
+SYSTEM_STATE_SUMMARY.md

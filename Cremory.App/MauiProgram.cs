@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Cremory.App.Services;
 
 namespace Cremory.App
 {
@@ -15,8 +16,23 @@ namespace Cremory.App
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+            builder.Services.AddSingleton<ApiService>();
+            builder.Services.AddSingleton<SignalRService>();
+
+            builder.Services.AddTransient<MainPage>();
+            builder.Services.AddTransient<OrdersPage>();
+            builder.Services.AddTransient<InventoryPage>();
+            builder.Services.AddTransient<IngredientsManagementPage>();
+            builder.Services.AddTransient<AnalyticsPage>();
+            builder.Services.AddTransient<FinancesPage>();
+            builder.Services.AddTransient<OrderArchivesPage>();
+            builder.Services.AddTransient<MenuPage>();
+            builder.Services.AddTransient<OrderParserPage>();
+            builder.Services.AddTransient<ProductPage>();
+            builder.Services.AddTransient<RecipePage>();
+
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();

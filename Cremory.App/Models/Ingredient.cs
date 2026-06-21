@@ -8,7 +8,17 @@
         public string Unit { get; set; } = string.Empty;
         public decimal ReorderLevel { get; set; }
 
-        // Useful property for a quick status indicator UI later
         public bool IsLowStock => StockQuantity <= ReorderLevel;
+
+        public double StockPercentage
+        {
+            get
+            {
+                if (ReorderLevel <= 0) return 1.0;
+                var max = ReorderLevel * 3;
+                var pct = (double)(StockQuantity / max);
+                return Math.Min(pct, 1.0);
+            }
+        }
     }
 }

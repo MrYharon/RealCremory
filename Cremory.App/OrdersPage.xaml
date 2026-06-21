@@ -1,12 +1,152 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Cremory.App.Models"
              x:Class="Cremory.App.OrdersPage"
-             Title="OrdersPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Orders"
+             BackgroundColor="{StaticResource Gray50}">
+
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, *" Padding="20" RowSpacing="16">
+
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8">
+            <VerticalStackLayout>
+                <Label Text="Orders" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
+                <Label Text="All orders by status" FontSize="13" TextColor="{StaticResource Gray500}" Margin="0,4,0,0"/>
+            </VerticalStackLayout>
+            <Button Grid.Column="1" Text="+ New" Clicked="OnNewOrderClicked"
+                    BackgroundColor="{StaticResource Success}" TextColor="White"
+                    FontAttributes="Bold" HeightRequest="40" Padding="14,0" VerticalOptions="End"/>
+            <Button Grid.Column="2" Text="Import" Clicked="OnImportClicked"
+                    BackgroundColor="{StaticResource Info}" TextColor="White"
+                    FontAttributes="Bold" HeightRequest="40" Padding="14,0" VerticalOptions="End"/>
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, *, *, *" ColumnSpacing="10">
+            <Border Grid.Column="0" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Warning}"
+                    Padding="12" Stroke="Transparent">
+                <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                    <Label Text="{Binding PendingCount}" FontSize="22" FontAttributes="Bold"
+                           TextColor="White" HorizontalTextAlignment="Center"/>
+                    <Label Text="Pending" FontSize="11" TextColor="White" Opacity="0.85"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </Border>
+            <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Info}"
+                    Padding="12" Stroke="Transparent">
+                <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                    <Label Text="{Binding PreparingCount}" FontSize="22" FontAttributes="Bold"
+                           TextColor="White" HorizontalTextAlignment="Center"/>
+                    <Label Text="Preparing" FontSize="11" TextColor="White" Opacity="0.85"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </Border>
+            <Border Grid.Column="2" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Success}"
+                    Padding="12" Stroke="Transparent">
+                <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                    <Label Text="{Binding CompletedCount}" FontSize="22" FontAttributes="Bold"
+                           TextColor="White" HorizontalTextAlignment="Center"/>
+                    <Label Text="Completed" FontSize="11" TextColor="White" Opacity="0.85"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </Border>
+            <Border Grid.Column="3" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Primary}"
+                    Padding="12" Stroke="Transparent">
+                <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                    <Label Text="{Binding TotalOrders}" FontSize="22" FontAttributes="Bold"
+                           TextColor="White" HorizontalTextAlignment="Center"/>
+                    <Label Text="Total" FontSize="11" TextColor="White" Opacity="0.85"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Row="2" ColumnDefinitions="Auto, Auto, Auto, *" ColumnSpacing="8">
+            <Button Grid.Column="0" x:Name="FilterAll" Text="All"
+                    Clicked="OnFilterClicked" BackgroundColor="{StaticResource Primary}"
+                    TextColor="White" HeightRequest="36" Padding="16,0" FontSize="12" FontAttributes="Bold"/>
+            <Button Grid.Column="1" x:Name="FilterPending" Text="Pending"
+                    Clicked="OnFilterClicked" BackgroundColor="{StaticResource Gray200}"
+                    TextColor="{StaticResource Gray700}" HeightRequest="36" Padding="16,0" FontSize="12"/>
+            <Button Grid.Column="2" x:Name="FilterPreparing" Text="Preparing"
+                    Clicked="OnFilterClicked" BackgroundColor="{StaticResource Gray200}"
+                    TextColor="{StaticResource Gray700}" HeightRequest="36" Padding="16,0" FontSize="12"/>
+        </Grid>
+
+        <Border Grid.Row="3" StrokeShape="RoundRectangle 10" BackgroundColor="White"
+                Padding="8" StrokeThickness="1" Stroke="{StaticResource Gray200}">
+            <SearchBar x:Name="OrderSearchBar" Placeholder="Search by name or ID..."
+                       TextChanged="OnSearchTextChanged"
+                       BackgroundColor="{StaticResource Gray50}"/>
+        </Border>
+
+        <RefreshView Grid.Row="4" x:Name="OrdersRefreshView" IsRefreshing="{Binding IsRefreshing}"
+                     Command="{Binding RefreshCommand}">
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
+                               Color="{StaticResource Primary}" VerticalOptions="Center" HorizontalOptions="Center"/>
+
+            <CollectionView x:Name="OrdersCollectionView"
+                            ItemsSource="{Binding FilteredOrders}">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="12">
+                        <Label Text="No orders found" FontSize="20" FontAttributes="Bold"
+                               TextColor="{StaticResource Gray400}" HorizontalTextAlignment="Center"/>
+                        <Label Text="Tap + New to create a walk-in order"
+                               FontSize="13" TextColor="{StaticResource Gray400}" HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:OrderSummary">
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Cancel" BackgroundColor="{StaticResource Danger}"
+                                               Invoked="OnCancelOrder"/>
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            <Border StrokeShape="RoundRectangle 12" StrokeThickness="1"
+                                    Stroke="{Binding BorderColor}" Padding="16" Margin="0,0,0,12"
+                                    BackgroundColor="White">
+                                <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto, Auto, Auto" RowSpacing="10">
+                                    <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="12" VerticalOptions="Center">
+                                        <BoxView WidthRequest="44" HeightRequest="44" CornerRadius="22"
+                                                 BackgroundColor="{Binding AvatarColor}"/>
+                                        <VerticalStackLayout VerticalOptions="Center">
+                                            <Label Text="{Binding CustomerName}" FontSize="16" FontAttributes="Bold"
+                                                   TextColor="{StaticResource Gray900}"/>
+                                            <Label Text="{Binding Timestamp}" FontSize="12" TextColor="{StaticResource Gray500}"/>
+                                        </VerticalStackLayout>
+                                    </HorizontalStackLayout>
+                                    <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="4"
+                                                        VerticalOptions="Center" HorizontalOptions="End">
+                                        <Label Text="{Binding OrderId}" FontSize="12" FontAttributes="Bold"
+                                               TextColor="{StaticResource Primary}" HorizontalOptions="End"/>
+                                        <Label Text="{Binding StatusBadge}" FontSize="10" FontAttributes="Bold" TextColor="White"
+                                               BackgroundColor="{Binding StatusColor}" Padding="10,5" HorizontalOptions="End"/>
+                                    </VerticalStackLayout>
+                                    <Border Grid.Row="1" Grid.ColumnSpan="2" BackgroundColor="{StaticResource Gray50}"
+                                            Stroke="Transparent" Padding="12" StrokeShape="RoundRectangle 8">
+                                        <Label Text="{Binding Items}" FontSize="13" TextColor="{StaticResource Gray700}"
+                                               LineBreakMode="WordWrap"/>
+                                    </Border>
+                                    <Label Grid.Row="2" Grid.Column="0"
+                                           Text="{Binding TotalPrice, StringFormat='Total: ₱{0:N2}'}"
+                                           FontSize="15" FontAttributes="Bold" TextColor="{StaticResource Gray900}"
+                                           VerticalOptions="Center"/>
+                                    <Button Grid.Row="2" Grid.Column="1" Text="{Binding ActionButtonText}"
+                                            Clicked="OnOrderActionClicked"
+                                            BackgroundColor="{Binding ActionButtonColor}" TextColor="White"
+                                            HeightRequest="38" Padding="14,0" FontAttributes="Bold" FontSize="12"/>
+                                    <Label Grid.Row="3" Grid.ColumnSpan="2" Text="{Binding StatusMessage}"
+                                           FontSize="11" TextColor="{StaticResource Gray500}" Margin="0,2,0,0"/>
+                                    <BoxView Grid.Row="4" Grid.ColumnSpan="2" HeightRequest="1"
+                                             Color="{StaticResource Gray100}" Margin="0,4,0,0"/>
+                                </Grid>
+                            </Border>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+
 </ContentPage>

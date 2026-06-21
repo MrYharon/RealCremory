@@ -16,25 +16,118 @@ namespace Cremory.API.Controllers
             _context = context;
         }
 
-        // GET: api/products
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-            return await _context.Products.ToListAsync();
+            return await _context.Products
+                .Include(p => p.Category)
+                .OrderBy(p => p.DisplayOrder)
+                .ToListAsync();
         }
 
-        // GET: api/products/5
+        [HttpGet("categories")]
+        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+        {
+            return await _context.Categories
+                .OrderBy(c => c.DisplayOrder)
+                .ToListAsync();
+        }
+
+        [HttpGet("menu")]
+        public async Task<ActionResult<IEnumerable<MenuCategoryDto>>> GetMenu()
+        {
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .Where(p => p.IsActive && p.Category != null)
+                .OrderBy(p => p.Category!.DisplayOrder)
+                .ThenBy(p => p.DisplayOrder)
+                .ToListAsync();
+
+            var menu = products
+                .GroupBy(p => new { p.CategoryId, CategoryName = p.Category!.Name })
+                .Select(g => new MenuCategoryDto
+                {
+                    CategoryId = g.Key.CategoryId,
+                    CategoryName = g.Key.CategoryName,
+                    Items = g.Select(p => new MenuItemDto
+                    {
+                        ProductId = p.ProductId,
+                        Name = p.Name,
+                        Variant = p.Variant,
+                        Flavor = p.Flavor,
+                        BasePrice = p.BasePrice,
+                        AddOnDescription = p.AddOnDescription,
+                        AddOnPricePerUnit = p.AddOnPricePerUnit,
+                        DisplayOrder = p.DisplayOrder
+                    }).ToList()
+                })
+                .ToList();
+
+            return Ok(menu);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products
+                .Include(p => p.Category)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
 
             if (product == null)
-            {
                 return NotFound(new { message = $"Product with ID {id} not found." });
-            }
 
             return Ok(product);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Product>> CreateProduct(Product product)
+        {
+            try
+            {
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction(nameof(GetProduct), new { id = product.ProductId }, product);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.InnerException?.Message ?? ex.Message });
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, Product product)
+        {
+            if (id != product.ProductId)
+                return BadRequest(new { message = "ID mismatch." });
+
+            var existing = await _context.Products.FindAsync(id);
+            if (existing == null)
+                return NotFound(new { message = $"Product with ID {id} not found." });
+
+            existing.CategoryId = product.CategoryId;
+            existing.Name = product.Name;
+            existing.Variant = product.Variant;
+            existing.Flavor = product.Flavor;
+            existing.BasePrice = product.BasePrice;
+            existing.AddOnDescription = product.AddOnDescription;
+            existing.AddOnPricePerUnit = product.AddOnPricePerUnit;
+            existing.IsActive = product.IsActive;
+            existing.DisplayOrder = product.DisplayOrder;
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+                return NotFound(new { message = $"Product with ID {id} not found." });
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

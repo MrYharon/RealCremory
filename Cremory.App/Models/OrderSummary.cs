@@ -4,7 +4,21 @@
     {
         Pending = 0,
         Creating = 1,
-        Completed = 2
+        Completed = 2,
+        Cancelled = 3
+    }
+
+    public class OrderDto
+    {
+        public string OrderId { get; set; } = string.Empty;
+        public string CustomerName { get; set; } = string.Empty;
+        public string Items { get; set; } = string.Empty;
+        public decimal TotalPrice { get; set; }
+        public OrderStatus Status { get; set; } = OrderStatus.Pending;
+        public string Source { get; set; } = "Walk-in";
+        public string? CustomerContact { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 
     public class OrderSummary
@@ -14,14 +28,35 @@
         public string Items { get; set; } = string.Empty;
         public decimal TotalPrice { get; set; }
         public string Timestamp { get; set; } = string.Empty;
-
-        // Flag to highlight brand new incoming orders
         public bool IsJustReceived { get; set; } = false;
-
-        // Order state for the workflow state machine
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
 
-        // UI Presentation Properties
+        public static OrderSummary FromDto(OrderDto dto)
+        {
+            return new OrderSummary
+            {
+                OrderId = dto.OrderId,
+                CustomerName = dto.CustomerName,
+                Items = dto.Items,
+                TotalPrice = dto.TotalPrice,
+                Status = dto.Status,
+                Timestamp = FormatRelativeTime(dto.CreatedAt),
+                IsJustReceived = dto.CreatedAt > DateTime.UtcNow.AddMinutes(-2)
+            };
+        }
+
+        private static string FormatRelativeTime(DateTime dateTime)
+        {
+            var diff = DateTime.UtcNow - dateTime;
+
+            if (diff.TotalSeconds < 60) return "Just now";
+            if (diff.TotalMinutes < 60) return $"{(int)diff.TotalMinutes} mins ago";
+            if (diff.TotalHours < 24) return $"{(int)diff.TotalHours}h ago";
+            if (diff.TotalDays < 7) return $"{(int)diff.TotalDays}d ago";
+
+            return dateTime.ToString("MMM dd");
+        }
+
         public string StatusBadge
         {
             get => Status switch
@@ -29,6 +64,7 @@
                 OrderStatus.Pending => "PENDING",
                 OrderStatus.Creating => "PREPARING",
                 OrderStatus.Completed => "COMPLETE",
+                OrderStatus.Cancelled => "CANCELLED",
                 _ => "UNKNOWN"
             };
         }
@@ -37,10 +73,11 @@
         {
             get => Status switch
             {
-                OrderStatus.Pending => "#FF9800",    // Orange
-                OrderStatus.Creating => "#2196F3",   // Blue
-                OrderStatus.Completed => "#4CAF50",  // Green
-                _ => "#999999"
+                OrderStatus.Pending => "#EF6C00",
+                OrderStatus.Creating => "#8D6E63",
+                OrderStatus.Completed => "#2E7D32",
+                OrderStatus.Cancelled => "#9E9E9E",
+                _ => "#9E9E9E"
             };
         }
 
@@ -48,9 +85,10 @@
         {
             get => Status switch
             {
-                OrderStatus.Pending => "⏳ Waiting for kitchen staff to start preparation",
-                OrderStatus.Creating => "👨‍🍳 Kitchen is actively working on this order",
-                OrderStatus.Completed => "✅ Order complete and ready!",
+                OrderStatus.Pending => "Waiting for kitchen to start preparation",
+                OrderStatus.Creating => "Kitchen is working on this order",
+                OrderStatus.Completed => "Order complete and ready",
+                OrderStatus.Cancelled => "This order has been cancelled",
                 _ => ""
             };
         }
@@ -62,6 +100,7 @@
                 OrderStatus.Pending => "▶ Start Preparing",
                 OrderStatus.Creating => "✓ Mark Complete",
                 OrderStatus.Completed => "Completed",
+                OrderStatus.Cancelled => "Cancelled",
                 _ => "Unknown"
             };
         }
@@ -70,26 +109,28 @@
         {
             get => Status switch
             {
-                OrderStatus.Pending => "#2196F3",    // Blue
-                OrderStatus.Creating => "#4CAF50",   // Green
-                OrderStatus.Completed => "#CCCCCC",  // Gray (disabled-look)
+                OrderStatus.Pending => "#8D6E63",
+                OrderStatus.Creating => "#2E7D32",
+                OrderStatus.Completed => "#CCCCCC",
+                OrderStatus.Cancelled => "#CCCCCC",
                 _ => "#999999"
             };
         }
 
         public string AvatarColor
         {
-            get => IsJustReceived ? "#FF5722" : "#1877F2";  // Red for new orders, Facebook blue otherwise
+            get => IsJustReceived ? "#C62828" : "#8D6E63";
         }
 
         public string BorderColor
         {
-            get => IsJustReceived ? "#FF5722" : Status switch
+            get => IsJustReceived ? "#C62828" : Status switch
             {
-                OrderStatus.Pending => "#FF9800",    // Orange
-                OrderStatus.Creating => "#2196F3",   // Blue
-                OrderStatus.Completed => "#4CAF50",  // Green
-                _ => "#E0E0E0"
+                OrderStatus.Pending => "#EF6C00",
+                OrderStatus.Creating => "#8D6E63",
+                OrderStatus.Completed => "#2E7D32",
+                OrderStatus.Cancelled => "#9E9E9E",
+                _ => "#E0D0BC"
             };
         }
     }

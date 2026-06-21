@@ -1,50 +1,102 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Cremory.App.Models"
              x:Class="Cremory.App.IngredientsManagementPage"
-             Title="Orders Management"
+             Title="Ingredients"
              BackgroundColor="{StaticResource Gray50}">
 
-    <Grid RowDefinitions="Auto, *" Padding="20" RowSpacing="20">
-
-        <!-- Header -->
+    <Grid RowDefinitions="Auto, Auto, *" Padding="20" RowSpacing="16">
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" ColumnSpacing="12">
             <VerticalStackLayout>
-                <Label Text="Orders Management" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
-                <Label Text="Manage ingredients and reorder points" FontSize="13" TextColor="{StaticResource Gray500}" Margin="0,4,0,0"/>
+                <Label Text="Ingredients" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
+                <Label Text="Manage stock levels and reorder points" FontSize="13" TextColor="{StaticResource Gray500}" Margin="0,4,0,0"/>
             </VerticalStackLayout>
-            <Button Grid.Column="1" Text="Add Item" BackgroundColor="{StaticResource Success}" 
-                    TextColor="White" VerticalOptions="End" FontAttributes="Bold" HeightRequest="40" Padding="16,0"/>
+            <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="End">
+                <Button Text="+ Add" Clicked="OnAddClicked"
+                        BackgroundColor="{StaticResource Success}" TextColor="White"
+                        FontAttributes="Bold" HeightRequest="40" Padding="14,0"/>
+            </HorizontalStackLayout>
         </Grid>
 
-        <!-- Content -->
-        <VerticalStackLayout Grid.Row="1" Spacing="16" VerticalOptions="Center" HorizontalOptions="Center">
+        <Border Grid.Row="1" StrokeShape="RoundRectangle 10" BackgroundColor="White"
+                Padding="12" StrokeThickness="1" Stroke="{StaticResource Gray200}">
+            <SearchBar x:Name="IngredientSearchBar" Placeholder="Search ingredients..."
+                       TextChanged="OnSearchTextChanged"
+                       BackgroundColor="{StaticResource Gray50}"/>
+        </Border>
 
-            <!-- Coming Soon Card -->
-            <Border StrokeShape="RoundRectangle 12" BackgroundColor="White" Padding="24" Stroke="Transparent"
-                   WidthRequest="300">
-                <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
-                    <Label Text="Inventory Control" FontSize="20" FontAttributes="Bold" 
-                           TextColor="{StaticResource Gray900}" HorizontalOptions="Center"/>
-                    <Label Text="Manage stock levels, set reorder points, and track ingredient usage" 
-                           FontSize="13" TextColor="{StaticResource Gray600}" 
-                           LineBreakMode="WordWrap" HorizontalTextAlignment="Center"/>
+        <ActivityIndicator x:Name="LoadingIndicator" IsRunning="False" IsVisible="False"
+                           Color="{StaticResource Primary}" VerticalOptions="Center" HorizontalOptions="Center"
+                           Grid.Row="2"/>
 
-                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12" Margin="0,16,0,0">
-                        <Border Grid.Column="0" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Primary}" 
-                               Padding="12">
-                            <Label Text="Add Items" FontSize="11" FontAttributes="Bold" TextColor="White" 
-                                  HorizontalOptions="Center" VerticalOptions="Center"/>
-                        </Border>
-                        <Border Grid.Column="1" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Info}" 
-                               Padding="12">
-                            <Label Text="Edit Stock" FontSize="11" FontAttributes="Bold" TextColor="White" 
-                                  HorizontalOptions="Center" VerticalOptions="Center"/>
-                        </Border>
-                    </Grid>
+        <CollectionView Grid.Row="2" x:Name="IngredientsCollectionView">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="12">
+                    <Label Text="No ingredients found" FontSize="20" FontAttributes="Bold"
+                           TextColor="{StaticResource Gray400}" HorizontalTextAlignment="Center"/>
+                    <Label Text="Tap + Add to create your first ingredient"
+                           FontSize="13" TextColor="{StaticResource Gray400}" HorizontalTextAlignment="Center"/>
                 </VerticalStackLayout>
-            </Border>
-        </VerticalStackLayout>
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Ingredient">
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Edit" BackgroundColor="{StaticResource Info}"
+                                           Invoked="OnEditSwipe"/>
+                                <SwipeItem Text="Delete" BackgroundColor="{StaticResource Danger}"
+                                           Invoked="OnDeleteSwipe"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <Border StrokeShape="RoundRectangle 12" StrokeThickness="1"
+                                Stroke="{StaticResource Gray200}" Padding="16" Margin="0,0,0,10"
+                                BackgroundColor="White">
+                            <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="8">
+                                <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="8">
+                                    <Label Text="{Binding Name}" FontSize="17" FontAttributes="Bold"
+                                           TextColor="{StaticResource Gray900}"/>
+                                    <Border StrokeShape="RoundRectangle 6" Padding="6,2"
+                                            BackgroundColor="{StaticResource Danger}"
+                                            Stroke="Transparent"
+                                            IsVisible="{Binding IsLowStock}">
+                                        <Label Text="Low Stock" FontSize="9" FontAttributes="Bold"
+                                               TextColor="White"/>
+                                    </Border>
+                                </HorizontalStackLayout>
+                                <Label Grid.Row="0" Grid.Column="1"
+                                       Text="{Binding StockQuantity, StringFormat='{0:N1}'}"
+                                       FontSize="22" FontAttributes="Bold"
+                                       TextColor="{StaticResource Primary}" HorizontalOptions="End"/>
+                                <Label Grid.Row="1" Grid.Column="0"
+                                       Text="{Binding Unit, StringFormat='Unit: {0}'}"
+                                       FontSize="12" TextColor="{StaticResource Gray500}"/>
+                                <Label Grid.Row="1" Grid.Column="1"
+                                       Text="{Binding Unit}"
+                                       FontSize="12" TextColor="{StaticResource Gray600}" HorizontalOptions="End"/>
+                                <Grid Grid.Row="2" Grid.ColumnSpan="2" ColumnDefinitions="*, Auto" ColumnSpacing="8"
+                                      Margin="0,4,0,0">
+                                    <ProgressBar Grid.Column="0" ProgressColor="{StaticResource Success}"
+                                                 HeightRequest="6" VerticalOptions="Center"
+                                                 Progress="{Binding StockPercentage}"/>
+                                    <Label Grid.Column="1" FontSize="11" TextColor="{StaticResource Gray600}"
+                                           VerticalOptions="Center">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="Reorder: {0:N0} {1}">
+                                                <Binding Path="ReorderLevel"/>
+                                                <Binding Path="Unit"/>
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+                                </Grid>
+                                <BoxView Grid.Row="3" Grid.ColumnSpan="2" HeightRequest="1"
+                                         Color="{StaticResource Gray100}" Margin="0,2,0,0"/>
+                            </Grid>
+                        </Border>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
     </Grid>
-
 </ContentPage>

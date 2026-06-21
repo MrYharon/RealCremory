@@ -1,107 +1,260 @@
 ﻿using System.Collections.ObjectModel;
 using Cremory.App.Models;
+using Cremory.App.Services;
 
 namespace Cremory.App
 {
     public partial class MainPage : ContentPage
     {
-        // ObservableCollection automatically refreshes the UI when items are added or removed
-        public ObservableCollection<OrderSummary> ActiveOrders { get; set; }
+        private readonly ApiService _api;
+        private readonly SignalRService _signalR;
+        private readonly List<OrderSummary> _allOrders = [];
 
-        // Analytics properties
-        public decimal TotalProfitToday { get; set; } = 1500.00m;
-        public int TotalOrdersToday { get; set; } = 8;
+        public ObservableCollection<OrderSummary> ActiveOrders { get; set; } = [];
+        public decimal TotalProfitToday { get; set; }
+        public int TotalOrdersToday { get; set; }
+        public bool IsLoading { get; set; }
+        public string CompletedOrdersText { get; set; }
+        public string OrdersTotalText { get; set; }
 
-        public MainPage()
+        public MainPage(ApiService api, SignalRService signalR)
         {
             InitializeComponent();
-
-            ActiveOrders = new ObservableCollection<OrderSummary>();
             BindingContext = this;
+            _api = api;
+            _signalR = signalR;
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-
-            // 1. Load any orders that were pending before the app opened
-            LoadInitialOrders();
-
-            // 2. Start listening for incoming Facebook commands
-            SimulateIncomingFacebookOrder();
+            await LoadOrdersAsync();
+            SubscribeToSignalR();
+            await _signalR.StartAsync();
         }
 
-        private void LoadInitialOrders()
+        protected override async void OnDisappearing()
         {
-            // Clear to prevent duplicates on navigation
-            ActiveOrders.Clear();
-
-            ActiveOrders.Add(new OrderSummary
-            {
-                OrderId = "ORD-FB-001",
-                CustomerName = "Walk-in Customer",
-                Items = "2 x Classic Pandesal (Pack of 10)",
-                TotalPrice = 100.00m,
-                Timestamp = "10 mins ago",
-                Status = OrderStatus.Creating
-            });
+            base.OnDisappearing();
+            UnsubscribeFromSignalR();
+            await _signalR.StopAsync();
         }
 
-        private async void SimulateIncomingFacebookOrder()
+        private void SubscribeToSignalR()
         {
-            // Wait 5 seconds to simulate your friend finishing the chat and sending "!order summary:"
-            await Task.Delay(5000);
+            _signalR.OrderCreated += OnOrderCreated;
+            _signalR.OrderUpdated += OnOrderUpdated;
+            _signalR.OrderDeleted += OnOrderDeleted;
+        }
 
-            // Insert the new order at the TOP of the list (index 0)
-            ActiveOrders.Insert(0, new OrderSummary
+        private void UnsubscribeFromSignalR()
+        {
+            _signalR.OrderCreated -= OnOrderCreated;
+            _signalR.OrderUpdated -= OnOrderUpdated;
+            _signalR.OrderDeleted -= OnOrderDeleted;
+        }
+
+        private void OnOrderCreated(OrderDto dto)
+        {
+            var summary = OrderSummary.FromDto(dto);
+            _allOrders.Add(summary);
+            if (summary.Status != OrderStatus.Completed && summary.Status != OrderStatus.Cancelled)
+                ActiveOrders.Insert(0, summary);
+            RefreshTotals();
+        }
+
+        private void OnOrderUpdated(OrderDto dto)
+        {
+            var updated = OrderSummary.FromDto(dto);
+            var allIdx = _allOrders.FindIndex(o => o.OrderId == dto.OrderId);
+            if (allIdx >= 0)
+                _allOrders[allIdx] = updated;
+            else
+                _allOrders.Add(updated);
+
+            var existing = ActiveOrders.FirstOrDefault(o => o.OrderId == dto.OrderId);
+            if (existing != null)
             {
-                OrderId = "ORD-FB-002",
-                CustomerName = "Facebook Messenger Order",
-                Items = "1 x blueberry cheesecake\n2 x Korean bun cheesecake",
-                TotalPrice = 450.00m,
-                Timestamp = "Just now",
-                IsJustReceived = true,
-                Status = OrderStatus.Pending
+                var index = ActiveOrders.IndexOf(existing);
+                if (updated.Status == OrderStatus.Completed || updated.Status == OrderStatus.Cancelled)
+                    ActiveOrders.RemoveAt(index);
+                else
+                    ActiveOrders[index] = updated;
+            }
+            else if (dto.Status != OrderStatus.Completed && dto.Status != OrderStatus.Cancelled)
+            {
+                ActiveOrders.Add(updated);
+            }
+            RefreshTotals();
+        }
+
+        private void OnOrderDeleted(string orderId)
+        {
+            _allOrders.RemoveAll(o => o.OrderId == orderId);
+            var existing = ActiveOrders.FirstOrDefault(o => o.OrderId == orderId);
+            if (existing != null)
+            {
+                ActiveOrders.Remove(existing);
+                RefreshTotals();
+            }
+        }
+
+        private async void OnRefreshing(object sender, EventArgs e)
+        {
+            await LoadOrdersAsync();
+            MainThread.BeginInvokeOnMainThread(() => MainRefreshView.IsRefreshing = false);
+        }
+
+        private async Task LoadOrdersAsync()
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                IsLoading = true;
+                OnPropertyChanged(nameof(IsLoading));
             });
+
+            try
+            {
+                var orders = await _api.GetOrdersAsync();
+                var active = orders.Where(o => o.Status != OrderStatus.Completed
+                                               && o.Status != OrderStatus.Cancelled).ToList();
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    _allOrders.Clear();
+                    _allOrders.AddRange(orders);
+                    ActiveOrders.Clear();
+                    foreach (var order in active)
+                        ActiveOrders.Add(order);
+
+                    RefreshTotals();
+                });
+            }
+            catch (Exception ex)
+            {
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await DisplayAlert("Error", "Failed to load orders. Check connection.", "OK");
+                });
+            }
+            finally
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    IsLoading = false;
+                    OnPropertyChanged(nameof(IsLoading));
+                });
+            }
+        }
+
+        private void RefreshTotals()
+        {
+            var completed = _allOrders.Where(o => o.Status == OrderStatus.Completed).ToList();
+            TotalProfitToday = completed.Sum(o => o.TotalPrice);
+            TotalOrdersToday = _allOrders.Count;
+            CompletedOrdersText = $"{completed.Count} orders completed";
+            OrdersTotalText = $"₱{_allOrders.Sum(o => o.TotalPrice):N0} total";
+
+            var pendingCount = _allOrders.Count(o => o.Status == OrderStatus.Pending);
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                try
+                {
+                    var flyoutItems = Shell.Current?.Items;
+                    if (flyoutItems != null)
+                    {
+                        foreach (var item in flyoutItems)
+                        {
+                            if (item.Title == "Orders" && item.Items.Count > 0 && item.Items[0].Items.Count > 0)
+                            {
+                                var content = item.Items[0].Items[0];
+                                var badgeProp = content.GetType().GetProperty("Badge");
+                                if (badgeProp != null)
+                                    badgeProp.SetValue(content, pendingCount > 0 ? pendingCount.ToString() : null);
+                                break;
+                            }
+                        }
+                    }
+                }
+                catch { }
+            });
+
+            OnPropertyChanged(nameof(ActiveOrders));
+            OnPropertyChanged(nameof(TotalProfitToday));
+            OnPropertyChanged(nameof(TotalOrdersToday));
+            OnPropertyChanged(nameof(CompletedOrdersText));
+            OnPropertyChanged(nameof(OrdersTotalText));
+        }
+
+        private async void OnCancelOrder(object sender, EventArgs e)
+        {
+            var item = sender as SwipeItem;
+            var order = item?.BindingContext as OrderSummary;
+            if (order == null) return;
+
+            if (order.Status == OrderStatus.Completed || order.Status == OrderStatus.Cancelled)
+            {
+                await DisplayAlert("Cancel", "This order is already finished.", "OK");
+                return;
+            }
+
+            var confirm = await DisplayAlert("Cancel Order",
+                $"Cancel order {order.OrderId} for {order.CustomerName}?", "Yes, Cancel", "No");
+            if (!confirm) return;
+
+            try
+            {
+                var success = await _api.UpdateOrderStatusAsync(order.OrderId, OrderStatus.Cancelled);
+                if (success)
+                {
+                    _allOrders.RemoveAll(o => o.OrderId == order.OrderId);
+                    ActiveOrders.Remove(order);
+                    RefreshTotals();
+                }
+            }
+            catch
+            {
+                await DisplayAlert("Error", "Failed to cancel order. Check connection.", "OK");
+            }
         }
 
         private async void OnOrderActionClicked(object sender, EventArgs e)
         {
-            // Grab the specific button that was clicked
             var button = sender as Button;
-
-            // Extract the Order data tied to that specific button
             var order = button?.BindingContext as OrderSummary;
+            if (order == null) return;
 
-            if (order != null)
+            OrderStatus newStatus;
+            switch (order.Status)
             {
-                // State machine: move to next state
-                switch (order.Status)
-                {
-                    case OrderStatus.Pending:
-                        // User clicked "Start Preparing"
-                        order.Status = OrderStatus.Creating;
-                        break;
+                case OrderStatus.Pending:
+                    newStatus = OrderStatus.Creating;
+                    break;
+                case OrderStatus.Creating:
+                    newStatus = OrderStatus.Completed;
+                    break;
+                default:
+                    return;
+            }
 
-                    case OrderStatus.Creating:
-                        // User clicked "Mark Complete"
-                        order.Status = OrderStatus.Completed;
-                        // Remove from active queue and send to archives
+            try
+            {
+                var success = await _api.UpdateOrderStatusAsync(order.OrderId, newStatus);
+                if (success)
+                {
+                    order.Status = newStatus;
+                    if (newStatus == OrderStatus.Completed)
+                    {
                         ActiveOrders.Remove(order);
                         await DisplayAlert("Order Complete", $"{order.OrderId} moved to archives.", "OK");
-                        // TODO: Send to OrderArchivesPage and deduct ingredients from Oracle DB
-                        break;
-
-                    case OrderStatus.Completed:
-                        // Already completed, shouldn't reach here
-                        break;
+                    }
+                    OnPropertyChanged(nameof(ActiveOrders));
                 }
-
-                // Refresh the UI by triggering property change
-                OnPropertyChanged(nameof(ActiveOrders));
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", "Failed to update order. Check connection.", "OK");
             }
         }
-
-        
     }
 }

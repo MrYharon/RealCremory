@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Cremory.App.WalkInOrderFormPage"
+             Title="New Walk-in Order"
+             BackgroundColor="{StaticResource Gray50}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+            <VerticalStackLayout Spacing="6">
+                <Label Text="New Walk-in Order" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
+                <Label Text="Create an order directly" FontSize="13" TextColor="{StaticResource Gray500}"/>
+            </VerticalStackLayout>
+
+            <Border StrokeShape="RoundRectangle 12" BackgroundColor="White" Padding="16"
+                    Stroke="{StaticResource Gray200}">
+                <VerticalStackLayout Spacing="14">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Customer Name" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
+                        <Border StrokeShape="RoundRectangle 8" Padding="12,0" Stroke="{StaticResource Gray200}"
+                                BackgroundColor="{StaticResource Gray50}" HeightRequest="44">
+                            <Entry x:Name="NameEntry" Placeholder="e.g. Juan dela Cruz"
+                                   PlaceholderColor="{StaticResource Gray400}"
+                                   TextColor="{StaticResource Gray900}"
+                                   BackgroundColor="Transparent"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Items" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
+                        <Border StrokeShape="RoundRectangle 8" Padding="12" Stroke="{StaticResource Gray200}"
+                                BackgroundColor="{StaticResource Gray50}">
+                            <Editor x:Name="ItemsEditor" Placeholder="e.g. 2x Croissant, 1x Ube Cake"
+                                    PlaceholderColor="{StaticResource Gray400}"
+                                    TextColor="{StaticResource Gray900}"
+                                    BackgroundColor="Transparent"
+                                    AutoSize="TextChanges"
+                                    HeightRequest="100"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Total Price" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
+                        <Border StrokeShape="RoundRectangle 8" Padding="12,0" Stroke="{StaticResource Gray200}"
+                                BackgroundColor="{StaticResource Gray50}" HeightRequest="44">
+                            <Entry x:Name="PriceEntry" Placeholder="0.00"
+                                   PlaceholderColor="{StaticResource Gray400}"
+                                   TextColor="{StaticResource Gray900}"
+                                   BackgroundColor="Transparent"
+                                   Keyboard="Numeric"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Contact Number (optional)" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
+                        <Border StrokeShape="RoundRectangle 8" Padding="12,0" Stroke="{StaticResource Gray200}"
+                                BackgroundColor="{StaticResource Gray50}" HeightRequest="44">
+                            <Entry x:Name="ContactEntry" Placeholder="e.g. 09171234567"
+                                   PlaceholderColor="{StaticResource Gray400}"
+                                   TextColor="{StaticResource Gray900}"
+                                   BackgroundColor="Transparent"
+                                   Keyboard="Telephone"/>
+                        </Border>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label x:Name="StatusLabel" FontSize="13" HorizontalTextAlignment="Center"/>
+
+            <Button x:Name="SaveButton" Text="Create Order"
+                    Clicked="OnSaveClicked"
+                    BackgroundColor="{StaticResource Success}" TextColor="White"
+                    FontAttributes="Bold" HeightRequest="48" FontSize="15"/>
+
+            <Button Text="Cancel"
+                    Clicked="OnCancelClicked"
+                    BackgroundColor="{StaticResource Gray200}" TextColor="{StaticResource Gray700}"
+                    HeightRequest="44" FontSize="14"/>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

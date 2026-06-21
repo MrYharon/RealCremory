@@ -8,6 +8,7 @@ namespace Cremory.API.Models
     {
         [Key]
         [Column("INGREDIENT_ID")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int IngredientId { get; set; }
 
         [Required]

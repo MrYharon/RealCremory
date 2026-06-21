@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Cremory.App.IngredientFormPage"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource Gray50}">
+
+    <Grid RowDefinitions="*, Auto" Padding="20" RowSpacing="16">
+        <ScrollView>
+            <VerticalStackLayout Spacing="16">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Ingredient Name" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="12,8" Stroke="{StaticResource Gray200}">
+                        <Entry x:Name="NameEntry" Placeholder="e.g. All-Purpose Flour" FontSize="15"
+                               TextColor="{StaticResource Gray900}" PlaceholderColor="{StaticResource Gray400}"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Unit" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="12,8" Stroke="{StaticResource Gray200}">
+                        <Entry x:Name="UnitEntry" Placeholder="kg, L, pcs, g" FontSize="15"
+                               TextColor="{StaticResource Gray900}" PlaceholderColor="{StaticResource Gray400}"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Stock Quantity" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="12,8" Stroke="{StaticResource Gray200}">
+                        <Entry x:Name="StockEntry" Placeholder="0" Keyboard="Numeric" FontSize="15"
+                               TextColor="{StaticResource Gray900}" PlaceholderColor="{StaticResource Gray400}"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Reorder Level" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="12,8" Stroke="{StaticResource Gray200}">
+                        <Entry x:Name="ReorderEntry" Placeholder="0" Keyboard="Numeric" FontSize="15"
+                               TextColor="{StaticResource Gray900}" PlaceholderColor="{StaticResource Gray400}"/>
+                    </Border>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, *" ColumnSpacing="12">
+            <Button Text="Cancel" Clicked="OnCancelClicked"
+                    BackgroundColor="{StaticResource Gray200}" TextColor="{StaticResource Gray700}"
+                    FontAttributes="Bold" HeightRequest="48"/>
+            <Button Grid.Column="1" Text="Save" Clicked="OnSaveClicked"
+                    BackgroundColor="{StaticResource Success}" TextColor="White"
+                    FontAttributes="Bold" HeightRequest="48"/>
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Cremory.App.OrderParserPage"
+             Title="Order Parser"
+             BackgroundColor="{StaticResource Gray50}">
+
+    <Grid RowDefinitions="Auto, *, Auto" Padding="20" RowSpacing="16">
+
+        <VerticalStackLayout Grid.Row="0" Spacing="6">
+            <Label Text="Messenger Order Import" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
+            <Label Text="Paste a Messenger order message below to create an order"
+                   FontSize="13" TextColor="{StaticResource Gray500}"/>
+        </VerticalStackLayout>
+
+        <Border Grid.Row="1" StrokeShape="RoundRectangle 12" BackgroundColor="White"
+                Padding="12" Stroke="{StaticResource Gray200}">
+            <Editor x:Name="RawTextEditor" TextChanged="OnTextChanged"
+                    Placeholder="Paste !ORDER SUMMARY: text here..."
+                    FontSize="13"
+                    TextColor="{StaticResource Gray900}"
+                    PlaceholderColor="{StaticResource Gray400}"
+                    BackgroundColor="{StaticResource Gray50}"
+                    AutoSize="TextChanges"/>
+        </Border>
+
+        <VerticalStackLayout Grid.Row="2" Spacing="12">
+            <Button x:Name="SubmitButton" Text="Parse &amp; Create Order"
+                    Clicked="OnParseClicked"
+                    BackgroundColor="{StaticResource Primary}" TextColor="White"
+                    FontAttributes="Bold" HeightRequest="48" FontSize="15"/>
+            <Label x:Name="ResultLabel" FontSize="13" HorizontalTextAlignment="Center"/>
+        </VerticalStackLayout>
+    </Grid>
+
+</ContentPage>
