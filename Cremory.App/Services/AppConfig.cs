@@ -21,7 +21,7 @@ namespace Cremory.App.Services
 #if ANDROID
             return "http://10.0.2.2:5105";
 #else
-            return "http://localhost:5105";
+            return "https://cremory-api-bhfhhab9fsfeazcb.indonesiacentral-01.azurewebsites.net";
 #endif
         }
     }
