@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using Cremory.API.Data;
 using Cremory.API.Hubs;
 using Cremory.API.Models;
 using Cremory.API.Services;
@@ -44,6 +45,12 @@ builder.Services.Configure<MessengerOptions>(options =>
             });
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<CremoryDbContext>();
+                db.Database.Migrate();
+            }
 
             if (app.Environment.IsDevelopment())
             {
