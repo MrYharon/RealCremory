@@ -79,6 +79,14 @@ namespace Cremory.API.Controllers
             return Ok(product);
         }
 
+        [HttpPost("categories")]
+        public async Task<ActionResult<Category>> CreateCategory(Category category)
+        {
+            _context.Categories.Add(category);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetCategories), category);
+        }
+
         [HttpPost]
         public async Task<ActionResult<Product>> CreateProduct(Product product)
         {
