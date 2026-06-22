@@ -6,18 +6,21 @@
              Title="Orders"
              BackgroundColor="{StaticResource Gray50}">
 
-    <Grid RowDefinitions="Auto, Auto, Auto, Auto, *" Padding="20" RowSpacing="16">
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, *" Padding="20" RowSpacing="14">
 
-        <Grid Grid.Row="0" ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8">
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto, Auto, Auto" ColumnSpacing="8">
             <VerticalStackLayout>
                 <Label Text="Orders" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
-                <Label Text="All orders by status" FontSize="13" TextColor="{StaticResource Gray500}" Margin="0,4,0,0"/>
+                <Label Text="Manage and track all orders" FontSize="13" TextColor="{StaticResource Gray500}" Margin="0,4,0,0"/>
             </VerticalStackLayout>
             <Button Grid.Column="1" Text="+ New" Clicked="OnNewOrderClicked"
                     BackgroundColor="{StaticResource Success}" TextColor="White"
                     FontAttributes="Bold" HeightRequest="40" Padding="14,0" VerticalOptions="End"/>
-            <Button Grid.Column="2" Text="Import" Clicked="OnImportClicked"
+            <Button Grid.Column="2" Text="Copy" Clicked="OnCopyTemplate"
                     BackgroundColor="{StaticResource Info}" TextColor="White"
+                    FontAttributes="Bold" HeightRequest="40" Padding="14,0" VerticalOptions="End"/>
+            <Button Grid.Column="3" Text="Import" Clicked="OnImportClicked"
+                    BackgroundColor="{StaticResource Primary}" TextColor="White"
                     FontAttributes="Bold" HeightRequest="40" Padding="14,0" VerticalOptions="End"/>
         </Grid>
 
@@ -60,16 +63,23 @@
             </Border>
         </Grid>
 
-        <Grid Grid.Row="2" ColumnDefinitions="Auto, Auto, Auto, *" ColumnSpacing="8">
+        <Grid Grid.Row="2" ColumnDefinitions="Auto, Auto, Auto, Auto, *, Auto" ColumnSpacing="6">
             <Button Grid.Column="0" x:Name="FilterAll" Text="All"
                     Clicked="OnFilterClicked" BackgroundColor="{StaticResource Primary}"
-                    TextColor="White" HeightRequest="36" Padding="16,0" FontSize="12" FontAttributes="Bold"/>
+                    TextColor="White" HeightRequest="36" Padding="14,0" FontSize="12" FontAttributes="Bold"/>
             <Button Grid.Column="1" x:Name="FilterPending" Text="Pending"
                     Clicked="OnFilterClicked" BackgroundColor="{StaticResource Gray200}"
-                    TextColor="{StaticResource Gray700}" HeightRequest="36" Padding="16,0" FontSize="12"/>
+                    TextColor="{StaticResource Gray700}" HeightRequest="36" Padding="14,0" FontSize="12"/>
             <Button Grid.Column="2" x:Name="FilterPreparing" Text="Preparing"
                     Clicked="OnFilterClicked" BackgroundColor="{StaticResource Gray200}"
-                    TextColor="{StaticResource Gray700}" HeightRequest="36" Padding="16,0" FontSize="12"/>
+                    TextColor="{StaticResource Gray700}" HeightRequest="36" Padding="14,0" FontSize="12"/>
+            <Button Grid.Column="3" x:Name="FilterCompleted" Text="Completed"
+                    Clicked="OnFilterClicked" BackgroundColor="{StaticResource Gray200}"
+                    TextColor="{StaticResource Gray700}" HeightRequest="36" Padding="14,0" FontSize="12"/>
+            <Button Grid.Column="5" x:Name="ArchiveToggle" Text="Show Archives"
+                    Clicked="OnToggleArchives"
+                    BackgroundColor="{StaticResource Gray200}"
+                    TextColor="{StaticResource Gray700}" HeightRequest="36" Padding="14,0" FontSize="12"/>
         </Grid>
 
         <Border Grid.Row="3" StrokeShape="RoundRectangle 10" BackgroundColor="White"
@@ -79,8 +89,39 @@
                        BackgroundColor="{StaticResource Gray50}"/>
         </Border>
 
-        <RefreshView Grid.Row="4" x:Name="OrdersRefreshView" IsRefreshing="{Binding IsRefreshing}"
-                     Command="{Binding RefreshCommand}">
+        <Grid Grid.Row="4" x:Name="ArchiveFilterBar" ColumnDefinitions="*, *" ColumnSpacing="10" IsVisible="False">
+            <Border StrokeShape="RoundRectangle 10" BackgroundColor="White" Padding="8"
+                    StrokeThickness="1" Stroke="{StaticResource Gray200}">
+                <Picker x:Name="DateRangePicker" Title="Date Range" TextColor="{StaticResource Gray900}"
+                        TitleColor="{StaticResource Gray500}" BackgroundColor="{StaticResource Gray50}"
+                        SelectedIndexChanged="OnDateFilterChanged">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Today</x:String>
+                            <x:String>This Week</x:String>
+                            <x:String>This Month</x:String>
+                            <x:String>All Time</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+            </Border>
+            <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="White" Padding="8"
+                    StrokeThickness="1" Stroke="{StaticResource Gray200}">
+                <Picker x:Name="ArchiveStatusPicker" Title="Status" TextColor="{StaticResource Gray900}"
+                        TitleColor="{StaticResource Gray500}" BackgroundColor="{StaticResource Gray50}"
+                        SelectedIndexChanged="OnDateFilterChanged">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>All</x:String>
+                            <x:String>Completed</x:String>
+                            <x:String>Cancelled</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+            </Border>
+        </Grid>
+
+        <RefreshView Grid.Row="5" x:Name="OrdersRefreshView" Refreshing="OnRefreshing">
             <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
                                Color="{StaticResource Primary}" VerticalOptions="Center" HorizontalOptions="Center"/>
 
@@ -104,9 +145,9 @@
                                 </SwipeItems>
                             </SwipeView.RightItems>
                             <Border StrokeShape="RoundRectangle 12" StrokeThickness="1"
-                                    Stroke="{Binding BorderColor}" Padding="16" Margin="0,0,0,12"
+                                    Stroke="{Binding BorderColor}" Padding="16" Margin="0,0,0,10"
                                     BackgroundColor="White">
-                                <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto, Auto, Auto" RowSpacing="10">
+                                <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="10">
                                     <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="12" VerticalOptions="Center">
                                         <BoxView WidthRequest="44" HeightRequest="44" CornerRadius="22"
                                                  BackgroundColor="{Binding AvatarColor}"/>
@@ -135,11 +176,10 @@
                                     <Button Grid.Row="2" Grid.Column="1" Text="{Binding ActionButtonText}"
                                             Clicked="OnOrderActionClicked"
                                             BackgroundColor="{Binding ActionButtonColor}" TextColor="White"
-                                            HeightRequest="38" Padding="14,0" FontAttributes="Bold" FontSize="12"/>
+                                            HeightRequest="38" Padding="14,0" FontAttributes="Bold" FontSize="12"
+                                            IsVisible="{Binding ShowActionButton}"/>
                                     <Label Grid.Row="3" Grid.ColumnSpan="2" Text="{Binding StatusMessage}"
                                            FontSize="11" TextColor="{StaticResource Gray500}" Margin="0,2,0,0"/>
-                                    <BoxView Grid.Row="4" Grid.ColumnSpan="2" HeightRequest="1"
-                                             Color="{StaticResource Gray100}" Margin="0,4,0,0"/>
                                 </Grid>
                             </Border>
                         </SwipeView>

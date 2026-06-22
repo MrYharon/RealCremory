@@ -36,6 +36,8 @@ namespace Cremory.App
             try
             {
                 var ingredients = await _api.GetIngredientsAsync();
+                if (ingredients.Count == 0)
+                    ingredients = GetSampleIngredients();
                 _masterList = ingredients;
                 ApplySearchFilter();
             }
@@ -48,6 +50,25 @@ namespace Cremory.App
                 LoadingIndicator.IsRunning = false;
                 LoadingIndicator.IsVisible = false;
             }
+        }
+
+        private static List<Ingredient> GetSampleIngredients()
+        {
+            return
+            [
+                new() { IngredientId = 1, Name = "All-Purpose Flour", StockQuantity = 25, Unit = "kg", ReorderLevel = 10 },
+                new() { IngredientId = 2, Name = "White Sugar", StockQuantity = 15, Unit = "kg", ReorderLevel = 8 },
+                new() { IngredientId = 3, Name = "Butter (Unsalted)", StockQuantity = 8, Unit = "kg", ReorderLevel = 5 },
+                new() { IngredientId = 4, Name = "Fresh Eggs", StockQuantity = 120, Unit = "pcs", ReorderLevel = 60 },
+                new() { IngredientId = 5, Name = "Whole Milk", StockQuantity = 4, Unit = "L", ReorderLevel = 6 },
+                new() { IngredientId = 6, Name = "Cream Cheese", StockQuantity = 3, Unit = "kg", ReorderLevel = 4 },
+                new() { IngredientId = 7, Name = "Active Dry Yeast", StockQuantity = 500, Unit = "g", ReorderLevel = 200 },
+                new() { IngredientId = 8, Name = "Vanilla Extract", StockQuantity = 1, Unit = "L", ReorderLevel = 0.5m },
+                new() { IngredientId = 9, Name = "Baking Powder", StockQuantity = 2, Unit = "kg", ReorderLevel = 1 },
+                new() { IngredientId = 10, Name = "Salt", StockQuantity = 5, Unit = "kg", ReorderLevel = 2 },
+                new() { IngredientId = 11, Name = "Cocoa Powder", StockQuantity = 2.5m, Unit = "kg", ReorderLevel = 1.5m },
+                new() { IngredientId = 12, Name = "Ube Halaya", StockQuantity = 1, Unit = "kg", ReorderLevel = 2 }
+            ];
         }
 
         private void ApplySearchFilter()

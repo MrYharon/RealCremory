@@ -15,39 +15,59 @@ namespace Cremory.App
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await LoadAnalytics();
+            await LoadAllData();
         }
 
-        private async Task LoadAnalytics()
+        private async Task LoadAllData()
         {
             LoadingIndicator.IsRunning = true;
             LoadingIndicator.IsVisible = true;
             try
             {
-                var data = await _api.GetDashboardAnalyticsAsync();
-                if (data == null) return;
+                var dashboardTask = _api.GetDashboardAnalyticsAsync();
+                var financeTask = _api.GetFinanceSummaryAsync();
 
-                PopularItemsCollection.ItemsSource = data.PopularItems;
+                await Task.WhenAll(dashboardTask, financeTask);
 
-                FbPctLabel.Text = $"{data.FacebookPct}%";
-                WalkInPctLabel.Text = $"{data.WalkInPct}%";
-                FbProgress.Progress = data.FacebookPct / 100.0;
-                WalkInProgress.Progress = data.WalkInPct / 100.0;
+                var dashboard = await dashboardTask;
+                var finance = await financeTask;
 
-                LowStockLabel.Text = data.LowStockCount.ToString();
-                AvgOrderValueLabel.Text = $"₱{data.AvgOrderValue:N0}";
+                if (dashboard != null)
+                {
+                    PopularItemsCollection.ItemsSource = dashboard.PopularItems;
 
-                BuildWeeklyChart(data.WeeklySales, data.WeekLabels);
+                    FbPctLabel.Text = $"{dashboard.FacebookPct}%";
+                    WalkInPctLabel.Text = $"{dashboard.WalkInPct}%";
+                    FbProgress.Progress = dashboard.FacebookPct / 100.0;
+                    WalkInProgress.Progress = dashboard.WalkInPct / 100.0;
+
+                    LowStockLabel.Text = dashboard.LowStockCount.ToString();
+                }
+
+                if (finance != null)
+                {
+                    TodayRevenue.Text = $"₱{finance.TodayRevenue:N2}";
+                    TodayOrdersLabel.Text = $"{finance.TodayOrders} orders";
+
+                    WeekRevenue.Text = $"₱{finance.WeekRevenue:N2}";
+                    WeekAverageLabel.Text = $"₱{finance.WeekAverage:N2}/order avg";
+
+                    MonthRevenue.Text = $"₱{finance.MonthRevenue:N2}";
+                    MonthOrdersLabel.Text = $"{finance.TotalOrdersMonth} orders this month";
+
+                    AvgOrderLabel.Text = $"₱{finance.AvgOrderValue:N2}";
+                    ProfitMarginLabel.Text = $"{finance.ProfitMargin}%";
+                    NetProfitLabel.Text = $"₱{finance.NetProfit:N0}";
+
+                    TransactionsCollection.ItemsSource = finance.RecentTransactions;
+                }
+
+                if (dashboard != null)
+                    BuildWeeklyChart(dashboard.WeeklySales, dashboard.WeekLabels);
             }
-            catch (Exception ex)
+            catch
             {
-                FbPctLabel.Text = "0%";
-                WalkInPctLabel.Text = "0%";
-                FbProgress.Progress = 0;
-                WalkInProgress.Progress = 0;
-                LowStockLabel.Text = "0";
-                AvgOrderValueLabel.Text = "₱0";
-                await DisplayAlert("Error", "Failed to load analytics. Check connection.", "OK");
+                await DisplayAlert("Error", "Failed to load analytics data. Check connection.", "OK");
             }
             finally
             {

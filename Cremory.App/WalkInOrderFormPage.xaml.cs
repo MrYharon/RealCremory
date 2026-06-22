@@ -6,6 +6,8 @@ namespace Cremory.App
     public partial class WalkInOrderFormPage : ContentPage
     {
         private readonly ApiService _api;
+        private readonly List<Product> _products = [];
+        private decimal _quickTotal;
 
         public event EventHandler<OrderDto>? OrderCreated;
 
@@ -13,6 +15,99 @@ namespace Cremory.App
         {
             InitializeComponent();
             _api = api;
+        }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            await LoadProductsAsync();
+        }
+
+        private async Task LoadProductsAsync()
+        {
+            try
+            {
+                var menu = await _api.GetMenuAsync();
+                _products.Clear();
+                ProductChips.Children.Clear();
+
+                foreach (var group in menu)
+                {
+                    foreach (var item in group.Items)
+                    {
+                        _products.Add(new Product
+                        {
+                            ProductId = item.ProductId,
+                            Name = $"{item.Variant} {item.Flavor}".Trim(),
+                            BasePrice = item.BasePrice
+                        });
+
+                        var chip = new Border
+                        {
+                            StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 16 },
+                            BackgroundColor = (Color)Application.Current!.Resources["Gray100"],
+                            Stroke = (Color)Application.Current!.Resources["Gray300"],
+                            StrokeThickness = 1,
+                            Padding = new Thickness(12, 6),
+                            Margin = new Thickness(0, 0, 6, 6),
+                            HeightRequest = 34
+                        };
+
+                        var label = new Label
+                        {
+                            Text = $"{item.Variant} {item.Flavor}".Trim(),
+                            FontSize = 12,
+                            TextColor = (Color)Application.Current!.Resources["Gray800"]
+                        };
+
+                        var tap = new TapGestureRecognizer();
+                        var capturedProduct = _products[^1];
+                        tap.Tapped += (s, e) => OnProductTapped(capturedProduct);
+                        label.GestureRecognizers.Add(tap);
+
+                        chip.Content = label;
+                        ProductChips.Children.Add(chip);
+                    }
+                }
+
+                if (_products.Count == 0)
+                {
+                    ProductChips.Children.Add(new Label
+                    {
+                        Text = "No products available",
+                        FontSize = 12,
+                        TextColor = (Color)Application.Current!.Resources["Gray400"]
+                    });
+                }
+            }
+            catch
+            {
+                ProductChips.Children.Add(new Label
+                {
+                    Text = "Could not load products",
+                    FontSize = 12,
+                    TextColor = (Color)Application.Current!.Resources["Gray500"]
+                });
+            }
+        }
+
+        private void OnProductTapped(Product product)
+        {
+            var currentItems = ItemsEditor?.Text?.Trim();
+            var newItem = product.Name;
+            if (!string.IsNullOrWhiteSpace(currentItems))
+                newItem = $"{currentItems}\n• {product.Name}";
+            else
+                newItem = $"• {product.Name}";
+
+            if (ItemsEditor != null)
+                ItemsEditor.Text = newItem;
+
+            _quickTotal += product.BasePrice;
+            if (PriceEntry != null && string.IsNullOrWhiteSpace(PriceEntry.Text?.Trim()))
+            {
+                PriceEntry.Text = _quickTotal.ToString("F2");
+            }
         }
 
         private async void OnSaveClicked(object sender, EventArgs e)

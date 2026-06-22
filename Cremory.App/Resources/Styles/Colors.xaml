@@ -14,15 +14,21 @@
 
     <!-- Accent Colors -->
     <Color x:Key="Success">#2E7D32</Color>
+    <Color x:Key="SuccessLight">#C8E6C9</Color>
     <Color x:Key="Warning">#E65100</Color>
+    <Color x:Key="WarningLight">#FFE0B2</Color>
     <Color x:Key="Danger">#C62828</Color>
+    <Color x:Key="DangerLight">#FFCDD2</Color>
     <Color x:Key="Info">#6D4C41</Color>
+    <Color x:Key="InfoLight">#D7CCC8</Color>
     <Color x:Key="Pending">#EF6C00</Color>
+    <Color x:Key="PendingLight">#FFE0B2</Color>
 
     <!-- Neutral Colors -->
     <Color x:Key="White">#FFFFFF</Color>
     <Color x:Key="Black">#3E2723</Color>
     <Color x:Key="OffBlack">#4E342E</Color>
+    <Color x:Key="Surface">#FEFCFA</Color>
 
     <!-- Warm Gray Scale -->
     <Color x:Key="Gray50">#FDF8F3</Color>
@@ -41,12 +47,14 @@
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
     <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDark}"/>
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource Success}"/>
+    <SolidColorBrush x:Key="SuccessLightBrush" Color="{StaticResource SuccessLight}"/>
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource Warning}"/>
     <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource Danger}"/>
     <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource Info}"/>
 
     <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
     <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource Surface}"/>
     <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
     <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>
     <SolidColorBrush x:Key="Gray300Brush" Color="{StaticResource Gray300}"/>

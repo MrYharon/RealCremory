@@ -7,18 +7,14 @@
 
     <Grid RowDefinitions="Auto, Auto, Auto, *" Padding="20" RowSpacing="18">
 
-        <!-- Header -->
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" ColumnSpacing="16">
             <VerticalStackLayout>
                 <Label Text="Kitchen View" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
                 <Label Text="Active orders in the queue" FontSize="14" TextColor="{StaticResource Gray500}" Margin="0,4,0,0"/>
             </VerticalStackLayout>
-            
         </Grid>
 
-        <!-- Analytics Cards Row -->
         <Grid Grid.Row="1" ColumnDefinitions="*, *, *" ColumnSpacing="14">
-            <!-- Total Revenue Today -->
             <Border Grid.Column="0" BackgroundColor="{StaticResource Success}" StrokeShape="RoundRectangle 12" Padding="16" Stroke="Transparent">
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Revenue Today" TextColor="{StaticResource White}" FontSize="12" FontAttributes="Bold" Opacity="0.85"/>
@@ -26,8 +22,6 @@
                     <Label Text="{Binding CompletedOrdersText}" TextColor="White" FontSize="10" Opacity="0.75"/>
                 </VerticalStackLayout>
             </Border>
-
-            <!-- Total Orders Today -->
             <Border Grid.Column="1" BackgroundColor="{StaticResource Info}" StrokeShape="RoundRectangle 12" Padding="16" Stroke="Transparent">
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Total Orders" TextColor="White" FontSize="12" FontAttributes="Bold" Opacity="0.85"/>
@@ -35,8 +29,6 @@
                     <Label Text="{Binding OrdersTotalText}" TextColor="White" FontSize="10" Opacity="0.75"/>
                 </VerticalStackLayout>
             </Border>
-
-            <!-- Active Queue -->
             <Border Grid.Column="2" BackgroundColor="{StaticResource Pending}" StrokeShape="RoundRectangle 12" Padding="16" Stroke="Transparent">
                 <VerticalStackLayout Spacing="6">
                     <Label Text="In Progress" TextColor="White" FontSize="12" FontAttributes="Bold" Opacity="0.85"/>
@@ -46,9 +38,8 @@
             </Border>
         </Grid>
 
-        <!-- Status Bar -->
         <Border Grid.Row="2" StrokeShape="RoundRectangle 10" BackgroundColor="White" Padding="16" StrokeThickness="1" Stroke="{StaticResource Gray200}">
-            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="24">
+            <Grid ColumnDefinitions="Auto, Auto, *" ColumnSpacing="24">
                 <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
                     <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5" BackgroundColor="{StaticResource Success}" VerticalOptions="Center"/>
                     <Label Text="API Connected" TextColor="{StaticResource Gray700}" FontSize="12" VerticalOptions="Center" FontAttributes="Bold"/>
@@ -57,78 +48,68 @@
                     <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5" BackgroundColor="{StaticResource Success}" VerticalOptions="Center"/>
                     <Label Text="Database Sync" TextColor="{StaticResource Gray700}" FontSize="12" VerticalOptions="Center" FontAttributes="Bold"/>
                 </HorizontalStackLayout>
-                <Label Grid.Column="2" Text="Just now" TextColor="{StaticResource Gray500}" FontSize="11" HorizontalOptions="End" VerticalOptions="Center"/>
+                <Label Grid.Column="2" x:Name="LastRefreshLabel" Text="Just now" TextColor="{StaticResource Gray500}" FontSize="11" HorizontalOptions="End" VerticalOptions="Center"/>
             </Grid>
         </Border>
 
-        <!-- Loading Indicator -->
         <RefreshView Grid.Row="3" x:Name="MainRefreshView" Refreshing="OnRefreshing">
-        <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
-                           Color="{StaticResource Primary}" VerticalOptions="Center" HorizontalOptions="Center"/>
+            <Grid>
+                <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
+                                   Color="{StaticResource Primary}" VerticalOptions="Start" HorizontalOptions="Center"
+                                   Margin="0,20,0,0"/>
 
-        <!-- Orders List -->
-        <CollectionView x:Name="OrdersCollectionView" ItemsSource="{Binding ActiveOrders}">
-            <CollectionView.EmptyView>
-                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="12">
-                    <Label Text="No active orders" FontSize="20" FontAttributes="Bold"
-                           TextColor="{StaticResource Gray400}" HorizontalTextAlignment="Center"/>
-                    <Label Text="Waiting for incoming orders..."
-                           FontSize="13" TextColor="{StaticResource Gray400}" HorizontalTextAlignment="Center"/>
-                </VerticalStackLayout>
-            </CollectionView.EmptyView>
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <SwipeView>
-                        <SwipeView.RightItems>
-                            <SwipeItems>
-                                <SwipeItem Text="Cancel" BackgroundColor="{StaticResource Danger}"
-                                           Invoked="OnCancelOrder"/>
-                            </SwipeItems>
-                        </SwipeView.RightItems>
-                        <Border StrokeShape="RoundRectangle 12" StrokeThickness="1" 
-                                Stroke="{Binding BorderColor}" Padding="16" Margin="0,0,0,12" 
-                                BackgroundColor="White">
-                            <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="12">
-
-                                <!-- Order header with customer and ID -->
-                                <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="12" VerticalOptions="Center">
-                                    <BoxView WidthRequest="44" HeightRequest="44" CornerRadius="22" BackgroundColor="{Binding AvatarColor}"/>
-                                    <VerticalStackLayout VerticalOptions="Center">
-                                        <Label Text="{Binding CustomerName}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
-                                        <Label Text="{Binding Timestamp}" FontSize="12" TextColor="{StaticResource Gray500}"/>
-                                    </VerticalStackLayout>
-                                </HorizontalStackLayout>
-
-                                <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="4" VerticalOptions="Center" HorizontalOptions="End">
-                                    <Label Text="{Binding OrderId}" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Primary}" HorizontalOptions="End"/>
-                                    <Label Text="{Binding StatusBadge}" FontSize="10" FontAttributes="Bold" TextColor="White" 
-                                           BackgroundColor="{Binding StatusColor}" Padding="10,5" HorizontalOptions="End"/>
-                                </VerticalStackLayout>
-
-                                <!-- Items -->
-                                <Border Grid.Row="1" Grid.ColumnSpan="2" BackgroundColor="{StaticResource Gray50}" Stroke="Transparent" Padding="12" StrokeShape="RoundRectangle 8">
-                                    <Label Text="{Binding Items}" FontSize="13" TextColor="{StaticResource Gray700}" LineBreakMode="WordWrap"/>
+                <CollectionView x:Name="OrdersCollectionView" ItemsSource="{Binding ActiveOrders}">
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="12" Padding="0,40">
+                            <Label Text="No active orders" FontSize="20" FontAttributes="Bold"
+                                   TextColor="{StaticResource Gray400}" HorizontalTextAlignment="Center"/>
+                            <Label Text="Waiting for incoming orders..."
+                                   FontSize="13" TextColor="{StaticResource Gray400}" HorizontalTextAlignment="Center"/>
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <SwipeView>
+                                <SwipeView.RightItems>
+                                    <SwipeItems>
+                                        <SwipeItem Text="Cancel" BackgroundColor="{StaticResource Danger}"
+                                                   Invoked="OnCancelOrder"/>
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
+                                <Border StrokeShape="RoundRectangle 12" StrokeThickness="1"
+                                        Stroke="{Binding BorderColor}" Padding="16" Margin="0,0,0,12"
+                                        BackgroundColor="White">
+                                    <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="12">
+                                        <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="12" VerticalOptions="Center">
+                                            <BoxView WidthRequest="44" HeightRequest="44" CornerRadius="22" BackgroundColor="{Binding AvatarColor}"/>
+                                            <VerticalStackLayout VerticalOptions="Center">
+                                                <Label Text="{Binding CustomerName}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
+                                                <Label Text="{Binding Timestamp}" FontSize="12" TextColor="{StaticResource Gray500}"/>
+                                            </VerticalStackLayout>
+                                        </HorizontalStackLayout>
+                                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="4" VerticalOptions="Center" HorizontalOptions="End">
+                                            <Label Text="{Binding OrderId}" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Primary}" HorizontalOptions="End"/>
+                                            <Label Text="{Binding StatusBadge}" FontSize="10" FontAttributes="Bold" TextColor="White"
+                                                   BackgroundColor="{Binding StatusColor}" Padding="10,5" HorizontalOptions="End"/>
+                                        </VerticalStackLayout>
+                                        <Border Grid.Row="1" Grid.ColumnSpan="2" BackgroundColor="{StaticResource Gray50}" Stroke="Transparent" Padding="12" StrokeShape="RoundRectangle 8">
+                                            <Label Text="{Binding Items}" FontSize="13" TextColor="{StaticResource Gray700}" LineBreakMode="WordWrap"/>
+                                        </Border>
+                                        <Label Grid.Row="2" Grid.Column="0" Text="{Binding TotalPrice, StringFormat='Total: ₱{0:N2}'}"
+                                               FontSize="15" FontAttributes="Bold" TextColor="{StaticResource Gray900}" VerticalOptions="Center"/>
+                                        <Button Grid.Row="2" Grid.Column="1" Text="{Binding ActionButtonText}"
+                                                Clicked="OnOrderActionClicked"
+                                                BackgroundColor="{Binding ActionButtonColor}" TextColor="White"
+                                                HeightRequest="38" Padding="14,0" FontAttributes="Bold" FontSize="12"/>
+                                        <Label Grid.Row="3" Grid.ColumnSpan="2" Text="{Binding StatusMessage}"
+                                               FontSize="11" TextColor="{StaticResource Gray500}" Margin="0,2,0,0"/>
+                                    </Grid>
                                 </Border>
-
-                                <!-- Price -->
-                                <Label Grid.Row="2" Grid.Column="0" Text="{Binding TotalPrice, StringFormat='Total: ₱{0:N2}'}" 
-                                       FontSize="15" FontAttributes="Bold" TextColor="{StaticResource Gray900}" VerticalOptions="Center"/>
-
-                                <!-- State machine button -->
-                                <Button Grid.Row="2" Grid.Column="1" Text="{Binding ActionButtonText}" 
-                                        Clicked="OnOrderActionClicked"
-                                        BackgroundColor="{Binding ActionButtonColor}" TextColor="White" 
-                                        HeightRequest="38" Padding="14,0" FontAttributes="Bold" FontSize="12"/>
-
-                                <!-- Status message -->
-                                <Label Grid.Row="3" Grid.ColumnSpan="2" Text="{Binding StatusMessage}" 
-                                       FontSize="11" TextColor="{StaticResource Gray500}" Margin="0,2,0,0"/>
-                            </Grid>
-                        </Border>
-                    </SwipeView>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                            </SwipeView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
         </RefreshView>
     </Grid>
 

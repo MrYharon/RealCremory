@@ -22,10 +22,7 @@ namespace Cremory.App
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<OrdersPage>();
             builder.Services.AddTransient<InventoryPage>();
-            builder.Services.AddTransient<IngredientsManagementPage>();
             builder.Services.AddTransient<AnalyticsPage>();
-            builder.Services.AddTransient<FinancesPage>();
-            builder.Services.AddTransient<OrderArchivesPage>();
             builder.Services.AddTransient<MenuPage>();
             builder.Services.AddTransient<OrderParserPage>();
             builder.Services.AddTransient<ProductPage>();

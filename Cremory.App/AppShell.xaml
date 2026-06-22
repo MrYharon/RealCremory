@@ -9,8 +9,8 @@
 
     <Shell.FlyoutHeader>
         <Grid HeightRequest="160" BackgroundColor="#5D4037" Padding="20">
-            <VerticalStackLayout VerticalOptions="End">
-                <Label Text="The Cremory" TextColor="White" FontSize="24" FontAttributes="Bold"/>
+            <VerticalStackLayout VerticalOptions="End" Spacing="4">
+                <Label Text="The Cremory" TextColor="White" FontSize="28" FontAttributes="Bold" FontFamily="OpenSansSemibold"/>
                 <Label Text="Bakery POS" TextColor="#D7CCC8" FontSize="14"/>
             </VerticalStackLayout>
         </Grid>
@@ -20,16 +20,12 @@
         <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Menu">
-        <ShellContent ContentTemplate="{DataTemplate local:MenuPage}" Route="MenuPage" />
-    </FlyoutItem>
-
     <FlyoutItem Title="Orders">
         <ShellContent ContentTemplate="{DataTemplate local:OrdersPage}" Route="OrdersPage" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Inventory">
-        <ShellContent ContentTemplate="{DataTemplate local:InventoryPage}" Route="InventoryPage" />
+    <FlyoutItem Title="Menu">
+        <ShellContent ContentTemplate="{DataTemplate local:MenuPage}" Route="MenuPage" />
     </FlyoutItem>
 
     <FlyoutItem Title="Products">
@@ -40,16 +36,12 @@
         <ShellContent ContentTemplate="{DataTemplate local:RecipePage}" Route="RecipePage" />
     </FlyoutItem>
 
+    <FlyoutItem Title="Inventory">
+        <ShellContent ContentTemplate="{DataTemplate local:InventoryPage}" Route="InventoryPage" />
+    </FlyoutItem>
+
     <FlyoutItem Title="Analytics">
         <ShellContent ContentTemplate="{DataTemplate local:AnalyticsPage}" Route="AnalyticsPage" />
-    </FlyoutItem>
-
-    <FlyoutItem Title="Finances">
-        <ShellContent ContentTemplate="{DataTemplate local:FinancesPage}" Route="FinancesPage" />
-    </FlyoutItem>
-
-    <FlyoutItem Title="Order History">
-        <ShellContent ContentTemplate="{DataTemplate local:OrderArchivesPage}" Route="OrderArchivesPage" />
     </FlyoutItem>
 
 </Shell>

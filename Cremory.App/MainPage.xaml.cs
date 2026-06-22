@@ -17,6 +17,8 @@ namespace Cremory.App
         public string CompletedOrdersText { get; set; }
         public string OrdersTotalText { get; set; }
 
+        private DateTime _lastRefreshTime = DateTime.Now;
+
         public MainPage(ApiService api, SignalRService signalR)
         {
             InitializeComponent();
@@ -25,19 +27,38 @@ namespace Cremory.App
             _signalR = signalR;
         }
 
+        private IDispatcherTimer? _refreshTimer;
+
         protected override async void OnAppearing()
         {
             base.OnAppearing();
             await LoadOrdersAsync();
             SubscribeToSignalR();
             await _signalR.StartAsync();
+            StartRefreshTimer();
         }
 
         protected override async void OnDisappearing()
         {
             base.OnDisappearing();
+            _refreshTimer?.Stop();
             UnsubscribeFromSignalR();
             await _signalR.StopAsync();
+        }
+
+        private void StartRefreshTimer()
+        {
+            _refreshTimer = Dispatcher.CreateTimer();
+            _refreshTimer.Interval = TimeSpan.FromSeconds(30);
+            _refreshTimer.Tick += (s, e) =>
+            {
+                _lastRefreshTime = DateTime.Now;
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    LastRefreshLabel.Text = "Just now";
+                });
+            };
+            _refreshTimer.Start();
         }
 
         private void SubscribeToSignalR()

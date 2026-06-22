@@ -10,10 +10,11 @@ namespace Cremory.App
         private readonly ObservableCollection<OrderSummary> _allOrders = [];
         private string _activeFilter = "All";
         private string _searchText = "";
+        private bool _showArchives;
+        private CancellationTokenSource? _searchCts;
 
         public ObservableCollection<OrderSummary> FilteredOrders { get; set; } = [];
         public bool IsLoading { get; set; }
-        public bool IsRefreshing { get; set; }
         public int PendingCount => _allOrders.Count(o => o.Status == OrderStatus.Pending);
         public int PreparingCount => _allOrders.Count(o => o.Status == OrderStatus.Creating);
         public int CompletedCount => _allOrders.Count(o => o.Status == OrderStatus.Completed);
@@ -24,7 +25,8 @@ namespace Cremory.App
             InitializeComponent();
             BindingContext = this;
             _api = api;
-            OrdersRefreshView.Refreshing += OnRefreshing;
+            DateRangePicker.SelectedIndex = 3;
+            ArchiveStatusPicker.SelectedIndex = 0;
         }
 
         protected override async void OnAppearing()
@@ -43,7 +45,8 @@ namespace Cremory.App
 
             try
             {
-                var orders = await _api.GetOrdersAsync();
+                var dtos = await _api.GetOrdersAsync(direct: true);
+                var orders = dtos.Select(OrderSummary.FromDto).ToList();
 
                 _allOrders.Clear();
                 foreach (var order in orders)
@@ -63,9 +66,7 @@ namespace Cremory.App
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     IsLoading = false;
-                    IsRefreshing = false;
                     OnPropertyChanged(nameof(IsLoading));
-                    OnPropertyChanged(nameof(IsRefreshing));
                 });
             }
         }
@@ -73,6 +74,8 @@ namespace Cremory.App
         private async void OnRefreshing(object sender, EventArgs e)
         {
             await LoadOrdersAsync();
+            var rv = sender as RefreshView;
+            if (rv != null) rv.IsRefreshing = false;
         }
 
         private void ApplyFilter()
@@ -87,13 +90,35 @@ namespace Cremory.App
                     o.OrderId.Contains(search, StringComparison.OrdinalIgnoreCase));
             }
 
-            filtered = _activeFilter switch
+            if (_showArchives)
             {
-                "Pending" => filtered.Where(o => o.Status == OrderStatus.Pending),
-                "Preparing" => filtered.Where(o => o.Status == OrderStatus.Creating),
-                "Completed" => filtered.Where(o => o.Status == OrderStatus.Completed),
-                _ => filtered
-            };
+                var dateFilter = DateRangePicker.SelectedItem as string;
+                var now = DateTime.UtcNow;
+                if (dateFilter == "Today")
+                    filtered = filtered.Where(o => o.Status == OrderStatus.Completed || o.Status == OrderStatus.Cancelled);
+                else if (dateFilter == "This Week")
+                    filtered = filtered.Where(o => o.Status == OrderStatus.Completed || o.Status == OrderStatus.Cancelled);
+                else if (dateFilter == "This Month")
+                    filtered = filtered.Where(o => o.Status == OrderStatus.Completed || o.Status == OrderStatus.Cancelled);
+                else
+                    filtered = filtered.Where(o => o.Status == OrderStatus.Completed || o.Status == OrderStatus.Cancelled);
+
+                var statusFilter = ArchiveStatusPicker.SelectedItem as string;
+                if (statusFilter == "Completed")
+                    filtered = filtered.Where(o => o.Status == OrderStatus.Completed);
+                else if (statusFilter == "Cancelled")
+                    filtered = filtered.Where(o => o.Status == OrderStatus.Cancelled);
+            }
+            else
+            {
+                filtered = _activeFilter switch
+                {
+                    "Pending" => filtered.Where(o => o.Status == OrderStatus.Pending),
+                    "Preparing" => filtered.Where(o => o.Status == OrderStatus.Creating),
+                    "Completed" => filtered.Where(o => o.Status == OrderStatus.Completed),
+                    _ => filtered.Where(o => o.Status != OrderStatus.Completed && o.Status != OrderStatus.Cancelled)
+                };
+            }
 
             FilteredOrders.Clear();
             foreach (var order in filtered.OrderByDescending(o => o.IsJustReceived))
@@ -113,10 +138,41 @@ namespace Cremory.App
             });
         }
 
-        private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+        private async void OnSearchTextChanged(object sender, TextChangedEventArgs e)
         {
-            _searchText = e.NewTextValue?.Trim() ?? "";
+            _searchCts?.Cancel();
+            _searchCts = new CancellationTokenSource();
+            var token = _searchCts.Token;
+
+            try
+            {
+                await Task.Delay(300, token);
+                _searchText = e.NewTextValue?.Trim() ?? "";
+                ApplyFilter();
+            }
+            catch (TaskCanceledException)
+            {
+            }
+        }
+
+        private void OnToggleArchives(object sender, EventArgs e)
+        {
+            _showArchives = !_showArchives;
+            ArchiveFilterBar.IsVisible = _showArchives;
+            ArchiveToggle.Text = _showArchives ? "Hide Archives" : "Show Archives";
+            ArchiveToggle.BackgroundColor = _showArchives
+                ? (Color)Application.Current!.Resources["Primary"]
+                : (Color)Application.Current!.Resources["Gray200"];
+            ArchiveToggle.TextColor = _showArchives
+                ? Colors.White
+                : (Color)Application.Current!.Resources["Gray700"];
             ApplyFilter();
+        }
+
+        private void OnDateFilterChanged(object sender, EventArgs e)
+        {
+            if (_showArchives)
+                ApplyFilter();
         }
 
         private async void OnImportClicked(object sender, EventArgs e)
@@ -133,6 +189,16 @@ namespace Cremory.App
                 await LoadOrdersAsync();
             };
             await Navigation.PushModalAsync(new NavigationPage(formPage));
+        }
+
+        private async void OnCopyTemplate(object sender, EventArgs e)
+        {
+            var template = "Customer:\nItems:\nTotal:\nContact:\nOrder:";
+            await Clipboard.Default.SetTextAsync(template);
+            var btn = (Button)sender;
+            btn.Text = "Copied!";
+            await Task.Delay(1500);
+            btn.Text = "Copy";
         }
 
         private async void OnOrderActionClicked(object sender, EventArgs e)
@@ -209,17 +275,22 @@ namespace Cremory.App
             var button = sender as Button;
             if (button == null) return;
 
-            FilterAll.BackgroundColor = (Color)Application.Current!.Resources["Gray200"];
-            FilterAll.TextColor = (Color)Application.Current!.Resources["Gray700"];
-            FilterPending.BackgroundColor = (Color)Application.Current!.Resources["Gray200"];
-            FilterPending.TextColor = (Color)Application.Current!.Resources["Gray700"];
-            FilterPreparing.BackgroundColor = (Color)Application.Current!.Resources["Gray200"];
-            FilterPreparing.TextColor = (Color)Application.Current!.Resources["Gray700"];
+            var buttons = new[] { FilterAll, FilterPending, FilterPreparing, FilterCompleted };
+            foreach (var btn in buttons)
+            {
+                btn.BackgroundColor = (Color)Application.Current!.Resources["Gray200"];
+                btn.TextColor = (Color)Application.Current!.Resources["Gray700"];
+            }
 
             button.BackgroundColor = (Color)Application.Current!.Resources["Primary"];
             button.TextColor = Colors.White;
 
             _activeFilter = button.Text;
+            _showArchives = false;
+            ArchiveFilterBar.IsVisible = false;
+            ArchiveToggle.Text = "Show Archives";
+            ArchiveToggle.BackgroundColor = (Color)Application.Current!.Resources["Gray200"];
+            ArchiveToggle.TextColor = (Color)Application.Current!.Resources["Gray700"];
             ApplyFilter();
         }
     }

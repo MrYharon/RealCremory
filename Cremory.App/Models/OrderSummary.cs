@@ -30,6 +30,8 @@
         public string Timestamp { get; set; } = string.Empty;
         public bool IsJustReceived { get; set; } = false;
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
+        public string Source { get; set; } = "Walk-in";
+        public string? CustomerContact { get; set; }
 
         public static OrderSummary FromDto(OrderDto dto)
         {
@@ -40,6 +42,8 @@
                 Items = dto.Items,
                 TotalPrice = dto.TotalPrice,
                 Status = dto.Status,
+                Source = dto.Source,
+                CustomerContact = dto.CustomerContact,
                 Timestamp = FormatRelativeTime(dto.CreatedAt),
                 IsJustReceived = dto.CreatedAt > DateTime.UtcNow.AddMinutes(-2)
             };
@@ -115,6 +119,11 @@
                 OrderStatus.Cancelled => "#CCCCCC",
                 _ => "#999999"
             };
+        }
+
+        public bool ShowActionButton
+        {
+            get => Status != OrderStatus.Completed && Status != OrderStatus.Cancelled;
         }
 
         public string AvatarColor

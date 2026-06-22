@@ -43,6 +43,7 @@ namespace Cremory.App
         {
             var available = _allIngredients
                 .Where(i => !_ingredients.Any(ri => ri.IngredientId == i.IngredientId))
+                .OrderBy(i => i.Name)
                 .ToList();
 
             if (available.Count == 0)
@@ -51,16 +52,60 @@ namespace Cremory.App
                 return;
             }
 
-            var names = available.Select(i => $"{i.Name} ({i.Unit})").ToArray();
-            var selected = await DisplayActionSheet("Select Ingredient", "Cancel", null, names);
-            if (selected == null || selected == "Cancel") return;
+            if (available.Count > 20)
+            {
+                var search = await DisplayPromptAsync("Search Ingredient",
+                    "Type to find an ingredient:",
+                    accept: "Search",
+                    placeholder: "e.g. Flour");
+                if (string.IsNullOrWhiteSpace(search))
+                {
+                    var names = available.Select(i => $"{i.Name} ({i.Unit})").Prepend("Cancel").ToArray();
+                    var selected = await DisplayActionSheet("Select Ingredient", "Cancel", null, names[1..]);
+                    if (string.IsNullOrEmpty(selected) || selected == "Cancel") return;
+                    var idx = Array.IndexOf(names, selected) - 1;
+                    if (idx < 0) return;
+                    await PromptQuantity(available[idx]);
+                }
+                else
+                {
+                    var matched = available
+                        .Where(i => i.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+                    if (matched.Count == 0)
+                    {
+                        await DisplayAlert("Not Found", $"No ingredient matching \"{search}\".", "OK");
+                        return;
+                    }
+                    if (matched.Count == 1)
+                    {
+                        await PromptQuantity(matched[0]);
+                        return;
+                    }
+                    var names = matched.Select(i => $"{i.Name} ({i.Unit})").ToArray();
+                    var selected = await DisplayActionSheet("Select Ingredient", "Cancel", null, names);
+                    if (string.IsNullOrEmpty(selected) || selected == "Cancel") return;
+                    var idx = Array.IndexOf(names, selected);
+                    if (idx < 0) return;
+                    await PromptQuantity(matched[idx]);
+                }
+            }
+            else
+            {
+                var names = available.Select(i => $"{i.Name} ({i.Unit})").ToArray();
+                var selected = await DisplayActionSheet("Select Ingredient", "Cancel", null, names);
+                if (string.IsNullOrEmpty(selected) || selected == "Cancel") return;
+                var idx = Array.IndexOf(names, selected);
+                if (idx < 0) return;
+                await PromptQuantity(available[idx]);
+            }
+        }
 
-            var idx = Array.IndexOf(names, selected);
-            var ingredient = available[idx];
-
+        private async Task PromptQuantity(Ingredient ingredient)
+        {
             var qtyStr = await DisplayPromptAsync("Quantity",
-                $"Enter quantity for {ingredient.Name}:",
-                "Add", "Cancel",
+                $"Enter quantity for {ingredient.Name} ({ingredient.Unit}):",
+                accept: "Add",
                 placeholder: "0",
                 keyboard: Keyboard.Numeric);
 
@@ -92,7 +137,7 @@ namespace Cremory.App
                 return;
             }
 
-            if (!decimal.TryParse(PriceEntry?.Text?.Trim(), out var price))
+            if (!decimal.TryParse(PriceEntry?.Text?.Trim(), out var price) || price <= 0)
             {
                 await DisplayAlert("Validation", "Enter a valid selling price.", "OK");
                 return;

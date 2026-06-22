@@ -35,8 +35,14 @@
                                     TextColor="{StaticResource Gray900}"
                                     BackgroundColor="Transparent"
                                     AutoSize="TextChanges"
-                                    HeightRequest="100"/>
+                                    HeightRequest="80"/>
                         </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Quick Add from Menu" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                        <FlexLayout x:Name="ProductChips" Wrap="Wrap" AlignItems="Start"
+                                    JustifyContent="Start" Direction="Row" AlignContent="Start"/>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="4">
