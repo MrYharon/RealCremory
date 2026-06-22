@@ -39,7 +39,7 @@ namespace Cremory.API.Controllers
         }
 
         [HttpGet("webhook")]
-        public IActionResult Verify([FromQuery] string hub_mode, [FromQuery] string hub_verify_token, [FromQuery] string hub_challenge)
+        public IActionResult Verify([FromQuery(Name = "hub.mode")] string hub_mode, [FromQuery(Name = "hub.verify_token")] string hub_verify_token, [FromQuery(Name = "hub.challenge")] string hub_challenge)
         {
             if (hub_mode == "subscribe" && hub_verify_token == _messenger.VerifyToken)
                 return Ok(hub_challenge);
