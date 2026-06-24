@@ -34,16 +34,15 @@ namespace Cremory.App
             base.OnAppearing();
             await LoadOrdersAsync();
             SubscribeToSignalR();
-            await _signalR.StartAsync();
+            await _signalR.EnsureStartedAsync();
             StartRefreshTimer();
         }
 
-        protected override async void OnDisappearing()
+        protected override void OnDisappearing()
         {
             base.OnDisappearing();
             _refreshTimer?.Stop();
             UnsubscribeFromSignalR();
-            await _signalR.StopAsync();
         }
 
         private void StartRefreshTimer()
@@ -245,18 +244,9 @@ namespace Cremory.App
             var order = button?.BindingContext as OrderSummary;
             if (order == null) return;
 
-            OrderStatus newStatus;
-            switch (order.Status)
-            {
-                case OrderStatus.Pending:
-                    newStatus = OrderStatus.Creating;
-                    break;
-                case OrderStatus.Creating:
-                    newStatus = OrderStatus.Completed;
-                    break;
-                default:
-                    return;
-            }
+            var next = OrderSummary.NextStatus(order.Status);
+            if (next == null) return;
+            var newStatus = next.Value;
 
             try
             {

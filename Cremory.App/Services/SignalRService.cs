@@ -8,6 +8,7 @@ namespace Cremory.App.Services
         private HubConnection? _connection;
         private readonly string _hubUrl;
         private bool _disposed;
+        private bool _started;
 
         public event Action<OrderDto>? OrderCreated;
         public event Action<OrderDto>? OrderUpdated;
@@ -22,15 +23,10 @@ namespace Cremory.App.Services
             _hubUrl = AppConfig.SignalrHub;
         }
 
-        public async Task StartAsync()
+        public async Task EnsureStartedAsync()
         {
-            if (_connection != null)
-            {
-                if (_connection.State == HubConnectionState.Connected)
-                    return;
-
-                await _connection.DisposeAsync();
-            }
+            if (_started) return;
+            _started = true;
 
             _connection = new HubConnectionBuilder()
                 .WithUrl(_hubUrl)
@@ -88,20 +84,10 @@ namespace Cremory.App.Services
             }
         }
 
-        public async Task StopAsync()
-        {
-            if (_connection != null)
-            {
-                await _connection.StopAsync();
-                ConnectionStateChanged?.Invoke(false);
-            }
-        }
-
         public void Dispose()
         {
             if (_disposed) return;
             _disposed = true;
-            _ = StopAsync();
             _connection?.DisposeAsync();
         }
     }

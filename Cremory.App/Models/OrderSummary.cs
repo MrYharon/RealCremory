@@ -126,6 +126,13 @@
             get => Status != OrderStatus.Completed && Status != OrderStatus.Cancelled;
         }
 
+        public static OrderStatus? NextStatus(OrderStatus current) => current switch
+        {
+            OrderStatus.Pending => OrderStatus.Creating,
+            OrderStatus.Creating => OrderStatus.Completed,
+            _ => null
+        };
+
         public string AvatarColor
         {
             get => IsJustReceived ? "#C62828" : "#8D6E63";

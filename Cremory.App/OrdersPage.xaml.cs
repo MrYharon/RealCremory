@@ -7,11 +7,13 @@ namespace Cremory.App
     public partial class OrdersPage : ContentPage
     {
         private readonly ApiService _api;
+        private readonly SignalRService _signalR;
         private readonly ObservableCollection<OrderSummary> _allOrders = [];
         private string _activeFilter = "All";
         private string _searchText = "";
         private bool _showArchives;
         private CancellationTokenSource? _searchCts;
+        private bool _signalRSubscribed;
 
         public ObservableCollection<OrderSummary> FilteredOrders { get; set; } = [];
         public bool IsLoading { get; set; }
@@ -20,11 +22,12 @@ namespace Cremory.App
         public int CompletedCount => _allOrders.Count(o => o.Status == OrderStatus.Completed);
         public int TotalOrders => _allOrders.Count;
 
-        public OrdersPage(ApiService api)
+        public OrdersPage(ApiService api, SignalRService signalR)
         {
             InitializeComponent();
             BindingContext = this;
             _api = api;
+            _signalR = signalR;
             DateRangePicker.SelectedIndex = 3;
             ArchiveStatusPicker.SelectedIndex = 0;
         }
@@ -33,6 +36,62 @@ namespace Cremory.App
         {
             base.OnAppearing();
             await LoadOrdersAsync();
+            SubscribeToSignalR();
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            UnsubscribeFromSignalR();
+        }
+
+        private void SubscribeToSignalR()
+        {
+            if (_signalRSubscribed) return;
+            _signalRSubscribed = true;
+            _signalR.OrderCreated += OnOrderCreated;
+            _signalR.OrderUpdated += OnOrderUpdated;
+            _signalR.OrderDeleted += OnOrderDeleted;
+        }
+
+        private void UnsubscribeFromSignalR()
+        {
+            if (!_signalRSubscribed) return;
+            _signalRSubscribed = false;
+            _signalR.OrderCreated -= OnOrderCreated;
+            _signalR.OrderUpdated -= OnOrderUpdated;
+            _signalR.OrderDeleted -= OnOrderDeleted;
+        }
+
+        private void OnOrderCreated(OrderDto dto)
+        {
+            var summary = OrderSummary.FromDto(dto);
+            _allOrders.Add(summary);
+            ApplyFilter();
+        }
+
+        private void OnOrderUpdated(OrderDto dto)
+        {
+            var updated = OrderSummary.FromDto(dto);
+            var existing = _allOrders.FirstOrDefault(o => o.OrderId == dto.OrderId);
+            if (existing != null)
+            {
+                var idx = _allOrders.IndexOf(existing);
+                _allOrders[idx] = updated;
+            }
+            else
+            {
+                _allOrders.Add(updated);
+            }
+            ApplyFilter();
+        }
+
+        private void OnOrderDeleted(string orderId)
+        {
+            var existing = _allOrders.FirstOrDefault(o => o.OrderId == orderId);
+            if (existing != null)
+                _allOrders.Remove(existing);
+            ApplyFilter();
         }
 
         private async Task LoadOrdersAsync()
@@ -45,6 +104,7 @@ namespace Cremory.App
 
             try
             {
+                await _signalR.EnsureStartedAsync();
                 var dtos = await _api.GetOrdersAsync(direct: true);
                 var orders = dtos.Select(OrderSummary.FromDto).ToList();
 
@@ -92,16 +152,7 @@ namespace Cremory.App
 
             if (_showArchives)
             {
-                var dateFilter = DateRangePicker.SelectedItem as string;
-                var now = DateTime.UtcNow;
-                if (dateFilter == "Today")
-                    filtered = filtered.Where(o => o.Status == OrderStatus.Completed || o.Status == OrderStatus.Cancelled);
-                else if (dateFilter == "This Week")
-                    filtered = filtered.Where(o => o.Status == OrderStatus.Completed || o.Status == OrderStatus.Cancelled);
-                else if (dateFilter == "This Month")
-                    filtered = filtered.Where(o => o.Status == OrderStatus.Completed || o.Status == OrderStatus.Cancelled);
-                else
-                    filtered = filtered.Where(o => o.Status == OrderStatus.Completed || o.Status == OrderStatus.Cancelled);
+                filtered = filtered.Where(o => o.Status == OrderStatus.Completed || o.Status == OrderStatus.Cancelled);
 
                 var statusFilter = ArchiveStatusPicker.SelectedItem as string;
                 if (statusFilter == "Completed")
@@ -207,18 +258,9 @@ namespace Cremory.App
             var order = button?.BindingContext as OrderSummary;
             if (order == null) return;
 
-            OrderStatus newStatus;
-            switch (order.Status)
-            {
-                case OrderStatus.Pending:
-                    newStatus = OrderStatus.Creating;
-                    break;
-                case OrderStatus.Creating:
-                    newStatus = OrderStatus.Completed;
-                    break;
-                default:
-                    return;
-            }
+            var next = OrderSummary.NextStatus(order.Status);
+            if (next == null) return;
+            var newStatus = next.Value;
 
             try
             {
