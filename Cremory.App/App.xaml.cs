@@ -1,12 +1,15 @@
-﻿namespace Cremory.App
+﻿using Cremory.App.Services;
+
+namespace Cremory.App
 {
     public partial class App : Application
     {
-        public App()
+        public static ApiService? ApiService { get; private set; }
+
+        public App(ApiService apiService)
         {
             InitializeComponent();
-
-            // This line activates the hamburger menu globally!
+            ApiService = apiService;
             MainPage = new AppShell();
         }
     }

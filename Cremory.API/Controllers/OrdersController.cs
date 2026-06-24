@@ -25,11 +25,45 @@ namespace Cremory.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrders(
+            [FromQuery] string? status = null,
+            [FromQuery] string? search = null,
+            [FromQuery] DateTime? dateFrom = null,
+            [FromQuery] DateTime? dateTo = null,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 100)
         {
-            return await _context.Orders
+            var query = _context.Orders.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<OrderStatus>(status, true, out var statusFilter))
+                query = query.Where(o => o.Status == statusFilter);
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchLower = search.ToLower();
+                query = query.Where(o =>
+                    o.CustomerName.ToLower().Contains(searchLower) ||
+                    o.OrderId.ToLower().Contains(searchLower));
+            }
+
+            if (dateFrom.HasValue)
+                query = query.Where(o => o.CreatedAt >= dateFrom.Value);
+
+            if (dateTo.HasValue)
+                query = query.Where(o => o.CreatedAt <= dateTo.Value);
+
+            var totalCount = await query.CountAsync();
+
+            var orders = await query
                 .OrderByDescending(o => o.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            Response.Headers["X-Total-Count"] = totalCount.ToString();
+            Response.Headers["X-Total-Pages"] = ((int)Math.Ceiling(totalCount / (double)pageSize)).ToString();
+
+            return Ok(orders);
         }
 
         [HttpGet("{id}")]

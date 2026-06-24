@@ -152,11 +152,15 @@ namespace Cremory.App.Services
             }
         }
 
-        public async Task<List<OrderSummary>> GetOrdersAsync()
+        public async Task<List<OrderSummary>> GetOrdersAsync(
+            string? status = null, string? search = null,
+            DateTime? dateFrom = null, DateTime? dateTo = null,
+            int page = 1, int pageSize = 100)
         {
             try
             {
-                var dtos = await _httpClient.GetFromJsonAsync<List<OrderDto>>("Orders", JsonOptions);
+                var url = BuildOrdersUrl(status, search, dateFrom, dateTo, page, pageSize);
+                var dtos = await _httpClient.GetFromJsonAsync<List<OrderDto>>(url, JsonOptions);
                 return dtos?.Select(OrderSummary.FromDto).ToList() ?? [];
             }
             catch (Exception ex)
@@ -166,17 +170,37 @@ namespace Cremory.App.Services
             }
         }
 
-        public async Task<List<OrderDto>> GetOrdersAsync(bool direct)
+        public async Task<List<OrderDto>> GetOrdersRawAsync(
+            string? status = null, string? search = null,
+            DateTime? dateFrom = null, DateTime? dateTo = null,
+            int page = 1, int pageSize = 100)
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<OrderDto>>("Orders", JsonOptions) ?? [];
+                var url = BuildOrdersUrl(status, search, dateFrom, dateTo, page, pageSize);
+                return await _httpClient.GetFromJsonAsync<List<OrderDto>>(url, JsonOptions) ?? [];
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
                 return [];
             }
+        }
+
+        private static string BuildOrdersUrl(
+            string? status, string? search,
+            DateTime? dateFrom, DateTime? dateTo,
+            int page, int pageSize)
+        {
+            var parts = new List<string>();
+            if (!string.IsNullOrWhiteSpace(status)) parts.Add($"status={Uri.EscapeDataString(status)}");
+            if (!string.IsNullOrWhiteSpace(search)) parts.Add($"search={Uri.EscapeDataString(search)}");
+            if (dateFrom.HasValue) parts.Add($"dateFrom={dateFrom.Value:yyyy-MM-dd}");
+            if (dateTo.HasValue) parts.Add($"dateTo={dateTo.Value:yyyy-MM-dd}");
+            parts.Add($"page={page}");
+            parts.Add($"pageSize={pageSize}");
+
+            return $"Orders?{string.Join("&", parts)}";
         }
 
         public async Task<bool> UpdateOrderStatusAsync(string orderId, OrderStatus status)

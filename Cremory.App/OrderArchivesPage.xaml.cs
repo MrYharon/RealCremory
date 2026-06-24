@@ -29,7 +29,7 @@ namespace Cremory.App
             LoadingIndicator.IsVisible = true;
             try
             {
-                var dtos = await _api.GetOrdersAsync(direct: true);
+                var dtos = await _api.GetOrdersRawAsync();
                 _allDtos = dtos;
                 _allArchivedOrders = dtos
                     .Where(o => o.Status == OrderStatus.Completed || o.Status == OrderStatus.Cancelled)

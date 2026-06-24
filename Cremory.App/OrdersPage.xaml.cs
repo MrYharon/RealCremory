@@ -105,7 +105,7 @@ namespace Cremory.App
             try
             {
                 await _signalR.EnsureStartedAsync();
-                var dtos = await _api.GetOrdersAsync(direct: true);
+                var dtos = await _api.GetOrdersRawAsync();
                 var orders = dtos.Select(OrderSummary.FromDto).ToList();
 
                 _allOrders.Clear();
@@ -250,66 +250,6 @@ namespace Cremory.App
             btn.Text = "Copied!";
             await Task.Delay(1500);
             btn.Text = "Copy";
-        }
-
-        private async void OnOrderActionClicked(object sender, EventArgs e)
-        {
-            var button = sender as Button;
-            var order = button?.BindingContext as OrderSummary;
-            if (order == null) return;
-
-            var next = OrderSummary.NextStatus(order.Status);
-            if (next == null) return;
-            var newStatus = next.Value;
-
-            try
-            {
-                var success = await _api.UpdateOrderStatusAsync(order.OrderId, newStatus);
-                if (success)
-                {
-                    order.Status = newStatus;
-                    if (newStatus == OrderStatus.Completed)
-                    {
-                        await DisplayAlert("Order Complete", $"{order.OrderId} has been completed.", "OK");
-                    }
-                    ApplyFilter();
-                }
-            }
-            catch
-            {
-                await DisplayAlert("Error", "Failed to update order. Check connection.", "OK");
-            }
-        }
-
-        private async void OnCancelOrder(object sender, EventArgs e)
-        {
-            var item = sender as SwipeItem;
-            var order = item?.BindingContext as OrderSummary;
-            if (order == null) return;
-
-            if (order.Status == OrderStatus.Completed || order.Status == OrderStatus.Cancelled)
-            {
-                await DisplayAlert("Cancel", "This order is already finished.", "OK");
-                return;
-            }
-
-            var confirm = await DisplayAlert("Cancel Order",
-                $"Cancel order {order.OrderId} for {order.CustomerName}?", "Yes, Cancel", "No");
-            if (!confirm) return;
-
-            try
-            {
-                var success = await _api.UpdateOrderStatusAsync(order.OrderId, OrderStatus.Cancelled);
-                if (success)
-                {
-                    order.Status = OrderStatus.Cancelled;
-                    ApplyFilter();
-                }
-            }
-            catch
-            {
-                await DisplayAlert("Error", "Failed to cancel order. Check connection.", "OK");
-            }
         }
 
         private void OnFilterClicked(object sender, EventArgs e)
