@@ -27,18 +27,69 @@ namespace Cremory.App.Services
             };
         }
 
-        public async Task<List<Ingredient>> GetIngredientsAsync()
+        private static bool IsConnected =>
+            Connectivity.Current.NetworkAccess == NetworkAccess.Internet;
+
+        private async Task<T?> HttpGetAsync<T>(string url, string cacheKey) where T : class
+        {
+            if (!IsConnected)
+                return LoadFromCache<T>(cacheKey);
+
+            try
+            {
+                var result = await _httpClient.GetFromJsonAsync<T>(url, JsonOptions);
+                if (result != null)
+                    SaveToCache(cacheKey, result);
+                return result;
+            }
+            catch (HttpRequestException)
+            {
+                await Task.Delay(1000);
+                try
+                {
+                    var retry = await _httpClient.GetFromJsonAsync<T>(url, JsonOptions);
+                    if (retry != null)
+                        SaveToCache(cacheKey, retry);
+                    return retry;
+                }
+                catch
+                {
+                    return LoadFromCache<T>(cacheKey);
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                return LoadFromCache<T>(cacheKey);
+            }
+        }
+
+        private static void SaveToCache<T>(string key, T data)
         {
             try
             {
-                var response = await _httpClient.GetFromJsonAsync<List<Ingredient>>("Ingredients", JsonOptions);
-                return response ?? [];
+                var json = JsonSerializer.Serialize(data, JsonOptions);
+                Preferences.Set($"api_cache_{key}", json);
             }
-            catch (Exception ex)
+            catch { }
+        }
+
+        private static T? LoadFromCache<T>(string key) where T : class
+        {
+            try
             {
-                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
-                return [];
+                var json = Preferences.Get($"api_cache_{key}", "");
+                if (string.IsNullOrEmpty(json)) return null;
+                return JsonSerializer.Deserialize<T>(json, JsonOptions);
             }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<Ingredient>> GetIngredientsAsync()
+        {
+            return await HttpGetAsync<List<Ingredient>>("Ingredients", "ingredients") ?? [];
         }
 
         public async Task<(bool Success, string? Error)> CreateIngredientAsync(Ingredient ingredient)
@@ -89,44 +140,17 @@ namespace Cremory.App.Services
 
         public async Task<List<Category>> GetCategoriesAsync()
         {
-            try
-            {
-                var response = await _httpClient.GetFromJsonAsync<List<Category>>("Products/categories", JsonOptions);
-                return response ?? [];
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
-                return [];
-            }
+            return await HttpGetAsync<List<Category>>("Products/categories", "categories") ?? [];
         }
 
         public async Task<List<Product>> GetProductsAsync()
         {
-            try
-            {
-                var response = await _httpClient.GetFromJsonAsync<List<Product>>("Products", JsonOptions);
-                return response ?? [];
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
-                return [];
-            }
+            return await HttpGetAsync<List<Product>>("Products", "products") ?? [];
         }
 
         public async Task<List<MenuCategoryDto>> GetMenuAsync()
         {
-            try
-            {
-                var response = await _httpClient.GetFromJsonAsync<List<MenuCategoryDto>>("Products/menu", JsonOptions);
-                return response ?? [];
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
-                return [];
-            }
+            return await HttpGetAsync<List<MenuCategoryDto>>("Products/menu", "menu") ?? [];
         }
 
         public async Task<OrderDto?> CreateWalkInOrderAsync(string customerName, string items, decimal totalPrice, string? contact)
@@ -157,17 +181,9 @@ namespace Cremory.App.Services
             DateTime? dateFrom = null, DateTime? dateTo = null,
             int page = 1, int pageSize = 100)
         {
-            try
-            {
-                var url = BuildOrdersUrl(status, search, dateFrom, dateTo, page, pageSize);
-                var dtos = await _httpClient.GetFromJsonAsync<List<OrderDto>>(url, JsonOptions);
-                return dtos?.Select(OrderSummary.FromDto).ToList() ?? [];
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
-                return [];
-            }
+            var url = BuildOrdersUrl(status, search, dateFrom, dateTo, page, pageSize);
+            var dtos = await HttpGetAsync<List<OrderDto>>(url, "orders");
+            return dtos?.Select(OrderSummary.FromDto).ToList() ?? [];
         }
 
         public async Task<List<OrderDto>> GetOrdersRawAsync(
@@ -175,16 +191,8 @@ namespace Cremory.App.Services
             DateTime? dateFrom = null, DateTime? dateTo = null,
             int page = 1, int pageSize = 100)
         {
-            try
-            {
-                var url = BuildOrdersUrl(status, search, dateFrom, dateTo, page, pageSize);
-                return await _httpClient.GetFromJsonAsync<List<OrderDto>>(url, JsonOptions) ?? [];
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
-                return [];
-            }
+            var url = BuildOrdersUrl(status, search, dateFrom, dateTo, page, pageSize);
+            return await HttpGetAsync<List<OrderDto>>(url, "orders") ?? [];
         }
 
         private static string BuildOrdersUrl(
@@ -220,28 +228,12 @@ namespace Cremory.App.Services
 
         public async Task<FinanceSummaryDto?> GetFinanceSummaryAsync()
         {
-            try
-            {
-                return await _httpClient.GetFromJsonAsync<FinanceSummaryDto>("Analytics/finance", JsonOptions);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
-                return null;
-            }
+            return await HttpGetAsync<FinanceSummaryDto>("Analytics/finance", "finance");
         }
 
         public async Task<DashboardAnalyticsDto?> GetDashboardAnalyticsAsync()
         {
-            try
-            {
-                return await _httpClient.GetFromJsonAsync<DashboardAnalyticsDto>("Analytics/dashboard", JsonOptions);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
-                return null;
-            }
+            return await HttpGetAsync<DashboardAnalyticsDto>("Analytics/dashboard", "dashboard");
         }
 
         public async Task<OrderDto?> PostOrderParseAsync(string rawText)
@@ -265,9 +257,7 @@ namespace Cremory.App.Services
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("Products", product, JsonOptions);
-                if (response.IsSuccessStatusCode)
-                    return (true, null);
-
+                if (response.IsSuccessStatusCode) return (true, null);
                 var body = await response.Content.ReadAsStringAsync();
                 return (false, body);
             }
@@ -313,16 +303,7 @@ namespace Cremory.App.Services
 
         public async Task<List<Recipe>> GetRecipesAsync()
         {
-            try
-            {
-                var response = await _httpClient.GetFromJsonAsync<List<Recipe>>("Recipes", JsonOptions);
-                return response ?? [];
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
-                return [];
-            }
+            return await HttpGetAsync<List<Recipe>>("Recipes", "recipes") ?? [];
         }
 
         public async Task<(bool Success, string? Error)> CreateRecipeAsync(Recipe recipe)

@@ -7,6 +7,7 @@
              Title="Menu"
              BackgroundColor="{StaticResource Gray50}">
 
+    <RefreshView x:Name="MenuRefreshView" Refreshing="OnRefreshing" RefreshColor="{StaticResource Primary}">
     <Grid RowDefinitions="Auto, *" Padding="20" RowSpacing="16">
         <VerticalStackLayout Grid.Row="0" Spacing="6">
             <Label Text="The Cremory Menu" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
@@ -64,5 +65,6 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
     </Grid>
+    </RefreshView>
 
 </ContentPage>

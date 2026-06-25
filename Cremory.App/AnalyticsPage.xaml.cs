@@ -18,6 +18,12 @@ namespace Cremory.App
             await LoadAllData();
         }
 
+        private async void OnRefreshing(object? sender, EventArgs e)
+        {
+            await LoadAllData();
+            AnalyticsRefreshView.IsRefreshing = false;
+        }
+
         private async Task LoadAllData()
         {
             LoadingIndicator.IsRunning = true;

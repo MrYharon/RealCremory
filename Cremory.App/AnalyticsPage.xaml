@@ -6,6 +6,7 @@
              Title="Analytics"
              BackgroundColor="{StaticResource Gray50}">
 
+    <RefreshView x:Name="AnalyticsRefreshView" Refreshing="OnRefreshing" RefreshColor="{StaticResource Primary}">
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="16">
             <VerticalStackLayout Spacing="6">
@@ -179,4 +180,5 @@
                                Margin="0,20"/>
         </VerticalStackLayout>
     </ScrollView>
+    </RefreshView>
 </ContentPage>

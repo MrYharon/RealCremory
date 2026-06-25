@@ -28,6 +28,12 @@ namespace Cremory.App
             await LoadMenu();
         }
 
+        private async void OnRefreshing(object? sender, EventArgs e)
+        {
+            await LoadMenu();
+            MenuRefreshView.IsRefreshing = false;
+        }
+
         private async Task LoadMenu()
         {
             LoadingIndicator.IsRunning = true;
