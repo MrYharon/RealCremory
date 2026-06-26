@@ -59,6 +59,7 @@ namespace Cremory.App.Controls
             try
             {
                 var api = App.ApiService;
+                if (api == null) return;
                 await api.UpdateOrderStatusAsync(order.OrderId, OrderStatus.Cancelled);
             }
             catch
@@ -70,9 +71,10 @@ namespace Cremory.App.Controls
 
         private static Page? GetCurrentPage()
         {
-            if (Application.Current?.MainPage is Shell shell)
+            var window = Application.Current?.Windows.FirstOrDefault();
+            if (window?.Page is Shell shell)
                 return shell.CurrentPage ?? shell;
-            return Application.Current?.MainPage;
+            return window?.Page;
         }
     }
 }

@@ -35,9 +35,9 @@ namespace Cremory.App
                 }
                 else
                 {
-                    ResultLabel.TextColor = Colors.Green;
-                    ResultLabel.Text = $"Order created: {result.OrderId}";
-                    RawTextEditor.Text = "";
+                    ResultLabel!.TextColor = Colors.Green;
+                    ResultLabel!.Text = $"Order created: {result.OrderId}";
+                    RawTextEditor!.Text = "";
                 }
             }
             catch

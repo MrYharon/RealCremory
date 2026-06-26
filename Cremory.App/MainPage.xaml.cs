@@ -14,8 +14,8 @@ namespace Cremory.App
         public decimal TotalProfitToday { get; set; }
         public int TotalOrdersToday { get; set; }
         public bool IsLoading { get; set; }
-        public string CompletedOrdersText { get; set; }
-        public string OrdersTotalText { get; set; }
+        public string CompletedOrdersText { get; set; } = "";
+        public string OrdersTotalText { get; set; } = "";
 
         private DateTime _lastRefreshTime = DateTime.Now;
 
@@ -150,7 +150,7 @@ namespace Cremory.App
                     RefreshTotals();
                 });
             }
-            catch (Exception ex)
+            catch
             {
                 MainThread.BeginInvokeOnMainThread(async () =>
                 {

@@ -47,7 +47,7 @@ namespace Cremory.App
                 .ToList();
                 MenuCollectionView.ItemsSource = grouped;
             }
-            catch (Exception ex)
+            catch
             {
                 await DisplayAlert("Error", "Failed to load menu. Check connection.", "OK");
             }
