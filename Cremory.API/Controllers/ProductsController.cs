@@ -90,6 +90,9 @@ namespace Cremory.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> CreateProduct(Product product)
         {
+            if (await _context.Products.AnyAsync(p => p.Name == product.Name))
+                return Conflict(new { message = $"Product '{product.Name}' already exists." });
+
             try
             {
                 _context.Products.Add(product);
@@ -111,6 +114,9 @@ namespace Cremory.API.Controllers
             var existing = await _context.Products.FindAsync(id);
             if (existing == null)
                 return NotFound(new { message = $"Product with ID {id} not found." });
+
+            if (await _context.Products.AnyAsync(p => p.Name == product.Name && p.ProductId != id))
+                return Conflict(new { message = $"Product '{product.Name}' already exists." });
 
             existing.CategoryId = product.CategoryId;
             existing.Name = product.Name;

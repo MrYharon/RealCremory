@@ -42,6 +42,9 @@ namespace Cremory.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Recipe>> CreateRecipe(Recipe recipe)
         {
+            if (await _context.Recipes.AnyAsync(r => r.Name == recipe.Name))
+                return Conflict(new { message = $"Recipe '{recipe.Name}' already exists." });
+
             try
             {
                 if (recipe.RecipeIngredients != null)
@@ -75,6 +78,9 @@ namespace Cremory.API.Controllers
 
             if (existing == null)
                 return NotFound(new { message = $"Recipe with ID {id} not found." });
+
+            if (await _context.Recipes.AnyAsync(r => r.Name == recipe.Name && r.RecipeId != id))
+                return Conflict(new { message = $"Recipe '{recipe.Name}' already exists." });
 
             existing.Name = recipe.Name;
             existing.Description = recipe.Description;

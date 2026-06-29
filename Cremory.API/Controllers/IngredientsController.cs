@@ -35,6 +35,9 @@ namespace Cremory.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Ingredient>> CreateIngredient(Ingredient ingredient)
         {
+            if (await _context.Ingredients.AnyAsync(i => i.Name == ingredient.Name))
+                return Conflict(new { message = $"Ingredient '{ingredient.Name}' already exists." });
+
             try
             {
                 _context.Ingredients.Add(ingredient);
@@ -56,6 +59,9 @@ namespace Cremory.API.Controllers
             var existing = await _context.Ingredients.FindAsync(id);
             if (existing == null)
                 return NotFound(new { message = $"Ingredient with ID {id} not found." });
+
+            if (await _context.Ingredients.AnyAsync(i => i.Name == ingredient.Name && i.IngredientId != id))
+                return Conflict(new { message = $"Ingredient '{ingredient.Name}' already exists." });
 
             existing.Name = ingredient.Name;
             existing.StockQuantity = ingredient.StockQuantity;
