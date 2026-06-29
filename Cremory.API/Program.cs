@@ -53,6 +53,17 @@ builder.Services.Configure<MessengerOptions>(options =>
                     db.Database.Migrate();
             }
 
+            app.Use(async (context, next) =>
+            {
+                var sw = System.Diagnostics.Stopwatch.StartNew();
+                await next();
+                sw.Stop();
+                var statusCode = context.Response.StatusCode;
+                var method = context.Request.Method;
+                var path = context.Request.Path;
+                Console.WriteLine($"{method} {path} -> {statusCode} ({sw.ElapsedMilliseconds}ms)");
+            });
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
