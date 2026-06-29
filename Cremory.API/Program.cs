@@ -49,7 +49,8 @@ builder.Services.Configure<MessengerOptions>(options =>
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<CremoryDbContext>();
-                db.Database.Migrate();
+                if (db.Database.IsRelational())
+                    db.Database.Migrate();
             }
 
             if (app.Environment.IsDevelopment())

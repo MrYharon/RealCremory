@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="Cremory.API.Tests/Cremory.API.Tests.csproj" />
   <Project Path="Cremory.API/Cremory.API.csproj" Id="9f02be89-e042-4fd1-8ad1-5746afd5f0db" />
   <Project Path="Cremory.App/Cremory.App.csproj" Id="fcaabd9b-b4cc-45b9-ab36-e4f2ccd5a33b" />
 </Solution>
