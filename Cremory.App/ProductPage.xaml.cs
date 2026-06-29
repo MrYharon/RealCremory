@@ -8,6 +8,7 @@ namespace Cremory.App
     {
         private readonly ApiService _api;
         private readonly ObservableCollection<Product> _products = [];
+        private List<Product> _allProducts = [];
 
         public ProductPage(ApiService api)
         {
@@ -28,9 +29,9 @@ namespace Cremory.App
             LoadingIndicator.IsVisible = true;
             try
             {
-                var products = await _api.GetProductsAsync();
+                _allProducts = await _api.GetProductsAsync();
                 _products.Clear();
-                foreach (var p in products)
+                foreach (var p in _allProducts)
                     _products.Add(p);
             }
             catch
@@ -48,6 +49,18 @@ namespace Cremory.App
         {
             await LoadProductsAsync();
             ProductRefreshView.IsRefreshing = false;
+        }
+
+        private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+        {
+            var query = e.NewTextValue?.Trim() ?? "";
+            _products.Clear();
+            foreach (var p in _allProducts.Where(p =>
+                string.IsNullOrWhiteSpace(query) ||
+                p.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                (p.Variant?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (p.Flavor?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false)))
+                _products.Add(p);
         }
 
         private async void OnToggleActiveSwipe(object sender, EventArgs e)

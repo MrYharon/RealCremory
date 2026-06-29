@@ -8,6 +8,7 @@ namespace Cremory.App
     {
         private readonly ApiService _api;
         private readonly ObservableCollection<Recipe> _recipes = [];
+        private List<Recipe> _allRecipes = [];
 
         public RecipePage(ApiService api)
         {
@@ -34,9 +35,9 @@ namespace Cremory.App
             LoadingIndicator.IsVisible = true;
             try
             {
-                var recipes = await _api.GetRecipesAsync();
+                _allRecipes = await _api.GetRecipesAsync();
                 _recipes.Clear();
-                foreach (var r in recipes)
+                foreach (var r in _allRecipes)
                     _recipes.Add(r);
             }
             catch
@@ -56,6 +57,17 @@ namespace Cremory.App
             if (ingredients.Count == 0)
                 await DisplayAlert("No Ingredients", "Add ingredients first before creating recipes.", "OK");
             return ingredients;
+        }
+
+        private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+        {
+            var query = e.NewTextValue?.Trim() ?? "";
+            _recipes.Clear();
+            foreach (var r in _allRecipes.Where(r =>
+                string.IsNullOrWhiteSpace(query) ||
+                r.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                (r.Description?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false)))
+                _recipes.Add(r);
         }
 
         private async void OnAddClicked(object sender, EventArgs e)

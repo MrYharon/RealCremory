@@ -6,7 +6,7 @@
              Title="Products"
              BackgroundColor="{StaticResource Gray50}">
 
-    <Grid RowDefinitions="Auto, *" Padding="20" RowSpacing="16">
+    <Grid RowDefinitions="Auto, Auto, *" Padding="20" RowSpacing="16">
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" ColumnSpacing="12">
             <VerticalStackLayout>
                 <Label Text="Products" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
@@ -17,7 +17,14 @@
                     FontAttributes="Bold" HeightRequest="40" Padding="14,0" VerticalOptions="End"/>
         </Grid>
 
-        <RefreshView Grid.Row="1" x:Name="ProductRefreshView" Refreshing="OnRefreshing">
+        <Border Grid.Row="1" StrokeShape="RoundRectangle 10" BackgroundColor="White"
+                Padding="8" StrokeThickness="1" Stroke="{StaticResource Gray200}">
+            <SearchBar x:Name="ProductSearchBar" Placeholder="Search products..."
+                       TextChanged="OnSearchTextChanged"
+                       BackgroundColor="{StaticResource Gray50}"/>
+        </Border>
+
+        <RefreshView Grid.Row="2" x:Name="ProductRefreshView" Refreshing="OnRefreshing">
         <ActivityIndicator x:Name="LoadingIndicator" IsRunning="False" IsVisible="False"
                            Color="{StaticResource Primary}" VerticalOptions="Center" HorizontalOptions="Center"/>
 
