@@ -15,6 +15,9 @@
         <Border StrokeShape="RoundRectangle 12" StrokeThickness="1"
                 Stroke="{Binding BorderColor}" Padding="16" Margin="0,0,0,10"
                 BackgroundColor="White">
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnCardTapped"/>
+            </Border.GestureRecognizers>
             <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="10">
                 <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="12" VerticalOptions="Center">
                     <BoxView WidthRequest="44" HeightRequest="44" CornerRadius="22"

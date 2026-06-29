@@ -32,6 +32,8 @@
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
         public string Source { get; set; } = "Walk-in";
         public string? CustomerContact { get; set; }
+        public DateTime CreatedAtUtc { get; set; }
+        public DateTime UpdatedAtUtc { get; set; }
 
         public static OrderSummary FromDto(OrderDto dto)
         {
@@ -44,6 +46,8 @@
                 Status = dto.Status,
                 Source = dto.Source,
                 CustomerContact = dto.CustomerContact,
+                CreatedAtUtc = dto.CreatedAt,
+                UpdatedAtUtc = dto.UpdatedAt,
                 Timestamp = FormatRelativeTime(dto.CreatedAt),
                 IsJustReceived = dto.CreatedAt > DateTime.UtcNow.AddMinutes(-2)
             };

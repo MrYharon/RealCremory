@@ -12,6 +12,16 @@ namespace Cremory.App.Controls
 
         private OrderSummary? Order => BindingContext as OrderSummary;
 
+        private async void OnCardTapped(object? sender, EventArgs e)
+        {
+            var order = Order;
+            if (order == null) return;
+            var page = GetCurrentPage();
+            if (page == null) return;
+            var detail = new OrderDetailPage(order, order.CreatedAtUtc, order.UpdatedAtUtc);
+            await page.Navigation.PushModalAsync(new NavigationPage(detail));
+        }
+
         private async void OnActionClicked(object sender, EventArgs e)
         {
             var order = Order;
