@@ -129,7 +129,9 @@
                                Color="{StaticResource Primary}" VerticalOptions="Center" HorizontalOptions="Center"/>
 
             <CollectionView x:Name="OrdersCollectionView"
-                            ItemsSource="{Binding FilteredOrders}">
+                            ItemsSource="{Binding FilteredOrders}"
+                            RemainingItemsThreshold="5"
+                            RemainingItemsThresholdReached="OnLoadMore">
                 <CollectionView.EmptyView>
                     <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="12">
                         <Label Text="No orders found" FontSize="20" FontAttributes="Bold"

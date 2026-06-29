@@ -14,6 +14,10 @@ namespace Cremory.App
         private bool _showArchives;
         private CancellationTokenSource? _searchCts;
         private bool _signalRSubscribed;
+        private int _currentPage = 1;
+        private int _totalCount;
+        private bool _hasMorePages = true;
+        private bool _isLoadingMore;
 
         public ObservableCollection<OrderSummary> FilteredOrders { get; set; } = [];
         public bool IsLoading { get; set; }
@@ -105,7 +109,19 @@ namespace Cremory.App
             try
             {
                 await _signalR.EnsureStartedAsync();
-                var dtos = await _api.GetOrdersRawAsync();
+                _currentPage = 1;
+                _hasMorePages = true;
+
+                var (status, dateFrom, dateTo) = GetServerFilterParams();
+
+                var (dtos, totalCount) = await _api.GetOrdersPagedAsync(
+                    status: status, search: string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
+                    dateFrom: dateFrom, dateTo: dateTo,
+                    page: _currentPage, pageSize: 100);
+
+                _totalCount = totalCount;
+                _hasMorePages = dtos.Count >= 100;
+
                 var orders = dtos.Select(OrderSummary.FromDto).ToList();
 
                 _allOrders.Clear();
@@ -131,6 +147,78 @@ namespace Cremory.App
             }
         }
 
+        private async Task LoadMoreOrdersAsync()
+        {
+            if (_isLoadingMore || !_hasMorePages) return;
+            _isLoadingMore = true;
+
+            try
+            {
+                _currentPage++;
+                var (status, dateFrom, dateTo) = GetServerFilterParams();
+
+                var (dtos, totalCount) = await _api.GetOrdersPagedAsync(
+                    status: status, search: string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
+                    dateFrom: dateFrom, dateTo: dateTo,
+                    page: _currentPage, pageSize: 100);
+
+                _totalCount = totalCount;
+                _hasMorePages = dtos.Count >= 100;
+
+                var orders = dtos.Select(OrderSummary.FromDto).ToList();
+                foreach (var order in orders)
+                {
+                    if (!_allOrders.Any(o => o.OrderId == order.OrderId))
+                        _allOrders.Add(order);
+                }
+
+                ApplyFilter();
+            }
+            catch { }
+            finally
+            {
+                _isLoadingMore = false;
+            }
+        }
+
+        private (string? Status, DateTime? DateFrom, DateTime? DateTo) GetServerFilterParams()
+        {
+            if (_showArchives)
+            {
+                var dateFilter = DateRangePicker.SelectedItem as string;
+                DateTime? dateFrom = null;
+                DateTime? dateTo = null;
+                var now = DateTime.UtcNow;
+
+                if (dateFilter == "Today") dateFrom = now.Date;
+                else if (dateFilter == "This Week") dateFrom = now.AddDays(-7);
+                else if (dateFilter == "This Month") dateFrom = now.AddDays(-30);
+
+                var statusFilter = ArchiveStatusPicker.SelectedItem as string;
+                var status = statusFilter switch
+                {
+                    "Completed" => "Completed",
+                    "Cancelled" => "Cancelled",
+                    _ => null
+                };
+                return (status, dateFrom, dateTo);
+            }
+
+            var activeStatus = _activeFilter switch
+            {
+                "Pending" => "Pending",
+                "Preparing" => "Creating",
+                "Completed" => "Completed",
+                _ => null
+            };
+            return (activeStatus, null, null);
+        }
+
+        private async void OnLoadMore(object sender, EventArgs e)
+        {
+            await LoadMoreOrdersAsync();
+        }
+
         private async void OnRefreshing(object sender, EventArgs e)
         {
             await LoadOrdersAsync();
@@ -141,14 +229,6 @@ namespace Cremory.App
         private void ApplyFilter()
         {
             var filtered = _allOrders.AsEnumerable();
-
-            if (!string.IsNullOrWhiteSpace(_searchText))
-            {
-                var search = _searchText.ToLower();
-                filtered = filtered.Where(o =>
-                    o.CustomerName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                    o.OrderId.Contains(search, StringComparison.OrdinalIgnoreCase));
-            }
 
             if (_showArchives)
             {
@@ -199,7 +279,7 @@ namespace Cremory.App
             {
                 await Task.Delay(300, token);
                 _searchText = e.NewTextValue?.Trim() ?? "";
-                ApplyFilter();
+                await LoadOrdersAsync();
             }
             catch (TaskCanceledException)
             {
@@ -217,13 +297,13 @@ namespace Cremory.App
             ArchiveToggle.TextColor = _showArchives
                 ? Colors.White
                 : (Color)Application.Current!.Resources["Gray700"];
-            ApplyFilter();
+            _ = LoadOrdersAsync();
         }
 
         private void OnDateFilterChanged(object sender, EventArgs e)
         {
             if (_showArchives)
-                ApplyFilter();
+                _ = LoadOrdersAsync();
         }
 
         private async void OnImportClicked(object sender, EventArgs e)
@@ -273,7 +353,7 @@ namespace Cremory.App
             ArchiveToggle.Text = "Show Archives";
             ArchiveToggle.BackgroundColor = (Color)Application.Current!.Resources["Gray200"];
             ArchiveToggle.TextColor = (Color)Application.Current!.Resources["Gray700"];
-            ApplyFilter();
+            _ = LoadOrdersAsync();
         }
     }
 }

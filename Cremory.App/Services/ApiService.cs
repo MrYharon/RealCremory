@@ -186,6 +186,33 @@ namespace Cremory.App.Services
             return dtos?.Select(OrderSummary.FromDto).ToList() ?? [];
         }
 
+        public async Task<(List<OrderDto> Orders, int TotalCount)> GetOrdersPagedAsync(
+            string? status = null, string? search = null,
+            DateTime? dateFrom = null, DateTime? dateTo = null,
+            int page = 1, int pageSize = 100)
+        {
+            var url = BuildOrdersUrl(status, search, dateFrom, dateTo, page, pageSize);
+            try
+            {
+                var response = await _httpClient.GetAsync(url);
+                if (!response.IsSuccessStatusCode) return ([], 0);
+
+                var json = await response.Content.ReadAsStringAsync();
+                var orders = JsonSerializer.Deserialize<List<OrderDto>>(json, JsonOptions) ?? [];
+
+                var totalCount = 0;
+                if (response.Headers.TryGetValues("X-Total-Count", out var values) &&
+                    int.TryParse(values.FirstOrDefault(), out var count))
+                    totalCount = count;
+
+                return (orders, totalCount);
+            }
+            catch
+            {
+                return ([], 0);
+            }
+        }
+
         public async Task<List<OrderDto>> GetOrdersRawAsync(
             string? status = null, string? search = null,
             DateTime? dateFrom = null, DateTime? dateTo = null,
