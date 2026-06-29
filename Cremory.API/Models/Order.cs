@@ -24,11 +24,13 @@ namespace Cremory.API.Models
         [StringLength(100)]
         public string CustomerName { get; set; } = string.Empty;
 
+        [Required]
         [Column("ITEMS")]
         [StringLength(2000)]
         public string Items { get; set; } = string.Empty;
 
         [Column("TOTAL_PRICE")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Total price must be greater than 0")]
         public decimal TotalPrice { get; set; }
 
         [Column("STATUS")]

@@ -21,6 +21,7 @@ namespace Cremory.API.Models
         public string? Description { get; set; }
 
         [Column("SELLING_PRICE")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Selling price must be greater than 0")]
         public decimal SellingPrice { get; set; }
 
         [Column("IS_ACTIVE")]

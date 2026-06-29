@@ -51,9 +51,9 @@ namespace Cremory.App
                 return;
             }
 
-            if (!decimal.TryParse(PriceEntry?.Text?.Trim(), out var price))
+            if (!decimal.TryParse(PriceEntry?.Text?.Trim(), out var price) || price <= 0)
             {
-                await DisplayAlert("Validation", "Enter a valid base price.", "OK");
+                await DisplayAlert("Validation", "Enter a valid base price greater than 0.", "OK");
                 return;
             }
 

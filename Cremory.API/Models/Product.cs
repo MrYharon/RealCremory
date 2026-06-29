@@ -29,6 +29,7 @@ namespace Cremory.API.Models
         public string? Flavor { get; set; }
 
         [Column("BASE_PRICE")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Base price must be greater than 0")]
         public decimal BasePrice { get; set; }
 
         [Column("ADD_ON_DESCRIPTION")]

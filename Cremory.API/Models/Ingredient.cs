@@ -17,6 +17,7 @@ namespace Cremory.API.Models
         public string Name { get; set; } = string.Empty;
 
         [Column("STOCK_QUANTITY")]
+        [Range(0, double.MaxValue, ErrorMessage = "Stock quantity cannot be negative")]
         public decimal StockQuantity { get; set; }
 
         [Required]
@@ -25,6 +26,7 @@ namespace Cremory.API.Models
         public string Unit { get; set; } = string.Empty;
 
         [Column("REORDER_LEVEL")]
+        [Range(0, double.MaxValue, ErrorMessage = "Reorder level cannot be negative")]
         public decimal ReorderLevel { get; set; }
     }
 }

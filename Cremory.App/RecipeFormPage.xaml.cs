@@ -143,6 +143,12 @@ namespace Cremory.App
                 return;
             }
 
+            if (_ingredients.Count == 0)
+            {
+                await DisplayAlert("Validation", "Add at least one ingredient to the recipe.", "OK");
+                return;
+            }
+
             var recipe = _existing ?? new Recipe();
             recipe.Name = name;
             recipe.SellingPrice = price;
