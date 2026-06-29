@@ -54,18 +54,28 @@ namespace Cremory.App
                 UpdatedAt = DateTime.UtcNow
             };
 
-            var api = App.ApiService;
-            if (api == null) return;
+            SaveButton.IsEnabled = false;
+            SaveButton.Text = "Saving...";
+            try
+            {
+                var api = App.ApiService;
+                if (api == null) return;
 
-            var (success, error) = await api.UpdateOrderAsync(updated);
-            if (success)
-            {
-                await DisplayAlert("Saved", "Order updated successfully.", "OK");
-                await Navigation.PopModalAsync();
+                var (success, error) = await api.UpdateOrderAsync(updated);
+                if (success)
+                {
+                    await DisplayAlert("Saved", "Order updated successfully.", "OK");
+                    await Navigation.PopModalAsync();
+                }
+                else
+                {
+                    await DisplayAlert("Error", $"Failed to save: {error}", "OK");
+                }
             }
-            else
+            finally
             {
-                await DisplayAlert("Error", $"Failed to save: {error}", "OK");
+                SaveButton.IsEnabled = true;
+                SaveButton.Text = "Save Changes";
             }
         }
 

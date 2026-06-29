@@ -62,7 +62,7 @@
             <Button Text="Cancel" Clicked="OnCancelClicked"
                     BackgroundColor="{StaticResource Gray200}" TextColor="{StaticResource Gray700}"
                     FontAttributes="Bold" HeightRequest="48"/>
-            <Button Grid.Column="1" Text="Save" Clicked="OnSaveClicked"
+            <Button Grid.Column="1" x:Name="SaveButton" Text="Save" Clicked="OnSaveClicked"
                     BackgroundColor="{StaticResource Success}" TextColor="White"
                     FontAttributes="Bold" HeightRequest="48"/>
         </Grid>
