@@ -79,6 +79,49 @@ namespace Cremory.App.Controls
             }
         }
 
+        private async void OnEditSwipe(object sender, EventArgs e)
+        {
+            var order = Order;
+            if (order == null) return;
+            var page = GetCurrentPage();
+            if (page == null) return;
+            var editPage = new EditOrderPage(new OrderDto
+            {
+                OrderId = order.OrderId,
+                CustomerName = order.CustomerName,
+                CustomerContact = order.CustomerContact,
+                Items = order.Items,
+                TotalPrice = order.TotalPrice,
+                Source = order.Source,
+                Status = order.Status,
+                CreatedAt = order.CreatedAtUtc,
+                UpdatedAt = order.UpdatedAtUtc
+            });
+            await page.Navigation.PushModalAsync(new NavigationPage(editPage));
+        }
+
+        private async void OnDeleteSwipe(object sender, EventArgs e)
+        {
+            var order = Order;
+            if (order == null) return;
+            var page = GetCurrentPage();
+            if (page == null) return;
+
+            var confirm = await page.DisplayAlert("Delete Order",
+                $"Permanently delete order {order.OrderId} for {order.CustomerName}?\nThis cannot be undone.",
+                "Delete", "Cancel");
+            if (!confirm) return;
+
+            var api = App.ApiService;
+            if (api == null) return;
+
+            var (success, error) = await api.DeleteOrderAsync(order.OrderId);
+            if (success)
+                await page.DisplayAlert("Deleted", $"Order {order.OrderId} deleted.", "OK");
+            else
+                await page.DisplayAlert("Error", $"Failed to delete: {error}", "OK");
+        }
+
         private static Page? GetCurrentPage()
         {
             var window = Application.Current?.Windows.FirstOrDefault();

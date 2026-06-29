@@ -78,13 +78,19 @@
                 </Grid>
             </Border>
 
-            <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+            <Grid ColumnDefinitions="*, Auto, Auto, Auto" ColumnSpacing="8">
                 <Button x:Name="ActionButton" Text="{Binding Order.ActionButtonText}"
                         Clicked="OnActionClicked"
                         BackgroundColor="{Binding Order.ActionButtonColor}"
                         TextColor="White" FontAttributes="Bold" HeightRequest="48"
                         IsVisible="{Binding Order.ShowActionButton}"/>
-                <Button Grid.Column="1" Text="Back" Clicked="OnBackClicked"
+                <Button Grid.Column="1" Text="Edit" Clicked="OnEditClicked"
+                        BackgroundColor="{StaticResource Info}" TextColor="White"
+                        FontAttributes="Bold" HeightRequest="48" Padding="10,0"/>
+                <Button Grid.Column="2" Text="Delete" Clicked="OnDeleteClicked"
+                        BackgroundColor="#C62828" TextColor="White"
+                        FontAttributes="Bold" HeightRequest="48" Padding="10,0"/>
+                <Button Grid.Column="3" Text="Back" Clicked="OnBackClicked"
                         BackgroundColor="{StaticResource Gray200}" TextColor="{StaticResource Gray700}"
                         FontAttributes="Bold" HeightRequest="48"/>
             </Grid>

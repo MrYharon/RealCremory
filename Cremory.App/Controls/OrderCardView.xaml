@@ -6,10 +6,18 @@
              x:Class="Cremory.App.Controls.OrderCardView">
 
     <SwipeView>
+        <SwipeView.LeftItems>
+            <SwipeItems>
+                <SwipeItem Text="Edit" BackgroundColor="{StaticResource Info}"
+                           Invoked="OnEditSwipe"/>
+            </SwipeItems>
+        </SwipeView.LeftItems>
         <SwipeView.RightItems>
             <SwipeItems>
                 <SwipeItem Text="Cancel" BackgroundColor="{StaticResource Danger}"
                            Invoked="OnCancelSwipe"/>
+                <SwipeItem Text="Delete" BackgroundColor="#C62828"
+                           Invoked="OnDeleteSwipe"/>
             </SwipeItems>
         </SwipeView.RightItems>
         <Border StrokeShape="RoundRectangle 12" StrokeThickness="1"

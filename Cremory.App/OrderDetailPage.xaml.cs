@@ -35,6 +35,45 @@ namespace Cremory.App
             await Navigation.PopModalAsync();
         }
 
+        private async void OnDeleteClicked(object sender, EventArgs e)
+        {
+            var confirm = await DisplayAlert("Delete Order",
+                $"Permanently delete order {Order.OrderId} for {Order.CustomerName}?\nThis cannot be undone.",
+                "Delete", "Cancel");
+            if (!confirm) return;
+
+            var api = App.ApiService;
+            if (api == null) return;
+
+            var (success, error) = await api.DeleteOrderAsync(Order.OrderId);
+            if (success)
+            {
+                await DisplayAlert("Deleted", $"Order {Order.OrderId} deleted.", "OK");
+                await Navigation.PopModalAsync();
+            }
+            else
+            {
+                await DisplayAlert("Error", $"Failed to delete: {error}", "OK");
+            }
+        }
+
+        private async void OnEditClicked(object sender, EventArgs e)
+        {
+            var editPage = new EditOrderPage(new OrderDto
+            {
+                OrderId = Order.OrderId,
+                CustomerName = Order.CustomerName,
+                CustomerContact = Order.CustomerContact,
+                Items = Order.Items,
+                TotalPrice = Order.TotalPrice,
+                Source = Order.Source,
+                Status = Order.Status,
+                CreatedAt = Order.CreatedAtUtc,
+                UpdatedAt = Order.UpdatedAtUtc
+            });
+            await Navigation.PushModalAsync(new NavigationPage(editPage));
+        }
+
         private async void OnBackClicked(object sender, EventArgs e)
         {
             await Navigation.PopModalAsync();

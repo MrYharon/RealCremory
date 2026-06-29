@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Cremory.App"
+             x:Class="Cremory.App.EditOrderPage"
+             x:DataType="local:EditOrderPage"
+             Title="Edit Order"
+             BackgroundColor="{StaticResource Gray50}">
+
+    <Grid RowDefinitions="*, Auto" Padding="20" RowSpacing="16">
+        <ScrollView>
+            <VerticalStackLayout Spacing="16">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Customer Name" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="12,8" Stroke="{StaticResource Gray200}">
+                        <Entry x:Name="NameEntry" Placeholder="Customer name" FontSize="15"
+                               TextColor="{StaticResource Gray900}" PlaceholderColor="{StaticResource Gray400}"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Contact (optional)" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="12,8" Stroke="{StaticResource Gray200}">
+                        <Entry x:Name="ContactEntry" Placeholder="Phone or Messenger" FontSize="15"
+                               TextColor="{StaticResource Gray900}" PlaceholderColor="{StaticResource Gray400}"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Items" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="12,8" Stroke="{StaticResource Gray200}">
+                        <Editor x:Name="ItemsEditor" Placeholder="One item per line&#10;e.g. 1x Ube Basque Cheesecake"
+                                FontSize="14" TextColor="{StaticResource Gray900}" PlaceholderColor="{StaticResource Gray400}"
+                                AutoSize="TextChanges" HeightRequest="120" BackgroundColor="White"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Total Price (₱)" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="12,8" Stroke="{StaticResource Gray200}">
+                        <Entry x:Name="PriceEntry" Placeholder="0" Keyboard="Numeric" FontSize="15"
+                               TextColor="{StaticResource Gray900}" PlaceholderColor="{StaticResource Gray400}"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Source" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="4,0" Stroke="{StaticResource Gray200}">
+                        <Picker x:Name="SourcePicker" TextColor="{StaticResource Gray900}" TitleColor="{StaticResource Gray400}"
+                                BackgroundColor="White">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>Walk-in</x:String>
+                                    <x:String>Facebook</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </Border>
+                </VerticalStackLayout>
+
+                <Label x:Name="StatusLabel" FontSize="12" TextColor="{StaticResource Gray500}"/>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, *" ColumnSpacing="12">
+            <Button Text="Cancel" Clicked="OnCancelClicked"
+                    BackgroundColor="{StaticResource Gray200}" TextColor="{StaticResource Gray700}"
+                    FontAttributes="Bold" HeightRequest="48"/>
+            <Button Grid.Column="1" Text="Save Changes" Clicked="OnSaveClicked"
+                    BackgroundColor="{StaticResource Success}" TextColor="White"
+                    FontAttributes="Bold" HeightRequest="48"/>
+        </Grid>
+    </Grid>
+</ContentPage>

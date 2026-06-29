@@ -226,6 +226,38 @@ namespace Cremory.App.Services
             }
         }
 
+        public async Task<(bool Success, string? Error)> UpdateOrderAsync(OrderDto order)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"Orders/{order.OrderId}", order, JsonOptions);
+                if (response.IsSuccessStatusCode) return (true, null);
+                var body = await response.Content.ReadAsStringAsync();
+                return (false, body);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
+                return (false, ex.Message);
+            }
+        }
+
+        public async Task<(bool Success, string? Error)> DeleteOrderAsync(string orderId)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"Orders/{orderId}");
+                if (response.IsSuccessStatusCode) return (true, null);
+                var body = await response.Content.ReadAsStringAsync();
+                return (false, body);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
+                return (false, ex.Message);
+            }
+        }
+
         public async Task<FinanceSummaryDto?> GetFinanceSummaryAsync()
         {
             return await HttpGetAsync<FinanceSummaryDto>("Analytics/finance", "finance");
