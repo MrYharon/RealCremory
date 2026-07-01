@@ -16,12 +16,16 @@ namespace Cremory.API
             var port = Environment.GetEnvironmentVariable("PORT") ?? "5105";
             builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
-            var connStr = Environment.GetEnvironmentVariable("DATABASE_URL")
-                ?? builder.Configuration.GetConnectionString("PostgresConnection");
-
             builder.Services.AddControllers();
             builder.Services.AddDbContext<Cremory.API.Data.CremoryDbContext>(options =>
-                options.UseNpgsql(connStr));
+            {
+                if (builder.Environment.IsDevelopment())
+                    options.UseSqlite("Data Source=cremory.db");
+                else
+                    options.UseNpgsql(
+                        Environment.GetEnvironmentVariable("DATABASE_URL")
+                        ?? builder.Configuration.GetConnectionString("PostgresConnection"));
+            });
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddSignalR();
