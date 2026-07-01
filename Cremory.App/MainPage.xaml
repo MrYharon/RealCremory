@@ -18,29 +18,47 @@
             </VerticalStackLayout>
         </Grid>
 
-        <Grid Grid.Row="1" ColumnDefinitions="*, *, *" ColumnSpacing="14">
-            <Border Grid.Column="0" BackgroundColor="{StaticResource Success}" StrokeShape="RoundRectangle 12" Padding="16" Stroke="Transparent">
-                <VerticalStackLayout Spacing="6">
-                    <Label Text="Revenue Today" TextColor="{StaticResource White}" FontSize="12" FontAttributes="Bold" Opacity="0.85"/>
-                    <Label Text="{Binding TotalProfitToday, StringFormat='₱{0:N0}'}" TextColor="White" FontSize="24" FontAttributes="Bold"/>
-                    <Label Text="{Binding CompletedOrdersText}" TextColor="White" FontSize="10" Opacity="0.75"/>
-                </VerticalStackLayout>
-            </Border>
-            <Border Grid.Column="1" BackgroundColor="{StaticResource Info}" StrokeShape="RoundRectangle 12" Padding="16" Stroke="Transparent">
-                <VerticalStackLayout Spacing="6">
-                    <Label Text="Total Orders" TextColor="White" FontSize="12" FontAttributes="Bold" Opacity="0.85"/>
-                    <Label Text="{Binding TotalOrdersToday}" TextColor="White" FontSize="24" FontAttributes="Bold"/>
-                    <Label Text="{Binding OrdersTotalText}" TextColor="White" FontSize="10" Opacity="0.75"/>
-                </VerticalStackLayout>
-            </Border>
-            <Border Grid.Column="2" BackgroundColor="{StaticResource Pending}" StrokeShape="RoundRectangle 12" Padding="16" Stroke="Transparent">
-                <VerticalStackLayout Spacing="6">
-                    <Label Text="In Progress" TextColor="White" FontSize="12" FontAttributes="Bold" Opacity="0.85"/>
-                    <Label Text="{Binding ActiveOrders.Count}" TextColor="White" FontSize="24" FontAttributes="Bold"/>
-                    <Label Text="waiting for prep" TextColor="White" FontSize="10" Opacity="0.75"/>
-                </VerticalStackLayout>
-            </Border>
-        </Grid>
+        <ScrollView Grid.Row="1" Orientation="Horizontal" HorizontalScrollBarVisibility="Never"
+                     VerticalOptions="Start">
+            <HorizontalStackLayout Spacing="10" Padding="0">
+                <Border BackgroundColor="{StaticResource Success}" StrokeShape="RoundRectangle 12"
+                        WidthRequest="140" Padding="14,16" Stroke="Transparent">
+                    <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="2" HorizontalOptions="Center">
+                        <Label Grid.Row="0" Text="Revenue Today" TextColor="White" FontSize="10" FontAttributes="Bold"
+                               Opacity="0.85" LineBreakMode="NoWrap" HorizontalTextAlignment="Center"/>
+                        <Label Grid.Row="1" Text="{Binding TotalProfitToday, StringFormat='₱{0:N0}'}" TextColor="White"
+                               FontSize="20" FontAttributes="Bold" LineBreakMode="NoWrap" HorizontalTextAlignment="Center"
+                               Margin="0,2,0,0"/>
+                        <Label Grid.Row="2" Text="{Binding CompletedOrdersText}" TextColor="White" FontSize="10" Opacity="0.75"
+                               HorizontalTextAlignment="Center"/>
+                    </Grid>
+                </Border>
+                <Border BackgroundColor="{StaticResource Info}" StrokeShape="RoundRectangle 12"
+                        WidthRequest="140" Padding="14,16" Stroke="Transparent">
+                    <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="2" HorizontalOptions="Center">
+                        <Label Grid.Row="0" Text="Total Orders" TextColor="White" FontSize="10" FontAttributes="Bold"
+                               Opacity="0.85" LineBreakMode="NoWrap" HorizontalTextAlignment="Center"/>
+                        <Label Grid.Row="1" Text="{Binding TotalOrdersToday}" TextColor="White"
+                               FontSize="20" FontAttributes="Bold" LineBreakMode="NoWrap" HorizontalTextAlignment="Center"
+                               Margin="0,2,0,0"/>
+                        <Label Grid.Row="2" Text="{Binding OrdersTotalText}" TextColor="White" FontSize="10" Opacity="0.75"
+                               HorizontalTextAlignment="Center"/>
+                    </Grid>
+                </Border>
+                <Border BackgroundColor="{StaticResource Pending}" StrokeShape="RoundRectangle 12"
+                        WidthRequest="140" Padding="14,16" Stroke="Transparent">
+                    <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="2" HorizontalOptions="Center">
+                        <Label Grid.Row="0" Text="In Progress" TextColor="White" FontSize="10" FontAttributes="Bold"
+                               Opacity="0.85" LineBreakMode="NoWrap" HorizontalTextAlignment="Center"/>
+                        <Label Grid.Row="1" Text="{Binding ActiveOrders.Count}" TextColor="White"
+                               FontSize="20" FontAttributes="Bold" LineBreakMode="NoWrap" HorizontalTextAlignment="Center"
+                               Margin="0,2,0,0"/>
+                        <Label Grid.Row="2" Text="waiting for prep" TextColor="White" FontSize="10" Opacity="0.75"
+                               HorizontalTextAlignment="Center"/>
+                    </Grid>
+                </Border>
+            </HorizontalStackLayout>
+        </ScrollView>
 
         <Border Grid.Row="2" StrokeShape="RoundRectangle 10" BackgroundColor="White" Padding="16" StrokeThickness="1" Stroke="{StaticResource Gray200}">
             <Grid ColumnDefinitions="Auto, Auto, *" ColumnSpacing="24">

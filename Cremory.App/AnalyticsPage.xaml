@@ -14,45 +14,58 @@
                 <Label Text="Revenue, sales, and business performance" FontSize="13" TextColor="{StaticResource Gray500}"/>
             </VerticalStackLayout>
 
-            <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto"
-                  ColumnSpacing="12" RowSpacing="12">
-                <Border Grid.Row="0" Grid.Column="0" StrokeShape="RoundRectangle 12"
-                        BackgroundColor="White" Padding="16" Stroke="{StaticResource Gray200}">
-                    <VerticalStackLayout Spacing="4">
-                        <Label Text="Today's Revenue" FontSize="12" TextColor="{StaticResource Gray500}"/>
-                        <Label x:Name="TodayRevenue" Text="--" FontSize="26" FontAttributes="Bold"
-                               TextColor="{StaticResource Success}"/>
-                        <Label x:Name="TodayOrdersLabel" Text="" FontSize="11" TextColor="{StaticResource Gray500}"/>
-                    </VerticalStackLayout>
-                </Border>
-                <Border Grid.Row="0" Grid.Column="1" StrokeShape="RoundRectangle 12"
-                        BackgroundColor="White" Padding="16" Stroke="{StaticResource Gray200}">
-                    <VerticalStackLayout Spacing="4">
-                        <Label Text="This Week" FontSize="12" TextColor="{StaticResource Gray500}"/>
-                        <Label x:Name="WeekRevenue" Text="--" FontSize="26" FontAttributes="Bold"
-                               TextColor="{StaticResource Gray900}"/>
-                        <Label x:Name="WeekAverageLabel" Text="" FontSize="11" TextColor="{StaticResource Gray500}"/>
-                    </VerticalStackLayout>
-                </Border>
-                <Border Grid.Row="1" Grid.Column="0" StrokeShape="RoundRectangle 12"
-                        BackgroundColor="White" Padding="16" Stroke="{StaticResource Gray200}">
-                    <VerticalStackLayout Spacing="4">
-                        <Label Text="This Month" FontSize="12" TextColor="{StaticResource Gray500}"/>
-                        <Label x:Name="MonthRevenue" Text="--" FontSize="26" FontAttributes="Bold"
-                               TextColor="{StaticResource Gray900}"/>
-                        <Label x:Name="MonthOrdersLabel" Text="" FontSize="11" TextColor="{StaticResource Gray500}"/>
-                    </VerticalStackLayout>
-                </Border>
-                <Border Grid.Row="1" Grid.Column="1" StrokeShape="RoundRectangle 12"
-                        BackgroundColor="White" Padding="16" Stroke="{StaticResource Gray200}">
-                    <VerticalStackLayout Spacing="4">
-                        <Label Text="Avg Order Value" FontSize="12" TextColor="{StaticResource Gray500}"/>
-                        <Label x:Name="AvgOrderLabel" Text="--" FontSize="26" FontAttributes="Bold"
-                               TextColor="{StaticResource Primary}"/>
-                        <Label Text="This month" FontSize="11" TextColor="{StaticResource Gray500}"/>
-                    </VerticalStackLayout>
-                </Border>
-            </Grid>
+            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" VerticalOptions="Start">
+                <HorizontalStackLayout Spacing="10" Padding="0">
+                    <Border StrokeShape="RoundRectangle 12" BackgroundColor="White" Padding="14,16"
+                            WidthRequest="140" Stroke="{StaticResource Gray200}">
+                        <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="2" HorizontalOptions="Center">
+                            <Label Grid.Row="0" Text="Today's Revenue" FontSize="10" TextColor="{StaticResource Gray500}"
+                                   LineBreakMode="NoWrap" HorizontalTextAlignment="Center"/>
+                            <Label Grid.Row="1" x:Name="TodayRevenue" Text="--" FontSize="20" FontAttributes="Bold"
+                                   TextColor="{StaticResource Success}" LineBreakMode="NoWrap" HorizontalTextAlignment="Center"
+                                   Margin="0,2,0,0"/>
+                            <Label Grid.Row="2" x:Name="TodayOrdersLabel" Text="" FontSize="10" TextColor="{StaticResource Gray500}"
+                                   HorizontalTextAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                    <Border StrokeShape="RoundRectangle 12" BackgroundColor="White" Padding="14,16"
+                            WidthRequest="140" Stroke="{StaticResource Gray200}">
+                        <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="2" HorizontalOptions="Center">
+                            <Label Grid.Row="0" Text="This Week" FontSize="10" TextColor="{StaticResource Gray500}"
+                                   LineBreakMode="NoWrap" HorizontalTextAlignment="Center"/>
+                            <Label Grid.Row="1" x:Name="WeekRevenue" Text="--" FontSize="20" FontAttributes="Bold"
+                                   TextColor="{StaticResource Gray900}" LineBreakMode="NoWrap" HorizontalTextAlignment="Center"
+                                   Margin="0,2,0,0"/>
+                            <Label Grid.Row="2" x:Name="WeekAverageLabel" Text="" FontSize="10" TextColor="{StaticResource Gray500}"
+                                   HorizontalTextAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                    <Border StrokeShape="RoundRectangle 12" BackgroundColor="White" Padding="14,16"
+                            WidthRequest="140" Stroke="{StaticResource Gray200}">
+                        <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="2" HorizontalOptions="Center">
+                            <Label Grid.Row="0" Text="This Month" FontSize="10" TextColor="{StaticResource Gray500}"
+                                   LineBreakMode="NoWrap" HorizontalTextAlignment="Center"/>
+                            <Label Grid.Row="1" x:Name="MonthRevenue" Text="--" FontSize="20" FontAttributes="Bold"
+                                   TextColor="{StaticResource Gray900}" LineBreakMode="NoWrap" HorizontalTextAlignment="Center"
+                                   Margin="0,2,0,0"/>
+                            <Label Grid.Row="2" x:Name="MonthOrdersLabel" Text="" FontSize="10" TextColor="{StaticResource Gray500}"
+                                   HorizontalTextAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                    <Border StrokeShape="RoundRectangle 12" BackgroundColor="White" Padding="14,16"
+                            WidthRequest="140" Stroke="{StaticResource Gray200}">
+                        <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="2" HorizontalOptions="Center">
+                            <Label Grid.Row="0" Text="Avg Order" FontSize="10" TextColor="{StaticResource Gray500}"
+                                   LineBreakMode="NoWrap" HorizontalTextAlignment="Center"/>
+                            <Label Grid.Row="1" x:Name="AvgOrderLabel" Text="--" FontSize="20" FontAttributes="Bold"
+                                   TextColor="{StaticResource Primary}" LineBreakMode="NoWrap" HorizontalTextAlignment="Center"
+                                   Margin="0,2,0,0"/>
+                            <Label Grid.Row="2" Text="This month" FontSize="10" TextColor="{StaticResource Gray500}"
+                                   HorizontalTextAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </HorizontalStackLayout>
+            </ScrollView>
 
             <Border StrokeShape="RoundRectangle 12" BackgroundColor="White" Padding="16"
                     Stroke="{StaticResource Gray200}">

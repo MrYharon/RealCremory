@@ -286,24 +286,21 @@ namespace Cremory.App
             }
         }
 
-        private void OnToggleArchives(object sender, EventArgs e)
+        private void OnToggleArchives(object sender, ToggledEventArgs e)
         {
-            _showArchives = !_showArchives;
+            _showArchives = e.Value;
             ArchiveFilterBar.IsVisible = _showArchives;
-            ArchiveToggle.Text = _showArchives ? "Hide Archives" : "Show Archives";
-            ArchiveToggle.BackgroundColor = _showArchives
-                ? (Color)Application.Current!.Resources["Primary"]
-                : (Color)Application.Current!.Resources["Gray200"];
-            ArchiveToggle.TextColor = _showArchives
-                ? Colors.White
-                : (Color)Application.Current!.Resources["Gray700"];
-            _ = LoadOrdersAsync();
+            if (_showArchives)
+            {
+                ResetFilterChips();
+            }
+            ApplyFilter();
         }
 
         private void OnDateFilterChanged(object sender, EventArgs e)
         {
             if (_showArchives)
-                _ = LoadOrdersAsync();
+                ApplyFilter();
         }
 
         private async void OnImportClicked(object sender, EventArgs e)
@@ -332,28 +329,40 @@ namespace Cremory.App
             btn.Text = "Copy";
         }
 
+        private void ResetFilterChips()
+        {
+            var borders = new[] { FilterAllBorder, FilterPendingBorder, FilterPreparingBorder, FilterCompletedBorder };
+            var buttons = new[] { FilterAll, FilterPending, FilterPreparing, FilterCompleted };
+            for (int i = 0; i < borders.Length; i++)
+            {
+                borders[i].BackgroundColor = Colors.Transparent;
+                borders[i].Stroke = (Color)Application.Current!.Resources["Gray300"];
+                buttons[i].TextColor = (Color)Application.Current!.Resources["Gray600"];
+                buttons[i].FontAttributes = FontAttributes.None;
+            }
+        }
+
         private void OnFilterClicked(object sender, EventArgs e)
         {
             var button = sender as Button;
             if (button == null) return;
 
-            var buttons = new[] { FilterAll, FilterPending, FilterPreparing, FilterCompleted };
-            foreach (var btn in buttons)
-            {
-                btn.BackgroundColor = (Color)Application.Current!.Resources["Gray200"];
-                btn.TextColor = (Color)Application.Current!.Resources["Gray700"];
-            }
+            ResetFilterChips();
 
-            button.BackgroundColor = (Color)Application.Current!.Resources["Primary"];
+            var border = button.Parent as Border;
+            if (border != null)
+            {
+                border.BackgroundColor = (Color)Application.Current!.Resources["Primary"];
+                border.Stroke = Colors.Transparent;
+            }
             button.TextColor = Colors.White;
+            button.FontAttributes = FontAttributes.Bold;
 
             _activeFilter = button.Text;
             _showArchives = false;
+            ArchiveToggle.IsToggled = false;
             ArchiveFilterBar.IsVisible = false;
-            ArchiveToggle.Text = "Show Archives";
-            ArchiveToggle.BackgroundColor = (Color)Application.Current!.Resources["Gray200"];
-            ArchiveToggle.TextColor = (Color)Application.Current!.Resources["Gray700"];
-            _ = LoadOrdersAsync();
+            ApplyFilter();
         }
     }
 }

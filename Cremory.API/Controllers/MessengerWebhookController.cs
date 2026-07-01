@@ -20,6 +20,8 @@ namespace Cremory.API.Controllers
         private readonly OrderParserService _orderParser;
         private readonly CremoryDbContext _context;
         private readonly IHubContext<OrderHub> _hubContext;
+        private readonly ILogger<MessengerWebhookController> _logger;
+        private readonly IWebHostEnvironment _env;
         private static readonly JsonSerializerOptions _jsonOptions = new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -30,12 +32,16 @@ namespace Cremory.API.Controllers
             IOptions<MessengerOptions> messenger,
             OrderParserService orderParser,
             CremoryDbContext context,
-            IHubContext<OrderHub> hubContext)
+            IHubContext<OrderHub> hubContext,
+            ILogger<MessengerWebhookController> logger,
+            IWebHostEnvironment env)
         {
             _messenger = messenger.Value;
             _orderParser = orderParser;
             _context = context;
             _hubContext = hubContext;
+            _logger = logger;
+            _env = env;
         }
 
         [HttpGet("webhook")]
@@ -56,8 +62,17 @@ namespace Cremory.API.Controllers
             if (_messenger.AppSecret != string.Empty)
             {
                 var signature = Request.Headers["X-Hub-Signature-256"].FirstOrDefault();
-                if (!IsValidSignature(body.GetRawText(), signature))
+                if (string.IsNullOrEmpty(signature))
+                {
+                    _logger.LogWarning("Webhook: Missing X-Hub-Signature-256 header");
+                    if (!_env.IsDevelopment())
+                        return Ok();
+                }
+                else if (!IsValidSignature(body.GetRawText(), signature))
+                {
+                    _logger.LogWarning("Webhook: Invalid signature");
                     return Ok();
+                }
             }
 
             FacebookPayload? payload;
