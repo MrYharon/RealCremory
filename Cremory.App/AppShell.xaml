@@ -6,9 +6,6 @@
     xmlns:local="clr-namespace:Cremory.App"
     Shell.FlyoutBehavior="Flyout"
     Shell.FlyoutBackgroundColor="#FFFDFD"
-    Shell.ForegroundColor="#2C2525"
-    Shell.UnselectedColor="#7D5A5A"
-    Shell.TitleColor="#2C2525"
     Title="Cremory">
 
     <Shell.FlyoutHeader>
@@ -19,6 +16,17 @@
             </VerticalStackLayout>
         </Grid>
     </Shell.FlyoutHeader>
+
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <Grid Padding="20,12" ColumnSpacing="12" ColumnDefinitions="Auto, *">
+                <Label Text="{Binding Title}"
+                       FontSize="15" FontAttributes="Bold"
+                       TextColor="#2C2525" VerticalOptions="Center"
+                       Grid.Column="1"/>
+            </Grid>
+        </DataTemplate>
+    </Shell.ItemTemplate>
 
     <FlyoutItem Title="Dashboard">
         <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
