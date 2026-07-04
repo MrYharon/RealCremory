@@ -4,44 +4,44 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <!-- Warm Bakery Palette — Cream, Brown, Green, Red -->
+    <!-- Pastel Pink & Red Theme — Premium Bakery Boutique -->
 
     <!-- Brand Colors -->
-    <Color x:Key="Primary">#8D6E63</Color>
-    <Color x:Key="PrimaryDark">#5D4037</Color>
-    <Color x:Key="PrimaryLight">#A1887F</Color>
-    <Color x:Key="PrimaryVeryLight">#EFEBE9</Color>
+    <Color x:Key="Primary">#FBC4C4</Color>
+    <Color x:Key="PrimaryDark">#E27575</Color>
+    <Color x:Key="PrimaryLight">#FDE8E8</Color>
+    <Color x:Key="PrimaryVeryLight">#FEF2F2</Color>
 
     <!-- Accent Colors -->
-    <Color x:Key="Success">#2E7D32</Color>
-    <Color x:Key="SuccessLight">#C8E6C9</Color>
-    <Color x:Key="Warning">#E65100</Color>
-    <Color x:Key="WarningLight">#FFE0B2</Color>
-    <Color x:Key="Danger">#C62828</Color>
-    <Color x:Key="DangerLight">#FFCDD2</Color>
-    <Color x:Key="Info">#6D4C41</Color>
-    <Color x:Key="InfoLight">#D7CCC8</Color>
-    <Color x:Key="Pending">#EF6C00</Color>
-    <Color x:Key="PendingLight">#FFE0B2</Color>
+    <Color x:Key="Success">#81B29A</Color>
+    <Color x:Key="SuccessLight">#D4E8D8</Color>
+    <Color x:Key="Warning">#E07A5F</Color>
+    <Color x:Key="WarningLight">#F4D4C8</Color>
+    <Color x:Key="Danger">#E27575</Color>
+    <Color x:Key="DangerLight">#F5D0D0</Color>
+    <Color x:Key="Info">#A08B9E</Color>
+    <Color x:Key="InfoLight">#E8DEE7</Color>
+    <Color x:Key="Pending">#FBC4C4</Color>
+    <Color x:Key="PendingLight">#FDE8E8</Color>
 
     <!-- Neutral Colors -->
-    <Color x:Key="White">#FFFFFF</Color>
-    <Color x:Key="Black">#3E2723</Color>
-    <Color x:Key="OffBlack">#4E342E</Color>
-    <Color x:Key="Surface">#FEFCFA</Color>
+    <Color x:Key="White">#FFFDFD</Color>
+    <Color x:Key="Black">#2C2525</Color>
+    <Color x:Key="OffBlack">#3D3333</Color>
+    <Color x:Key="Surface">#FFFDFD</Color>
 
     <!-- Warm Gray Scale -->
-    <Color x:Key="Gray50">#FDF8F3</Color>
-    <Color x:Key="Gray100">#FAF3EB</Color>
-    <Color x:Key="Gray200">#F0E6D6</Color>
-    <Color x:Key="Gray300">#E0D0BC</Color>
-    <Color x:Key="Gray400">#C4B09C</Color>
-    <Color x:Key="Gray500">#A08B78</Color>
-    <Color x:Key="Gray600">#7D6B5A</Color>
-    <Color x:Key="Gray700">#5D4E3E</Color>
-    <Color x:Key="Gray800">#4E3E30</Color>
-    <Color x:Key="Gray900">#3E2E20</Color>
-    <Color x:Key="Gray950">#2C1E12</Color>
+    <Color x:Key="Gray50">#FFFDFD</Color>
+    <Color x:Key="Gray100">#FDF5F5</Color>
+    <Color x:Key="Gray200">#F5E8E8</Color>
+    <Color x:Key="Gray300">#E8D4D4</Color>
+    <Color x:Key="Gray400">#D4B8B8</Color>
+    <Color x:Key="Gray500">#B89292</Color>
+    <Color x:Key="Gray600">#9C7575</Color>
+    <Color x:Key="Gray700">#7D5A5A</Color>
+    <Color x:Key="Gray800">#5C4444</Color>
+    <Color x:Key="Gray900">#3D3333</Color>
+    <Color x:Key="Gray950">#2C2525</Color>
 
     <!-- Brushes -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
@@ -58,7 +58,6 @@
     <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
     <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>
     <SolidColorBrush x:Key="Gray300Brush" Color="{StaticResource Gray300}"/>
-    <SolidColorBrush x:Key="Gray400Brush" Color="{StaticResource Gray400}"/>
     <SolidColorBrush x:Key="Gray500Brush" Color="{StaticResource Gray500}"/>
     <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
     <SolidColorBrush x:Key="Gray700Brush" Color="{StaticResource Gray700}"/>

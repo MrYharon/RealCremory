@@ -143,5 +143,92 @@ namespace Cremory.API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        [HttpGet("stock")]
+        public async Task<ActionResult<IEnumerable<ProductStockDto>>> GetStock()
+        {
+            var products = await _context.Products
+                .Where(p => p.IsActive)
+                .OrderBy(p => p.DisplayOrder)
+                .Select(p => new ProductStockDto
+                {
+                    ProductId = p.ProductId,
+                    Name = p.Name,
+                    Variant = p.Variant,
+                    Flavor = p.Flavor,
+                    CurrentStock = p.CurrentStock,
+                    LowStockThreshold = p.LowStockThreshold,
+                    IsLowStock = p.CurrentStock <= p.LowStockThreshold
+                })
+                .ToListAsync();
+
+            return Ok(products);
+        }
+
+        [HttpPut("{id}/stock")]
+        public async Task<IActionResult> UpdateStock(int id, [FromBody] UpdateStockRequest request)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+                return NotFound(new { message = $"Product with ID {id} not found." });
+
+            if (request.NewStock < 0)
+                return BadRequest(new { message = "Stock cannot be negative." });
+
+            product.CurrentStock = request.NewStock;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpPut("stock/batch")]
+        public async Task<IActionResult> BatchUpdateStock([FromBody] List<BatchStockUpdate> updates)
+        {
+            var errors = new List<string>();
+            foreach (var update in updates)
+            {
+                var product = await _context.Products.FindAsync(update.ProductId);
+                if (product == null)
+                {
+                    errors.Add($"Product {update.ProductId} not found.");
+                    continue;
+                }
+                if (update.NewStock < 0)
+                {
+                    errors.Add($"Stock for product {update.ProductId} cannot be negative.");
+                    continue;
+                }
+                product.CurrentStock = update.NewStock;
+            }
+
+            await _context.SaveChangesAsync();
+
+            if (errors.Count > 0)
+                return Ok(new { updated = updates.Count - errors.Count, errors });
+
+            return NoContent();
+        }
+    }
+
+    public class ProductStockDto
+    {
+        public int ProductId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string? Variant { get; set; }
+        public string? Flavor { get; set; }
+        public int CurrentStock { get; set; }
+        public int LowStockThreshold { get; set; }
+        public bool IsLowStock { get; set; }
+    }
+
+    public class UpdateStockRequest
+    {
+        public int NewStock { get; set; }
+    }
+
+    public class BatchStockUpdate
+    {
+        public int ProductId { get; set; }
+        public int NewStock { get; set; }
     }
 }

@@ -41,8 +41,38 @@
 
                     <VerticalStackLayout Spacing="4">
                         <Label Text="Quick Add from Menu" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
-                        <FlexLayout x:Name="ProductChips" Wrap="Wrap" AlignItems="Start"
-                                    JustifyContent="Start" Direction="Row" AlignContent="Start"/>
+                        <CollectionView x:Name="ProductStepperView" HeightRequest="200">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="local:ProductStepperItem">
+                                    <Border StrokeShape="RoundRectangle 10" StrokeThickness="1"
+                                            Stroke="{StaticResource Gray200}" Padding="10,6" Margin="0,0,0,6"
+                                            BackgroundColor="{StaticResource Gray50}">
+                                        <Grid ColumnDefinitions="*, Auto, Auto, Auto" ColumnSpacing="8">
+                                            <Label Text="{Binding DisplayName}" FontSize="13"
+                                                   TextColor="{StaticResource Gray800}" VerticalOptions="Center"/>
+                                            <Button Grid.Column="1" Text="−" FontSize="18" FontAttributes="Bold"
+                                                    BackgroundColor="{StaticResource Gray200}"
+                                                    TextColor="{StaticResource Gray700}"
+                                                    CornerRadius="20" WidthRequest="40" HeightRequest="40" Padding="0"
+                                                    Clicked="OnStepperMinus"/>
+                                            <Border Grid.Column="2" StrokeShape="RoundRectangle 8" Padding="8,4"
+                                                    BackgroundColor="{StaticResource PrimaryLight}"
+                                                    Stroke="{StaticResource Primary}" StrokeThickness="1"
+                                                    VerticalOptions="Center" MinimumWidthRequest="44">
+                                                <Label Text="{Binding Quantity}" FontSize="18" FontAttributes="Bold"
+                                                       TextColor="{StaticResource PrimaryDark}"
+                                                       HorizontalOptions="Center"/>
+                                            </Border>
+                                            <Button Grid.Column="3" Text="+" FontSize="18" FontAttributes="Bold"
+                                                    BackgroundColor="{StaticResource Primary}"
+                                                    TextColor="White"
+                                                    CornerRadius="20" WidthRequest="40" HeightRequest="40" Padding="0"
+                                                    Clicked="OnStepperPlus"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="4">
@@ -73,10 +103,17 @@
 
             <Label x:Name="StatusLabel" FontSize="13" HorizontalTextAlignment="Center"/>
 
-            <Button x:Name="SaveButton" Text="Create Order"
-                    Clicked="OnSaveClicked"
-                    BackgroundColor="{StaticResource Success}" TextColor="White"
-                    FontAttributes="Bold" HeightRequest="48" FontSize="15"/>
+            <Grid HeightRequest="48">
+                <Button x:Name="SaveButton" Text="Create Order"
+                        Clicked="OnSaveClicked"
+                        BackgroundColor="{StaticResource Success}" TextColor="White"
+                        FontAttributes="Bold" HeightRequest="48" FontSize="15"/>
+                <Border x:Name="SaveLoadingOverlay" IsVisible="False"
+                        StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Success}"
+                        Stroke="Transparent" HeightRequest="48">
+                    <ActivityIndicator IsRunning="True" Color="White" HeightRequest="24" WidthRequest="24"/>
+                </Border>
+            </Grid>
 
             <Button Text="Cancel"
                     Clicked="OnCancelClicked"

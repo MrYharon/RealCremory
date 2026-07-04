@@ -84,6 +84,7 @@ namespace Cremory.API.Controllers
             order.UpdatedAt = DateTime.UtcNow;
 
             _context.Orders.Add(order);
+            await DeductStockFromItems(order.Items);
             await _context.SaveChangesAsync();
 
             await _hubContext.Clients.All.SendAsync("OrderCreated", order);
@@ -102,6 +103,7 @@ namespace Cremory.API.Controllers
             order.OrderId = GenerateOrderId(order.Source);
 
             _context.Orders.Add(order);
+            await DeductStockFromItems(order.Items);
             await _context.SaveChangesAsync();
 
             await _hubContext.Clients.All.SendAsync("OrderCreated", order);
@@ -176,6 +178,59 @@ namespace Cremory.API.Controllers
 
             var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
             return $"{prefix}-{timestamp}";
+        }
+
+        private async Task DeductStockFromItems(string itemsText)
+        {
+            if (string.IsNullOrWhiteSpace(itemsText))
+                return;
+
+            var products = await _context.Products.Where(p => p.IsActive).ToListAsync();
+            var textLower = itemsText.ToLowerInvariant();
+            var updated = new HashSet<int>();
+
+            foreach (var product in products)
+            {
+                var matchNames = new[]
+                {
+                    product.Name?.ToLowerInvariant(),
+                    product.Variant?.ToLowerInvariant(),
+                    product.Flavor?.ToLowerInvariant()
+                }.Where(n => !string.IsNullOrEmpty(n)).Distinct();
+
+                if (!matchNames.Any(name => textLower.Contains(name)))
+                    continue;
+
+                var qty = ParseQuantityPrefix(textLower, product);
+                if (qty > 0 && !updated.Contains(product.ProductId))
+                {
+                    product.CurrentStock = Math.Max(0, product.CurrentStock - qty);
+                    updated.Add(product.ProductId);
+                }
+            }
+        }
+
+        private static int ParseQuantityPrefix(string textLower, Product product)
+        {
+            var keywords = new[]
+            {
+                product.Flavor?.ToLowerInvariant(),
+                product.Variant?.ToLowerInvariant(),
+                product.Name?.ToLowerInvariant()
+            }.Where(n => !string.IsNullOrEmpty(n)).Distinct();
+
+            foreach (var keyword in keywords)
+            {
+                var idx = textLower.IndexOf(keyword);
+                if (idx < 0) continue;
+
+                var before = idx > 3 ? textLower[(idx - 3)..idx] : textLower[..idx];
+                var numMatch = System.Text.RegularExpressions.Regex.Match(before, @"(\d+)\s*[xX]?\s*$");
+                if (numMatch.Success && int.TryParse(numMatch.Groups[1].Value, out var qty))
+                    return qty;
+            }
+
+            return 1;
         }
     }
 

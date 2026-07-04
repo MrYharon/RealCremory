@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Cremory.API.Data;
 using Cremory.API.Hubs;
 using Cremory.API.Models;
@@ -107,6 +108,7 @@ namespace Cremory.API.Controllers
                     order.OrderId = GenerateOrderId(order.Source);
 
                     _context.Orders.Add(order);
+                    await DeductStockFromItems(order.Items);
                     await _context.SaveChangesAsync();
 
                     await _hubContext.Clients.All.SendAsync("OrderCreated", order);
@@ -126,6 +128,47 @@ namespace Cremory.API.Controllers
             };
             var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
             return $"{prefix}-{timestamp}";
+        }
+
+        private async Task DeductStockFromItems(string itemsText)
+        {
+            if (string.IsNullOrWhiteSpace(itemsText))
+                return;
+
+            var products = await _context.Products.Where(p => p.IsActive).ToListAsync();
+            var textLower = itemsText.ToLowerInvariant();
+            var updated = new HashSet<int>();
+
+            foreach (var product in products)
+            {
+                var matchNames = new[]
+                {
+                    product.Name?.ToLowerInvariant(),
+                    product.Variant?.ToLowerInvariant(),
+                    product.Flavor?.ToLowerInvariant()
+                }.Where(n => !string.IsNullOrEmpty(n)).Distinct();
+
+                if (!matchNames.Any(name => textLower.Contains(name)))
+                    continue;
+
+                var qty = 1;
+                foreach (var keyword in matchNames)
+                {
+                    var idx = textLower.IndexOf(keyword);
+                    if (idx < 0) continue;
+                    var start = Math.Max(0, idx - 4);
+                    var before = textLower[start..idx];
+                    var numMatch = System.Text.RegularExpressions.Regex.Match(before, @"(\d+)\s*[xX]?\s*$");
+                    if (numMatch.Success && int.TryParse(numMatch.Groups[1].Value, out var parsed))
+                    { qty = parsed; break; }
+                }
+
+                if (qty > 0 && !updated.Contains(product.ProductId))
+                {
+                    product.CurrentStock = Math.Max(0, product.CurrentStock - qty);
+                    updated.Add(product.ProductId);
+                }
+            }
         }
 
         private bool IsValidSignature(string rawBody, string? signatureHeader)

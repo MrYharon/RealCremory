@@ -1,12 +1,21 @@
+using System.Collections.ObjectModel;
 using Cremory.App.Models;
 using Cremory.App.Services;
 
 namespace Cremory.App
 {
+    public class ProductStepperItem
+    {
+        public int ProductId { get; set; }
+        public string DisplayName { get; set; } = string.Empty;
+        public decimal BasePrice { get; set; }
+        public int Quantity { get; set; }
+    }
+
     public partial class WalkInOrderFormPage : ContentPage
     {
         private readonly ApiService _api;
-        private readonly List<Product> _products = [];
+        private readonly ObservableCollection<ProductStepperItem> _stepperItems = [];
         private decimal _quickTotal;
 
         public event EventHandler<OrderDto>? OrderCreated;
@@ -15,6 +24,7 @@ namespace Cremory.App
         {
             InitializeComponent();
             _api = api;
+            ProductStepperView.ItemsSource = _stepperItems;
         }
 
         protected override async void OnAppearing()
@@ -28,83 +38,76 @@ namespace Cremory.App
             try
             {
                 var menu = await _api.GetMenuAsync();
-                _products.Clear();
-                ProductChips.Children.Clear();
+                _stepperItems.Clear();
 
                 foreach (var group in menu)
                 {
                     foreach (var item in group.Items)
                     {
-                        _products.Add(new Product
+                        _stepperItems.Add(new ProductStepperItem
                         {
                             ProductId = item.ProductId,
-                            Name = $"{item.Variant} {item.Flavor}".Trim(),
+                            DisplayName = $"{item.Variant} {item.Flavor}".Trim(),
                             BasePrice = item.BasePrice
                         });
-
-                        var chip = new Border
-                        {
-                            StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 16 },
-                            BackgroundColor = (Color)Application.Current!.Resources["Gray100"],
-                            Stroke = (Color)Application.Current!.Resources["Gray300"],
-                            StrokeThickness = 1,
-                            Padding = new Thickness(12, 6),
-                            Margin = new Thickness(0, 0, 6, 6),
-                            HeightRequest = 34
-                        };
-
-                        var label = new Label
-                        {
-                            Text = $"{item.Variant} {item.Flavor}".Trim(),
-                            FontSize = 12,
-                            TextColor = (Color)Application.Current!.Resources["Gray800"]
-                        };
-
-                        var tap = new TapGestureRecognizer();
-                        var capturedProduct = _products[^1];
-                        tap.Tapped += (s, e) => OnProductTapped(capturedProduct);
-                        label.GestureRecognizers.Add(tap);
-
-                        chip.Content = label;
-                        ProductChips.Children.Add(chip);
                     }
-                }
-
-                if (_products.Count == 0)
-                {
-                    ProductChips.Children.Add(new Label
-                    {
-                        Text = "No products available",
-                        FontSize = 12,
-                        TextColor = (Color)Application.Current!.Resources["Gray400"]
-                    });
                 }
             }
             catch
             {
-                ProductChips.Children.Add(new Label
-                {
-                    Text = "Could not load products",
-                    FontSize = 12,
-                    TextColor = (Color)Application.Current!.Resources["Gray500"]
-                });
+                await DisplayAlert("Error", "Failed to load menu.", "OK");
             }
         }
 
-        private void OnProductTapped(Product product)
+        private void OnStepperPlus(object sender, EventArgs e)
         {
-            var currentItems = ItemsEditor?.Text?.Trim();
-            var newItem = product.Name;
-            if (!string.IsNullOrWhiteSpace(currentItems))
-                newItem = $"{currentItems}\n• {product.Name}";
-            else
-                newItem = $"• {product.Name}";
+            var btn = sender as Button;
+            var item = btn?.BindingContext as ProductStepperItem;
+            if (item == null) return;
 
-            if (ItemsEditor != null)
-                ItemsEditor.Text = newItem;
+            item.Quantity++;
+            RefreshItemsEditor();
 
-            _quickTotal += product.BasePrice;
-            if (PriceEntry != null && string.IsNullOrWhiteSpace(PriceEntry.Text?.Trim()))
+            var idx = _stepperItems.IndexOf(item);
+            if (idx >= 0)
+            {
+                _stepperItems.RemoveAt(idx);
+                _stepperItems.Insert(idx, item);
+            }
+        }
+
+        private void OnStepperMinus(object sender, EventArgs e)
+        {
+            var btn = sender as Button;
+            var item = btn?.BindingContext as ProductStepperItem;
+            if (item == null || item.Quantity <= 0) return;
+
+            item.Quantity--;
+            RefreshItemsEditor();
+
+            var idx = _stepperItems.IndexOf(item);
+            if (idx >= 0)
+            {
+                _stepperItems.RemoveAt(idx);
+                _stepperItems.Insert(idx, item);
+            }
+        }
+
+        private void RefreshItemsEditor()
+        {
+            var selected = _stepperItems.Where(s => s.Quantity > 0).ToList();
+            if (selected.Count == 0)
+            {
+                ItemsEditor.Text = "";
+                PriceEntry.Text = "";
+                return;
+            }
+
+            var lines = selected.Select(s => $"{s.Quantity}x {s.DisplayName}");
+            ItemsEditor.Text = string.Join("\n", lines);
+
+            _quickTotal = selected.Sum(s => s.BasePrice * s.Quantity);
+            if (string.IsNullOrWhiteSpace(PriceEntry.Text?.Trim()))
             {
                 PriceEntry.Text = _quickTotal.ToString("F2");
             }
@@ -135,7 +138,8 @@ namespace Cremory.App
             var contact = ContactEntry?.Text?.Trim();
 
             SaveButton.IsEnabled = false;
-            SaveButton.Text = "Saving...";
+            SaveButton.IsVisible = false;
+            SaveLoadingOverlay.IsVisible = true;
             StatusLabel.Text = "";
 
             try
@@ -162,7 +166,8 @@ namespace Cremory.App
             finally
             {
                 SaveButton.IsEnabled = true;
-                SaveButton.Text = "Create Order";
+                SaveButton.IsVisible = true;
+                SaveLoadingOverlay.IsVisible = false;
             }
         }
 

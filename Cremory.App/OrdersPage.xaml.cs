@@ -1,14 +1,23 @@
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 using Cremory.App.Models;
 using Cremory.App.Services;
 
 namespace Cremory.App
 {
+    public class KitchenItemGroup
+    {
+        public string ItemName { get; set; } = string.Empty;
+        public int TotalQty { get; set; }
+        public int OrderCount { get; set; }
+    }
+
     public partial class OrdersPage : ContentPage
     {
         private readonly ApiService _api;
         private readonly SignalRService _signalR;
         private readonly ObservableCollection<OrderSummary> _allOrders = [];
+        private readonly ObservableCollection<KitchenItemGroup> _kitchenItems = [];
         private string _activeFilter = "All";
         private string _searchText = "";
         private bool _showArchives;
@@ -18,6 +27,7 @@ namespace Cremory.App
         private int _totalCount;
         private bool _hasMorePages = true;
         private bool _isLoadingMore;
+        private bool _showKitchenView;
 
         public ObservableCollection<OrderSummary> FilteredOrders { get; set; } = [];
         public bool IsLoading { get; set; }
@@ -32,6 +42,7 @@ namespace Cremory.App
             BindingContext = this;
             _api = api;
             _signalR = signalR;
+            KitchenCollectionView.ItemsSource = _kitchenItems;
             DateRangePicker.SelectedIndex = 3;
             ArchiveStatusPicker.SelectedIndex = 0;
         }
@@ -67,11 +78,29 @@ namespace Cremory.App
             _signalR.OrderDeleted -= OnOrderDeleted;
         }
 
-        private void OnOrderCreated(OrderDto dto)
+        private async void OnOrderCreated(OrderDto dto)
         {
             var summary = OrderSummary.FromDto(dto);
             _allOrders.Add(summary);
             ApplyFilter();
+            await ShowNewOrderAlert(summary);
+        }
+
+        private async Task ShowNewOrderAlert(OrderSummary order)
+        {
+            AlertTitle.Text = "New Order Received!";
+            AlertMessage.Text = $"{order.CustomerName} — {order.Items}";
+            NewOrderAlert.IsVisible = true;
+            NewOrderAlert.Opacity = 0;
+            await NewOrderAlert.FadeTo(1, 300, Easing.CubicOut);
+            await Task.Delay(5000);
+            await NewOrderAlert.FadeTo(0, 300, Easing.CubicIn);
+            NewOrderAlert.IsVisible = false;
+        }
+
+        private void OnDismissAlert(object sender, TappedEventArgs e)
+        {
+            NewOrderAlert.IsVisible = false;
         }
 
         private void OnOrderUpdated(OrderDto dto)
@@ -104,6 +133,9 @@ namespace Cremory.App
             {
                 IsLoading = true;
                 OnPropertyChanged(nameof(IsLoading));
+                SkeletonLoading.IsVisible = true;
+                OrdersCollectionView.IsVisible = false;
+                _ = AnimateSkeleton();
             });
 
             try
@@ -143,8 +175,23 @@ namespace Cremory.App
                 {
                     IsLoading = false;
                     OnPropertyChanged(nameof(IsLoading));
+                    SkeletonLoading.IsVisible = false;
+                    OrdersCollectionView.IsVisible = true;
                 });
             }
+        }
+
+        private bool _skeletonAnimating;
+        private async Task AnimateSkeleton()
+        {
+            if (_skeletonAnimating) return;
+            _skeletonAnimating = true;
+            while (SkeletonLoading.IsVisible)
+            {
+                await SkeletonLoading.FadeTo(0.4, 600, Easing.SinInOut);
+                await SkeletonLoading.FadeTo(1.0, 600, Easing.SinInOut);
+            }
+            _skeletonAnimating = false;
         }
 
         private async Task LoadMoreOrdersAsync()
@@ -291,9 +338,7 @@ namespace Cremory.App
             _showArchives = e.Value;
             ArchiveFilterBar.IsVisible = _showArchives;
             if (_showArchives)
-            {
                 ResetFilterChips();
-            }
             ApplyFilter();
         }
 
@@ -344,6 +389,11 @@ namespace Cremory.App
 
         private void OnFilterClicked(object sender, EventArgs e)
         {
+            if (_showKitchenView)
+            {
+                ToggleKitchenView();
+            }
+
             var button = sender as Button;
             if (button == null) return;
 
@@ -363,6 +413,96 @@ namespace Cremory.App
             ArchiveToggle.IsToggled = false;
             ArchiveFilterBar.IsVisible = false;
             ApplyFilter();
+        }
+
+        private void OnKitchenViewClicked(object sender, EventArgs e)
+        {
+            ToggleKitchenView();
+        }
+
+        private void ToggleKitchenView()
+        {
+            _showKitchenView = !_showKitchenView;
+
+            if (_showKitchenView)
+            {
+                KitchenViewBtn.Text = "Orders View";
+                KitchenViewBorder.BackgroundColor = (Color)Application.Current!.Resources["PrimaryDark"];
+                KitchenViewBorder.Stroke = Colors.Transparent;
+                KitchenViewBtn.TextColor = Colors.White;
+                KitchenViewBtn.FontAttributes = FontAttributes.Bold;
+
+                OrdersCollectionView.IsVisible = false;
+                KitchenCollectionView.IsVisible = true;
+                BuildKitchenAggregation();
+            }
+            else
+            {
+                KitchenViewBtn.Text = "Kitchen View";
+                KitchenViewBorder.BackgroundColor = Colors.Transparent;
+                KitchenViewBorder.Stroke = (Color)Application.Current!.Resources["Gray300"];
+                KitchenViewBtn.TextColor = (Color)Application.Current!.Resources["Gray600"];
+                KitchenViewBtn.FontAttributes = FontAttributes.None;
+
+                OrdersCollectionView.IsVisible = true;
+                KitchenCollectionView.IsVisible = false;
+            }
+        }
+
+        private void BuildKitchenAggregation()
+        {
+            var pendingOrders = _allOrders
+                .Where(o => o.Status == OrderStatus.Pending || o.Status == OrderStatus.Creating)
+                .ToList();
+
+            var itemCounts = new Dictionary<string, (int TotalQty, HashSet<string> OrderIds)>();
+
+            foreach (var order in pendingOrders)
+            {
+                var items = ParseOrderItems(order.Items);
+                foreach (var (name, qty) in items)
+                {
+                    if (!itemCounts.ContainsKey(name))
+                        itemCounts[name] = (0, []);
+                    var existing = itemCounts[name];
+                    itemCounts[name] = (existing.TotalQty + qty, existing.OrderIds);
+                    itemCounts[name].OrderIds.Add(order.OrderId);
+                }
+            }
+
+            _kitchenItems.Clear();
+            foreach (var kvp in itemCounts.OrderByDescending(x => x.Value.TotalQty))
+            {
+                _kitchenItems.Add(new KitchenItemGroup
+                {
+                    ItemName = kvp.Key,
+                    TotalQty = kvp.Value.TotalQty,
+                    OrderCount = kvp.Value.OrderIds.Count
+                });
+            }
+        }
+
+        private static List<(string Name, int Qty)> ParseOrderItems(string itemsText)
+        {
+            if (string.IsNullOrWhiteSpace(itemsText))
+                return [];
+
+            var result = new List<(string Name, int Qty)>();
+            var lines = itemsText.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var line in lines)
+            {
+                var trimmed = line.Trim().TrimStart('•', '-', '*');
+                if (string.IsNullOrWhiteSpace(trimmed)) continue;
+
+                var match = Regex.Match(trimmed, @"^(\d+)\s*[xX]?\s*(.+)$");
+                if (match.Success && int.TryParse(match.Groups[1].Value, out var qty))
+                    result.Add((match.Groups[2].Value.Trim(), qty));
+                else
+                    result.Add((trimmed, 1));
+            }
+
+            return result;
         }
     }
 }

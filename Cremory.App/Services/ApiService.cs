@@ -153,6 +153,38 @@ namespace Cremory.App.Services
             return await HttpGetAsync<List<MenuCategoryDto>>("Products/menu", "menu") ?? [];
         }
 
+        public async Task<List<ProductStockDto>> GetProductStockAsync()
+        {
+            return await HttpGetAsync<List<ProductStockDto>>("Products/stock", "stock") ?? [];
+        }
+
+        public async Task<bool> UpdateProductStockAsync(int productId, int newStock)
+        {
+            try
+            {
+                var payload = new { newStock };
+                var response = await _httpClient.PutAsJsonAsync($"Products/{productId}/stock", payload, JsonOptions);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> BatchUpdateStockAsync(List<ProductStockUpdate> updates)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync("Products/stock/batch", updates, JsonOptions);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public async Task<OrderDto?> CreateWalkInOrderAsync(string customerName, string items, decimal totalPrice, string? contact)
         {
             try

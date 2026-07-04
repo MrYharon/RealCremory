@@ -8,10 +8,10 @@
     Title="Cremory">
 
     <Shell.FlyoutHeader>
-        <Grid HeightRequest="160" BackgroundColor="#5D4037" Padding="20">
+        <Grid HeightRequest="160" BackgroundColor="#C97586" Padding="20">
             <VerticalStackLayout VerticalOptions="End" Spacing="4">
                 <Label Text="The Cremory" TextColor="White" FontSize="28" FontAttributes="Bold" FontFamily="OpenSansSemibold"/>
-                <Label Text="Bakery POS" TextColor="#D7CCC8" FontSize="14"/>
+                <Label Text="Bakery POS" TextColor="#FCE4EC" FontSize="14"/>
             </VerticalStackLayout>
         </Grid>
     </Shell.FlyoutHeader>

@@ -45,6 +45,14 @@ namespace Cremory.API.Models
         [Column("DISPLAY_ORDER")]
         public int DisplayOrder { get; set; }
 
+        [Column("CURRENT_STOCK")]
+        [Range(0, int.MaxValue)]
+        public int CurrentStock { get; set; }
+
+        [Column("LOW_STOCK_THRESHOLD")]
+        [Range(0, int.MaxValue)]
+        public int LowStockThreshold { get; set; } = 10;
+
         [ForeignKey(nameof(CategoryId))]
         public Category? Category { get; set; }
     }
