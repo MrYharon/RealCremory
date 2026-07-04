@@ -9,10 +9,22 @@
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="12">
 
-            <VerticalStackLayout Spacing="4">
-                <Label Text="New Walk-in Order" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
-                <Label Text="Create an order directly" FontSize="12" TextColor="{StaticResource Gray500}"/>
-            </VerticalStackLayout>
+            <Grid ColumnDefinitions="*, Auto">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="New Walk-in Order" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
+                    <Label Text="Create an order directly" FontSize="12" TextColor="{StaticResource Gray500}"/>
+                </VerticalStackLayout>
+                <Border Grid.Column="1" StrokeShape="RoundRectangle 6"
+                        BackgroundColor="#FDF5F5" Stroke="#E8D4D4" StrokeThickness="1"
+                        Padding="8,4" VerticalOptions="Start">
+                    <Label Text="Copy Template" FontSize="10" FontAttributes="Bold"
+                           TextColor="#7D5A5A" Padding="4,0">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCopyTemplate"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Border>
+            </Grid>
 
             <Border StrokeShape="RoundRectangle 10" BackgroundColor="White" Padding="14"
                     Stroke="{StaticResource Gray200}">
@@ -30,19 +42,7 @@
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="4">
-                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="6">
-                            <Label Text="Items" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
-                            <Border Grid.Column="1" StrokeShape="RoundRectangle 6"
-                                    BackgroundColor="#FDF5F5" Stroke="#E8D4D4" StrokeThickness="1"
-                                    Padding="8,2">
-                                <Label Text="📋 Copy Template" FontSize="10" FontAttributes="Bold"
-                                       TextColor="#7D5A5A" Padding="4,0">
-                                    <Label.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnCopyTemplate"/>
-                                    </Label.GestureRecognizers>
-                                </Label>
-                            </Border>
-                        </Grid>
+                        <Label Text="Items" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
                         <Border StrokeShape="RoundRectangle 8" Padding="10" Stroke="{StaticResource Gray200}"
                                 BackgroundColor="{StaticResource Gray50}">
                             <Editor x:Name="ItemsEditor" Placeholder="e.g. 2x Croissant, 1x Ube Cake"

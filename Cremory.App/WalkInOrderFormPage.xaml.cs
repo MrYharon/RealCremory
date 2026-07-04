@@ -184,9 +184,9 @@ namespace Cremory.App
             var label = sender as Label;
             if (label != null)
             {
-                label.Text = "✓ Copied!";
+                label.Text = "Copied!";
                 await Task.Delay(1500);
-                label.Text = "📋 Copy Template";
+                label.Text = "Copy Template";
             }
         }
     }

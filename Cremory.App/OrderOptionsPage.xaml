@@ -37,7 +37,7 @@
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnEditTapped"/>
                     </Border.GestureRecognizers>
-                    <Label Text="✏️  Edit Order" FontSize="15" FontAttributes="Bold"
+                    <Label Text="Edit Order" FontSize="15" FontAttributes="Bold"
                            TextColor="#2C2525"/>
                 </Border>
 
@@ -47,7 +47,7 @@
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnCancelTapped"/>
                     </Border.GestureRecognizers>
-                    <Label Text="🚫  Cancel Order" FontSize="15" FontAttributes="Bold"
+                    <Label Text="Cancel Order" FontSize="15" FontAttributes="Bold"
                            TextColor="#2C2525"/>
                 </Border>
 
@@ -57,7 +57,7 @@
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnDeleteTapped"/>
                     </Border.GestureRecognizers>
-                    <Label Text="🗑️  Delete Order" FontSize="15" FontAttributes="Bold"
+                    <Label Text="Delete Order" FontSize="15" FontAttributes="Bold"
                            TextColor="#E27575"/>
                 </Border>
 

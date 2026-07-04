@@ -9,7 +9,7 @@
              Title="Orders"
              BackgroundColor="#FFFDFD">
 
-    <Grid RowDefinitions="Auto, Auto, Auto, Auto, *" Padding="16,14,16,0" RowSpacing="12">
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, *" Padding="16,14,16,0" RowSpacing="10">
 
         <Border x:Name="NewOrderAlert" Grid.Row="0"
                 StrokeShape="RoundRectangle 10"
@@ -23,7 +23,7 @@
                            TextColor="White" Opacity="0.85"
                            LineBreakMode="TailTruncation" MaxLines="1"/>
                 </VerticalStackLayout>
-                <Label Grid.Column="1" Text="✕" FontSize="14" TextColor="White"
+                <Label Grid.Column="1" Text="X" FontSize="14" TextColor="White"
                        VerticalOptions="Center" Padding="6">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnDismissAlert"/>
@@ -55,11 +55,17 @@
             </HorizontalStackLayout>
         </Grid>
 
-        <Border Grid.Row="2"
+        <SearchBar Grid.Row="2" x:Name="OrderSearchBar"
+                   Placeholder="Search orders..." TextChanged="OnSearchTextChanged"
+                   BackgroundColor="#FDF5F5" CancelButtonColor="#B89292"
+                   TextColor="#2C2525" PlaceholderColor="#B89292"
+                   FontSize="13" HeightRequest="36"/>
+
+        <Border Grid.Row="3"
                 StrokeShape="RoundRectangle 10"
                 BackgroundColor="#FDF5F5" Stroke="Transparent"
                 Padding="6">
-            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="6">
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="4">
                 <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
                     <HorizontalStackLayout Spacing="4">
                         <Border x:Name="FilterAllBorder" StrokeShape="RoundRectangle 12"
@@ -92,17 +98,13 @@
                         <Border x:Name="KitchenViewBorder" StrokeShape="RoundRectangle 12"
                                 BackgroundColor="Transparent"
                                 Stroke="#E8D4D4" StrokeThickness="1">
-                            <Button x:Name="KitchenViewBtn" Text="🍳 Kitchen" Clicked="OnKitchenViewClicked"
+                            <Button x:Name="KitchenViewBtn" Text="Kitchen" Clicked="OnKitchenViewClicked"
                                     BackgroundColor="Transparent" TextColor="#B89292"
                                     FontSize="11" Padding="12,0" HeightRequest="28"/>
                         </Border>
                     </HorizontalStackLayout>
                 </ScrollView>
-                <SearchBar x:Name="OrderSearchBar" Grid.Column="1"
-                           Placeholder="Search..." TextChanged="OnSearchTextChanged"
-                           BackgroundColor="White" HeightRequest="30" FontSize="11"
-                           CancelButtonColor="#B89292"/>
-                <HorizontalStackLayout Grid.Column="2" Spacing="4" VerticalOptions="Center">
+                <HorizontalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center" Padding="2,0">
                     <Label Text="Arch." FontSize="10" TextColor="#B89292" VerticalOptions="Center"/>
                     <Switch x:Name="ArchiveToggle" IsToggled="False"
                             Toggled="OnToggleArchives" VerticalOptions="Center" Scale="0.6"/>
@@ -110,7 +112,7 @@
             </Grid>
         </Border>
 
-        <Border Grid.Row="3" x:Name="ArchiveFilterBar"
+        <Border Grid.Row="4" x:Name="ArchiveFilterBar"
                 StrokeShape="RoundRectangle 10"
                 BackgroundColor="#FDF5F5" Stroke="Transparent"
                 Padding="8" IsVisible="False">
@@ -143,7 +145,7 @@
             </Grid>
         </Border>
 
-        <RefreshView Grid.Row="4" x:Name="OrdersRefreshView" Refreshing="OnRefreshing"
+        <RefreshView Grid.Row="5" x:Name="OrdersRefreshView" Refreshing="OnRefreshing"
                       RefreshColor="#E27575">
             <Grid>
                 <CollectionView x:Name="OrdersCollectionView"
@@ -155,7 +157,7 @@
                                              Spacing="8" Padding="0,80">
                             <Label Text="No orders yet" FontSize="20" FontAttributes="Bold"
                                    TextColor="#D4B8B8" HorizontalTextAlignment="Center"/>
-                            <Label Text="Tap the + button to create\nyour first order"
+                            <Label Text="Tap the + button to create your first order"
                                    FontSize="13" TextColor="#D4B8B8"
                                    HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
