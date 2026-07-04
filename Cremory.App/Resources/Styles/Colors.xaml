@@ -13,6 +13,8 @@
     <Color x:Key="PrimaryVeryLight">#FEF2F2</Color>
 
     <!-- Accent Colors -->
+    <Color x:Key="PastelMint">#C4FBD5</Color>
+    <Color x:Key="SecondaryText">#554B4B</Color>
     <Color x:Key="Success">#81B29A</Color>
     <Color x:Key="SuccessLight">#D4E8D8</Color>
     <Color x:Key="Warning">#E07A5F</Color>
@@ -46,6 +48,7 @@
     <!-- Brushes -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
     <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDark}"/>
+    <SolidColorBrush x:Key="PastelMintBrush" Color="{StaticResource PastelMint}"/>
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource Success}"/>
     <SolidColorBrush x:Key="SuccessLightBrush" Color="{StaticResource SuccessLight}"/>
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource Warning}"/>

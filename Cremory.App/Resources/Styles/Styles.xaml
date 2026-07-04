@@ -104,6 +104,24 @@
         <Setter Property="FontSize" Value="14" />
     </Style>
 
+    <Style TargetType="Label" x:Key="PrimaryLabel">
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="FontFamily" Value="OpenSansSemibold"/>
+        <Setter Property="TextColor" Value="#2C2525"/>
+    </Style>
+
+    <Style TargetType="Label" x:Key="SecondaryLabel">
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="FontFamily" Value="OpenSansRegular"/>
+        <Setter Property="TextColor" Value="#554B4B"/>
+    </Style>
+
+    <Style TargetType="Label" x:Key="MetaLabel">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontFamily" Value="OpenSansRegular"/>
+        <Setter Property="Opacity" Value="0.6"/>
+    </Style>
+
     <Style TargetType="Label" x:Key="Headline">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
         <Setter Property="FontSize" Value="32" />

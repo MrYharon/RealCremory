@@ -81,11 +81,11 @@
         {
             get => Status switch
             {
-                OrderStatus.Pending => "#EF6C00",
-                OrderStatus.Creating => "#8D6E63",
-                OrderStatus.Completed => "#2E7D32",
-                OrderStatus.Cancelled => "#9E9E9E",
-                _ => "#9E9E9E"
+                OrderStatus.Pending => "#FBC4C4",
+                OrderStatus.Creating => "#E27575",
+                OrderStatus.Completed => "#C4FBD5",
+                OrderStatus.Cancelled => "#B89292",
+                _ => "#B89292"
             };
         }
 
@@ -139,17 +139,17 @@
 
         public string AvatarColor
         {
-            get => IsJustReceived ? "#C62828" : "#8D6E63";
+            get => IsJustReceived ? "#E27575" : "#B89292";
         }
 
         public string BorderColor
         {
-            get => IsJustReceived ? "#C62828" : Status switch
+            get => IsJustReceived ? "#E27575" : Status switch
             {
-                OrderStatus.Pending => "#EF6C00",
-                OrderStatus.Creating => "#8D6E63",
-                OrderStatus.Completed => "#2E7D32",
-                OrderStatus.Cancelled => "#9E9E9E",
+                OrderStatus.Pending => "#F0E0E0",
+                OrderStatus.Creating => "#FBC4C4",
+                OrderStatus.Completed => "#C4FBD5",
+                OrderStatus.Cancelled => "#E0D0D0",
                 _ => "#E0D0BC"
             };
         }

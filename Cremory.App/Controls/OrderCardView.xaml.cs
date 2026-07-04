@@ -12,14 +12,31 @@ namespace Cremory.App.Controls
 
         private OrderSummary? Order => BindingContext as OrderSummary;
 
-        private async void OnCardTapped(object? sender, EventArgs e)
+        private async void OnCardDoubleTapped(object? sender, EventArgs e)
         {
             var order = Order;
             if (order == null) return;
-            var page = GetCurrentPage();
-            if (page == null) return;
-            var detail = new OrderDetailPage(order, order.CreatedAtUtc, order.UpdatedAtUtc);
-            await page.Navigation.PushModalAsync(new NavigationPage(detail));
+
+            var next = OrderSummary.NextStatus(order.Status);
+            if (next == null) return;
+
+            try
+            {
+                var api = App.ApiService;
+                if (api == null) return;
+                var success = await api.UpdateOrderStatusAsync(order.OrderId, next.Value);
+
+                if (success)
+                {
+                    order.Status = next.Value;
+                    CardBorder.Stroke = Color.FromArgb(order.BorderColor);
+                    await CardBorder.FadeTo(0.85, 100, Easing.CubicOut);
+                    await CardBorder.FadeTo(1.0, 200, Easing.CubicIn);
+                }
+            }
+            catch
+            {
+            }
         }
 
         private async void OnActionClicked(object sender, EventArgs e)
@@ -36,18 +53,16 @@ namespace Cremory.App.Controls
                 if (api == null) return;
                 var success = await api.UpdateOrderStatusAsync(order.OrderId, next.Value);
 
-                if (success && next.Value == OrderStatus.Completed)
+                if (success)
                 {
-                    var page = GetCurrentPage();
-                    if (page != null)
-                        await page.DisplayAlert("Order Complete", $"{order.OrderId} completed.", "OK");
+                    order.Status = next.Value;
+                    CardBorder.Stroke = Color.FromArgb(order.BorderColor);
+                    await CardBorder.FadeTo(0.85, 100, Easing.CubicOut);
+                    await CardBorder.FadeTo(1.0, 200, Easing.CubicIn);
                 }
             }
             catch
             {
-                var page = GetCurrentPage();
-                if (page != null)
-                    await page.DisplayAlert("Error", "Failed to update order.", "OK");
             }
         }
 
@@ -74,8 +89,9 @@ namespace Cremory.App.Controls
             }
             catch
             {
-                if (page != null)
-                    await page.DisplayAlert("Error", "Failed to cancel order.", "OK");
+                var page2 = GetCurrentPage();
+                if (page2 != null)
+                    await page2.DisplayAlert("Error", "Failed to cancel order.", "OK");
             }
         }
 
@@ -117,9 +133,14 @@ namespace Cremory.App.Controls
 
             var (success, error) = await api.DeleteOrderAsync(order.OrderId);
             if (success)
-                await page.DisplayAlert("Deleted", $"Order {order.OrderId} deleted.", "OK");
+            {
+            }
             else
-                await page.DisplayAlert("Error", $"Failed to delete: {error}", "OK");
+            {
+                var page2 = GetCurrentPage();
+                if (page2 != null)
+                    await page2.DisplayAlert("Error", $"Failed to delete: {error}", "OK");
+            }
         }
 
         private static Page? GetCurrentPage()
