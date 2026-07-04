@@ -9,3 +9,4 @@ namespace Cremory.API.Models
         public string AppSecret { get; set; } = string.Empty;
     }
 }
+
