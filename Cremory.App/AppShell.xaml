@@ -6,6 +6,9 @@
     xmlns:local="clr-namespace:Cremory.App"
     Shell.FlyoutBehavior="Flyout"
     Shell.FlyoutBackgroundColor="#FFFDFD"
+    Shell.ForegroundColor="#2C2525"
+    Shell.UnselectedColor="#7D5A5A"
+    Shell.TitleColor="#2C2525"
     Title="Cremory">
 
     <Shell.FlyoutHeader>

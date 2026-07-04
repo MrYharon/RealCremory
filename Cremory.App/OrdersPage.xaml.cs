@@ -333,10 +333,14 @@ namespace Cremory.App
             }
         }
 
-        private void OnToggleArchives(object sender, ToggledEventArgs e)
+        private void OnToggleArchives(object sender, TappedEventArgs e)
         {
-            _showArchives = e.Value;
+            _showArchives = !_showArchives;
             ArchiveFilterBar.IsVisible = _showArchives;
+            ArchiveToggleBtn.BackgroundColor = _showArchives ? Color.FromArgb("#E27575") : Colors.Transparent;
+            ArchiveToggleBtn.Stroke = _showArchives ? Colors.Transparent : Color.FromArgb("#E8D4D4");
+            ArchiveLabel.TextColor = _showArchives ? Colors.White : Color.FromArgb("#B89292");
+            ArchiveLabel.Text = _showArchives ? "Archives On" : "Archives";
             if (_showArchives)
                 ResetFilterChips();
             ApplyFilter();
@@ -410,7 +414,10 @@ namespace Cremory.App
 
             _activeFilter = button.Text;
             _showArchives = false;
-            ArchiveToggle.IsToggled = false;
+            ArchiveToggleBtn.BackgroundColor = Colors.Transparent;
+            ArchiveToggleBtn.Stroke = Color.FromArgb("#E8D4D4");
+            ArchiveLabel.TextColor = Color.FromArgb("#B89292");
+            ArchiveLabel.Text = "Archives";
             ArchiveFilterBar.IsVisible = false;
             ApplyFilter();
         }
