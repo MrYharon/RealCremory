@@ -63,13 +63,7 @@ namespace Cremory.API.Controllers
             if (_messenger.AppSecret != string.Empty)
             {
                 var signature = Request.Headers["X-Hub-Signature-256"].FirstOrDefault();
-                if (string.IsNullOrEmpty(signature))
-                {
-                    _logger.LogWarning("Webhook: Missing X-Hub-Signature-256 header");
-                    if (!_env.IsDevelopment())
-                        return Ok();
-                }
-                else if (!IsValidSignature(body.GetRawText(), signature))
+                if (!string.IsNullOrEmpty(signature) && !IsValidSignature(body.GetRawText(), signature))
                 {
                     _logger.LogWarning("Webhook: Invalid signature");
                     return Ok();
