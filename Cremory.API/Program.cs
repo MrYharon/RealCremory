@@ -13,9 +13,6 @@ namespace Cremory.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var port = Environment.GetEnvironmentVariable("PORT") ?? "5105";
-            builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
-
             builder.Services.AddControllers();
             builder.Services.AddDbContext<Cremory.API.Data.CremoryDbContext>(options =>
             {
@@ -54,7 +51,16 @@ builder.Services.Configure<MessengerOptions>(options =>
             {
                 var db = scope.ServiceProvider.GetRequiredService<CremoryDbContext>();
                 if (db.Database.IsRelational())
-                    db.Database.Migrate();
+                {
+                    try
+                    {
+                        db.Database.Migrate();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Database migration failed: {ex.Message}");
+                    }
+                }
             }
 
             app.Use(async (context, next) =>
