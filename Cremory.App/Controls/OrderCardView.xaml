@@ -20,56 +20,45 @@
                            Invoked="OnDeleteSwipe"/>
             </SwipeItems>
         </SwipeView.RightItems>
+
         <Border x:Name="CardBorder" StrokeShape="RoundRectangle 12" StrokeThickness="1.5"
-                Stroke="{Binding BorderColor}" Padding="14" Margin="0,0,0,8"
-                BackgroundColor="White">
-            <Grid x:Name="CardGrid" RowSpacing="8">
+                Stroke="{Binding BorderColor}" BackgroundColor="White" Padding="14" Margin="0,0,0,8">
+            <Grid RowSpacing="8">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer NumberOfTapsRequired="2" Tapped="OnCardDoubleTapped"/>
                 </Grid.GestureRecognizers>
 
-                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
-                    <BoxView WidthRequest="40" HeightRequest="40" CornerRadius="20"
-                             BackgroundColor="{Binding AvatarColor}" VerticalOptions="Center"/>
-                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
-                        <Label Text="{Binding CustomerName}" FontSize="16" FontAttributes="Bold"
-                               TextColor="{StaticResource Gray900}" LineBreakMode="TailTruncation" MaxLines="1"/>
-                        <Label Text="{Binding Timestamp}" FontSize="11" TextColor="{StaticResource Gray500}"
-                               Opacity="0.6"/>
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="2"
-                                         HorizontalOptions="End">
-                        <Label Text="{Binding OrderId}" FontSize="11" FontAttributes="Bold"
-                               TextColor="{StaticResource PrimaryDark}"
-                               HorizontalOptions="End" LineBreakMode="TailTruncation" MaxLines="1"/>
-                        <Border StrokeShape="RoundRectangle 6" Padding="8,3"
-                                BackgroundColor="{Binding StatusColor}" Stroke="Transparent">
-                            <Label Text="{Binding StatusBadge}" FontSize="9" FontAttributes="Bold"
-                                   TextColor="White" HorizontalOptions="Center"/>
-                        </Border>
-                    </VerticalStackLayout>
+                <Grid ColumnDefinitions="*, Auto">
+                    <Label Text="{Binding CustomerName}" FontSize="15" FontAttributes="Bold"
+                           TextColor="{StaticResource Gray900}" LineBreakMode="TailTruncation" MaxLines="1"/>
+                    <Border Grid.Column="1" StrokeShape="RoundRectangle 6" Padding="8,3"
+                            BackgroundColor="{Binding StatusColor}" Stroke="Transparent"
+                            VerticalOptions="Center">
+                        <Label Text="{Binding StatusBadge}" FontSize="9" FontAttributes="Bold"
+                               TextColor="White"/>
+                    </Border>
                 </Grid>
 
-                <Border Grid.Row="1" BackgroundColor="{StaticResource Gray50}"
+                <Label Grid.Row="1" Text="{Binding Timestamp}" FontSize="11"
+                       TextColor="{StaticResource Gray500}" Opacity="0.6"/>
+
+                <Border Grid.Row="2" BackgroundColor="{StaticResource Gray50}"
                         Stroke="Transparent" Padding="10" StrokeShape="RoundRectangle 8">
-                    <Label Text="{Binding Items}" FontSize="13" TextColor="{StaticResource Gray700}"
+                    <Label Text="{Binding Items}" FontSize="12" TextColor="{StaticResource Gray600}"
                            LineBreakMode="TailTruncation" MaxLines="2"/>
                 </Border>
 
-                <Grid Grid.Row="2" ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                <Grid Grid.Row="3" ColumnDefinitions="Auto, *">
                     <Label Text="{Binding TotalPrice, StringFormat='₱{0:N2}'}"
-                           FontSize="16" FontAttributes="Bold" TextColor="{StaticResource Gray900}"
-                           VerticalOptions="Center"/>
+                           FontSize="17" FontAttributes="Bold"
+                           TextColor="{StaticResource PrimaryDark}" VerticalOptions="Center"/>
                     <Button Grid.Column="1" Text="{Binding ActionButtonText}"
                             Clicked="OnActionClicked"
                             BackgroundColor="{Binding ActionButtonColor}" TextColor="White"
-                            HeightRequest="34" Padding="12,0" FontAttributes="Bold" FontSize="11"
-                            CornerRadius="8"
-                            IsVisible="{Binding ShowActionButton}"/>
+                            HeightRequest="34" Padding="14,0" FontAttributes="Bold" FontSize="11"
+                            CornerRadius="8" IsVisible="{Binding ShowActionButton}"
+                            HorizontalOptions="End"/>
                 </Grid>
-
-                <Label Grid.Row="3" Text="{Binding StatusMessage}"
-                       FontSize="10" TextColor="{StaticResource Gray500}" Opacity="0.7"/>
             </Grid>
         </Border>
     </SwipeView>
