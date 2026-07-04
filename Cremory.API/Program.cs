@@ -30,9 +30,12 @@ namespace Cremory.API
                 builder.Configuration.GetSection(OrderParserOptions.SectionName));
 builder.Services.Configure<MessengerOptions>(options =>
 {
-    options.VerifyToken = builder.Configuration.GetSection(MessengerOptions.SectionName)["VerifyToken"] ?? "";
-    options.PageAccessToken = builder.Configuration.GetSection(MessengerOptions.SectionName)["PageAccessToken"] ?? "";
-    options.AppSecret = builder.Configuration.GetSection(MessengerOptions.SectionName)["AppSecret"] ?? "";
+    options.VerifyToken = Environment.GetEnvironmentVariable("MESSENGER_VERIFY_TOKEN")
+        ?? builder.Configuration.GetSection(MessengerOptions.SectionName)["VerifyToken"] ?? "";
+    options.PageAccessToken = Environment.GetEnvironmentVariable("MESSENGER_PAGE_ACCESS_TOKEN")
+        ?? builder.Configuration.GetSection(MessengerOptions.SectionName)["PageAccessToken"] ?? "";
+    options.AppSecret = Environment.GetEnvironmentVariable("MESSENGER_APP_SECRET")
+        ?? builder.Configuration.GetSection(MessengerOptions.SectionName)["AppSecret"] ?? "";
 });
             builder.Services.AddScoped<OrderParserService>();
 
