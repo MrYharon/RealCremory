@@ -7,67 +7,70 @@
              BackgroundColor="{StaticResource Gray50}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="16">
-            <VerticalStackLayout Spacing="6">
-                <Label Text="New Walk-in Order" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
-                <Label Text="Create an order directly" FontSize="13" TextColor="{StaticResource Gray500}"/>
+        <VerticalStackLayout Padding="16" Spacing="12">
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="New Walk-in Order" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
+                <Label Text="Create an order directly" FontSize="12" TextColor="{StaticResource Gray500}"/>
             </VerticalStackLayout>
 
-            <Border StrokeShape="RoundRectangle 12" BackgroundColor="White" Padding="16"
+            <Border StrokeShape="RoundRectangle 10" BackgroundColor="White" Padding="14"
                     Stroke="{StaticResource Gray200}">
-                <VerticalStackLayout Spacing="14">
+                <VerticalStackLayout Spacing="12">
+
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="Customer Name" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
-                        <Border StrokeShape="RoundRectangle 8" Padding="12,0" Stroke="{StaticResource Gray200}"
-                                BackgroundColor="{StaticResource Gray50}" HeightRequest="44">
+                        <Label Text="Customer Name" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
+                        <Border StrokeShape="RoundRectangle 8" Padding="10,0" Stroke="{StaticResource Gray200}"
+                                BackgroundColor="{StaticResource Gray50}" HeightRequest="40">
                             <Entry x:Name="NameEntry" Placeholder="e.g. Juan dela Cruz"
                                    PlaceholderColor="{StaticResource Gray400}"
                                    TextColor="{StaticResource Gray900}"
-                                   BackgroundColor="Transparent"/>
+                                   BackgroundColor="Transparent" FontSize="14"/>
                         </Border>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="Items" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
-                        <Border StrokeShape="RoundRectangle 8" Padding="12" Stroke="{StaticResource Gray200}"
+                        <Label Text="Items" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
+                        <Border StrokeShape="RoundRectangle 8" Padding="10" Stroke="{StaticResource Gray200}"
                                 BackgroundColor="{StaticResource Gray50}">
                             <Editor x:Name="ItemsEditor" Placeholder="e.g. 2x Croissant, 1x Ube Cake"
                                     PlaceholderColor="{StaticResource Gray400}"
                                     TextColor="{StaticResource Gray900}"
                                     BackgroundColor="Transparent"
                                     AutoSize="TextChanges"
-                                    HeightRequest="80"/>
+                                    HeightRequest="64" FontSize="13"/>
                         </Border>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="Quick Add from Menu" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
-                        <CollectionView x:Name="ProductStepperView" HeightRequest="200">
+                        <Label Text="Quick Add" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                        <CollectionView x:Name="ProductStepperView" HeightRequest="180">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="local:ProductStepperItem">
-                                    <Border StrokeShape="RoundRectangle 10" StrokeThickness="1"
-                                            Stroke="{StaticResource Gray200}" Padding="10,6" Margin="0,0,0,6"
+                                    <Border StrokeShape="RoundRectangle 8" StrokeThickness="1"
+                                            Stroke="{StaticResource Gray200}" Padding="8,5" Margin="0,0,0,4"
                                             BackgroundColor="{StaticResource Gray50}">
-                                        <Grid ColumnDefinitions="*, Auto, Auto, Auto" ColumnSpacing="8">
-                                            <Label Text="{Binding DisplayName}" FontSize="13"
-                                                   TextColor="{StaticResource Gray800}" VerticalOptions="Center"/>
-                                            <Button Grid.Column="1" Text="−" FontSize="18" FontAttributes="Bold"
+                                        <Grid ColumnDefinitions="*, Auto, Auto, Auto" ColumnSpacing="6">
+                                            <Label Text="{Binding DisplayName}" FontSize="12"
+                                                   TextColor="{StaticResource Gray800}" VerticalOptions="Center"
+                                                   LineBreakMode="TailTruncation" MaxLines="1"/>
+                                            <Button Grid.Column="1" Text="−" FontSize="14"
                                                     BackgroundColor="{StaticResource Gray200}"
                                                     TextColor="{StaticResource Gray700}"
-                                                    CornerRadius="20" WidthRequest="40" HeightRequest="40" Padding="0"
+                                                    CornerRadius="16" WidthRequest="32" HeightRequest="32" Padding="0"
                                                     Clicked="OnStepperMinus"/>
-                                            <Border Grid.Column="2" StrokeShape="RoundRectangle 8" Padding="8,4"
+                                            <Border Grid.Column="2" StrokeShape="RoundRectangle 6" Padding="6,2"
                                                     BackgroundColor="{StaticResource PrimaryLight}"
                                                     Stroke="{StaticResource Primary}" StrokeThickness="1"
-                                                    VerticalOptions="Center" MinimumWidthRequest="44">
-                                                <Label Text="{Binding Quantity}" FontSize="18" FontAttributes="Bold"
+                                                    VerticalOptions="Center" MinimumWidthRequest="36">
+                                                <Label Text="{Binding Quantity}" FontSize="15" FontAttributes="Bold"
                                                        TextColor="{StaticResource PrimaryDark}"
                                                        HorizontalOptions="Center"/>
                                             </Border>
-                                            <Button Grid.Column="3" Text="+" FontSize="18" FontAttributes="Bold"
+                                            <Button Grid.Column="3" Text="+" FontSize="14"
                                                     BackgroundColor="{StaticResource Primary}"
                                                     TextColor="White"
-                                                    CornerRadius="20" WidthRequest="40" HeightRequest="40" Padding="0"
+                                                    CornerRadius="16" WidthRequest="32" HeightRequest="32" Padding="0"
                                                     Clicked="OnStepperPlus"/>
                                         </Grid>
                                     </Border>
@@ -76,50 +79,54 @@
                         </CollectionView>
                     </VerticalStackLayout>
 
-                    <VerticalStackLayout Spacing="4">
-                        <Label Text="Total Price" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
-                        <Border StrokeShape="RoundRectangle 8" Padding="12,0" Stroke="{StaticResource Gray200}"
-                                BackgroundColor="{StaticResource Gray50}" HeightRequest="44">
-                            <Entry x:Name="PriceEntry" Placeholder="0.00"
-                                   PlaceholderColor="{StaticResource Gray400}"
-                                   TextColor="{StaticResource Gray900}"
-                                   BackgroundColor="Transparent"
-                                   Keyboard="Numeric"/>
-                        </Border>
-                    </VerticalStackLayout>
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Total Price" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
+                            <Border StrokeShape="RoundRectangle 8" Padding="10,0" Stroke="{StaticResource Gray200}"
+                                    BackgroundColor="{StaticResource Gray50}" HeightRequest="40">
+                                <Entry x:Name="PriceEntry" Placeholder="0.00"
+                                       PlaceholderColor="{StaticResource Gray400}"
+                                       TextColor="{StaticResource Gray900}"
+                                       BackgroundColor="Transparent"
+                                       Keyboard="Numeric" FontSize="14"/>
+                            </Border>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Contact (optional)" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
+                            <Border StrokeShape="RoundRectangle 8" Padding="10,0" Stroke="{StaticResource Gray200}"
+                                    BackgroundColor="{StaticResource Gray50}" HeightRequest="40">
+                                <Entry x:Name="ContactEntry" Placeholder="09171234567"
+                                       PlaceholderColor="{StaticResource Gray400}"
+                                       TextColor="{StaticResource Gray900}"
+                                       BackgroundColor="Transparent"
+                                       Keyboard="Telephone" FontSize="14"/>
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
 
-                    <VerticalStackLayout Spacing="4">
-                        <Label Text="Contact Number (optional)" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
-                        <Border StrokeShape="RoundRectangle 8" Padding="12,0" Stroke="{StaticResource Gray200}"
-                                BackgroundColor="{StaticResource Gray50}" HeightRequest="44">
-                            <Entry x:Name="ContactEntry" Placeholder="e.g. 09171234567"
-                                   PlaceholderColor="{StaticResource Gray400}"
-                                   TextColor="{StaticResource Gray900}"
-                                   BackgroundColor="Transparent"
-                                   Keyboard="Telephone"/>
-                        </Border>
-                    </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
 
-            <Label x:Name="StatusLabel" FontSize="13" HorizontalTextAlignment="Center"/>
+            <Label x:Name="StatusLabel" FontSize="12" HorizontalTextAlignment="Center"/>
 
-            <Grid HeightRequest="48">
-                <Button x:Name="SaveButton" Text="Create Order"
-                        Clicked="OnSaveClicked"
-                        BackgroundColor="{StaticResource Success}" TextColor="White"
-                        FontAttributes="Bold" HeightRequest="48" FontSize="15"/>
-                <Border x:Name="SaveLoadingOverlay" IsVisible="False"
-                        StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Success}"
-                        Stroke="Transparent" HeightRequest="48">
-                    <ActivityIndicator IsRunning="True" Color="White" HeightRequest="24" WidthRequest="24"/>
-                </Border>
+            <Grid HeightRequest="44" ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                <Grid>
+                    <Button x:Name="SaveButton" Text="Create Order"
+                            Clicked="OnSaveClicked"
+                            BackgroundColor="{StaticResource Success}" TextColor="White"
+                            FontAttributes="Bold" HeightRequest="44" FontSize="14" CornerRadius="8"/>
+                    <Border x:Name="SaveLoadingOverlay" IsVisible="False"
+                            StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Success}"
+                            Stroke="Transparent" HeightRequest="44">
+                        <ActivityIndicator IsRunning="True" Color="White" HeightRequest="20" WidthRequest="20"/>
+                    </Border>
+                </Grid>
+                <Button Grid.Column="1" Text="Cancel"
+                        Clicked="OnCancelClicked"
+                        BackgroundColor="{StaticResource Gray200}" TextColor="{StaticResource Gray700}"
+                        HeightRequest="44" FontSize="13" Padding="20,0" CornerRadius="8"/>
             </Grid>
 
-            <Button Text="Cancel"
-                    Clicked="OnCancelClicked"
-                    BackgroundColor="{StaticResource Gray200}" TextColor="{StaticResource Gray700}"
-                    HeightRequest="44" FontSize="14"/>
         </VerticalStackLayout>
     </ScrollView>
 
