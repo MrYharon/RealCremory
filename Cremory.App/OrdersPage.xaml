@@ -7,22 +7,24 @@
              x:Class="Cremory.App.OrdersPage"
              x:DataType="local:OrdersPage"
              Title="Orders"
-             BackgroundColor="{StaticResource Gray50}">
+             BackgroundColor="#FFFDFD">
 
-    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, *" Padding="14" RowSpacing="10">
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, *" Padding="16,14,16,0" RowSpacing="12">
 
-        <Border x:Name="NewOrderAlert" Grid.Row="0" StrokeShape="RoundRectangle 10"
-                BackgroundColor="{StaticResource Danger}" Stroke="Transparent"
-                Padding="10" IsVisible="False">
+        <Border x:Name="NewOrderAlert" Grid.Row="0"
+                StrokeShape="RoundRectangle 10"
+                BackgroundColor="#E27575" Stroke="Transparent"
+                Padding="12" IsVisible="False">
             <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
                 <VerticalStackLayout Spacing="1">
-                    <Label x:Name="AlertTitle" Text="New Order!" FontSize="13"
-                           FontAttributes="Bold" TextColor="White"/>
-                    <Label x:Name="AlertMessage" Text="" FontSize="11" TextColor="White" Opacity="0.9"
+                    <Label x:Name="AlertTitle" Text="New Order!"
+                           FontSize="13" FontAttributes="Bold" TextColor="White"/>
+                    <Label x:Name="AlertMessage" Text="" FontSize="11"
+                           TextColor="White" Opacity="0.85"
                            LineBreakMode="TailTruncation" MaxLines="1"/>
                 </VerticalStackLayout>
-                <Label Grid.Column="1" Text="✕" FontSize="14" TextColor="White" VerticalOptions="Center"
-                       Padding="6">
+                <Label Grid.Column="1" Text="✕" FontSize="14" TextColor="White"
+                       VerticalOptions="Center" Padding="6">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnDismissAlert"/>
                     </Label.GestureRecognizers>
@@ -30,104 +32,93 @@
             </Grid>
         </Border>
 
-        <Grid Grid.Row="1" ColumnDefinitions="Auto, Auto, Auto, Auto, *" ColumnSpacing="6">
-            <Border StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Warning}"
-                    Padding="8,6" Stroke="Transparent" MinimumWidthRequest="0">
-                <HorizontalStackLayout Spacing="4">
-                    <Label Text="{Binding PendingCount}" FontSize="16" FontAttributes="Bold"
-                           TextColor="White" VerticalOptions="Center"/>
-                    <Label Text="Pending" FontSize="10" TextColor="White" Opacity="0.85"
-                           VerticalOptions="Center"/>
-                </HorizontalStackLayout>
-            </Border>
-            <Border Grid.Column="1" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Info}"
-                    Padding="8,6" Stroke="Transparent" MinimumWidthRequest="0">
-                <HorizontalStackLayout Spacing="4">
-                    <Label Text="{Binding PreparingCount}" FontSize="16" FontAttributes="Bold"
-                           TextColor="White" VerticalOptions="Center"/>
-                    <Label Text="Prep" FontSize="10" TextColor="White" Opacity="0.85"
-                           VerticalOptions="Center"/>
-                </HorizontalStackLayout>
-            </Border>
-            <Border Grid.Column="2" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Success}"
-                    Padding="8,6" Stroke="Transparent" MinimumWidthRequest="0">
-                <HorizontalStackLayout Spacing="4">
-                    <Label Text="{Binding CompletedCount}" FontSize="16" FontAttributes="Bold"
-                           TextColor="White" VerticalOptions="Center"/>
-                    <Label Text="Done" FontSize="10" TextColor="White" Opacity="0.85"
-                           VerticalOptions="Center"/>
-                </HorizontalStackLayout>
-            </Border>
-            <Border Grid.Column="3" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource Primary}"
-                    Padding="8,6" Stroke="Transparent" MinimumWidthRequest="0">
-                <HorizontalStackLayout Spacing="4">
-                    <Label Text="{Binding TotalOrders}" FontSize="16" FontAttributes="Bold"
-                           TextColor="White" VerticalOptions="Center"/>
-                    <Label Text="Total" FontSize="10" TextColor="White" Opacity="0.85"
-                           VerticalOptions="Center"/>
-                </HorizontalStackLayout>
-            </Border>
-        </Grid>
-
-        <Grid Grid.Row="2" ColumnDefinitions="*, Auto" ColumnSpacing="8">
-            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                <HorizontalStackLayout Spacing="4">
-                    <Border x:Name="FilterAllBorder" StrokeShape="RoundRectangle 14"
-                            BackgroundColor="{StaticResource Primary}" Stroke="Transparent">
-                        <Button x:Name="FilterAll" Text="All" Clicked="OnFilterClicked"
-                                BackgroundColor="Transparent" TextColor="White"
-                                FontSize="11" FontAttributes="Bold" Padding="12,0" HeightRequest="28"/>
-                    </Border>
-                    <Border x:Name="FilterPendingBorder" StrokeShape="RoundRectangle 14"
-                            BackgroundColor="Transparent" Stroke="{StaticResource Gray300}" StrokeThickness="1">
-                        <Button x:Name="FilterPending" Text="Pending" Clicked="OnFilterClicked"
-                                BackgroundColor="Transparent" TextColor="{StaticResource Gray600}"
-                                FontSize="11" Padding="12,0" HeightRequest="28"/>
-                    </Border>
-                    <Border x:Name="FilterPreparingBorder" StrokeShape="RoundRectangle 14"
-                            BackgroundColor="Transparent" Stroke="{StaticResource Gray300}" StrokeThickness="1">
-                        <Button x:Name="FilterPreparing" Text="Preparing" Clicked="OnFilterClicked"
-                                BackgroundColor="Transparent" TextColor="{StaticResource Gray600}"
-                                FontSize="11" Padding="12,0" HeightRequest="28"/>
-                    </Border>
-                    <Border x:Name="FilterCompletedBorder" StrokeShape="RoundRectangle 14"
-                            BackgroundColor="Transparent" Stroke="{StaticResource Gray300}" StrokeThickness="1">
-                        <Button x:Name="FilterCompleted" Text="Completed" Clicked="OnFilterClicked"
-                                BackgroundColor="Transparent" TextColor="{StaticResource Gray600}"
-                                FontSize="11" Padding="12,0" HeightRequest="28"/>
-                    </Border>
-                </HorizontalStackLayout>
-            </ScrollView>
-            <HorizontalStackLayout Grid.Column="1" Spacing="6">
-                <Border x:Name="KitchenViewBorder" StrokeShape="RoundRectangle 14"
-                        BackgroundColor="Transparent" Stroke="{StaticResource Gray300}" StrokeThickness="1">
-                    <Button x:Name="KitchenViewBtn" Text="Kitchen" Clicked="OnKitchenViewClicked"
-                            BackgroundColor="Transparent" TextColor="{StaticResource Gray600}"
-                            FontSize="11" Padding="12,0" HeightRequest="28"/>
+        <Grid Grid.Row="1" ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+            <Label Text="Orders" FontSize="26" FontAttributes="Bold"
+                   TextColor="#2C2525" VerticalOptions="Center"/>
+            <HorizontalStackLayout Grid.Column="1" Spacing="8" HorizontalOptions="Center"
+                                   VerticalOptions="Center">
+                <Label Text="{Binding PendingCount}" FontSize="14" FontAttributes="Bold"
+                       TextColor="#E27575"/>
+                <Label Text="pending" FontSize="12" TextColor="#B89292" VerticalOptions="Center"/>
+                <Label Text="|" FontSize="12" TextColor="#E8D4D4" VerticalOptions="Center"/>
+                <Label Text="{Binding PreparingCount}" FontSize="14" FontAttributes="Bold"
+                       TextColor="#E27575"/>
+                <Label Text="prep" FontSize="12" TextColor="#B89292" VerticalOptions="Center"/>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center">
+                <Border StrokeShape="RoundRectangle 8" BackgroundColor="#FBC4C4"
+                        Stroke="Transparent" HeightRequest="34">
+                    <Button Text="+ New" Clicked="OnNewOrderClicked"
+                            BackgroundColor="Transparent" TextColor="White"
+                            FontAttributes="Bold" FontSize="12" Padding="14,0"/>
                 </Border>
             </HorizontalStackLayout>
         </Grid>
 
-        <Border Grid.Row="3" StrokeShape="RoundRectangle 8" BackgroundColor="White"
-                Padding="8" StrokeThickness="1" Stroke="{StaticResource Gray200}">
-            <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="6">
-                <SearchBar x:Name="OrderSearchBar" Placeholder="Search orders..."
-                           TextChanged="OnSearchTextChanged"
-                           BackgroundColor="{StaticResource Gray50}" HeightRequest="34"
-                           FontSize="12"/>
-                <Label Grid.Column="1" Text="Arch." FontSize="10" TextColor="{StaticResource Gray500}"
-                       VerticalOptions="Center"/>
-                <Switch x:Name="ArchiveToggle" Grid.Column="2" IsToggled="False"
-                        Toggled="OnToggleArchives" VerticalOptions="Center" Scale="0.65"/>
+        <Border Grid.Row="2"
+                StrokeShape="RoundRectangle 10"
+                BackgroundColor="#FDF5F5" Stroke="Transparent"
+                Padding="6">
+            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="6">
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                    <HorizontalStackLayout Spacing="4">
+                        <Border x:Name="FilterAllBorder" StrokeShape="RoundRectangle 12"
+                                BackgroundColor="#E27575" Stroke="Transparent">
+                            <Button x:Name="FilterAll" Text="All" Clicked="OnFilterClicked"
+                                    BackgroundColor="Transparent" TextColor="White"
+                                    FontSize="11" FontAttributes="Bold" Padding="12,0" HeightRequest="28"/>
+                        </Border>
+                        <Border x:Name="FilterPendingBorder" StrokeShape="RoundRectangle 12"
+                                BackgroundColor="Transparent"
+                                Stroke="#E8D4D4" StrokeThickness="1">
+                            <Button x:Name="FilterPending" Text="Pending" Clicked="OnFilterClicked"
+                                    BackgroundColor="Transparent" TextColor="#B89292"
+                                    FontSize="11" Padding="12,0" HeightRequest="28"/>
+                        </Border>
+                        <Border x:Name="FilterPreparingBorder" StrokeShape="RoundRectangle 12"
+                                BackgroundColor="Transparent"
+                                Stroke="#E8D4D4" StrokeThickness="1">
+                            <Button x:Name="FilterPreparing" Text="Preparing" Clicked="OnFilterClicked"
+                                    BackgroundColor="Transparent" TextColor="#B89292"
+                                    FontSize="11" Padding="12,0" HeightRequest="28"/>
+                        </Border>
+                        <Border x:Name="FilterCompletedBorder" StrokeShape="RoundRectangle 12"
+                                BackgroundColor="Transparent"
+                                Stroke="#E8D4D4" StrokeThickness="1">
+                            <Button x:Name="FilterCompleted" Text="Completed" Clicked="OnFilterClicked"
+                                    BackgroundColor="Transparent" TextColor="#B89292"
+                                    FontSize="11" Padding="12,0" HeightRequest="28"/>
+                        </Border>
+                        <Border x:Name="KitchenViewBorder" StrokeShape="RoundRectangle 12"
+                                BackgroundColor="Transparent"
+                                Stroke="#E8D4D4" StrokeThickness="1">
+                            <Button x:Name="KitchenViewBtn" Text="🍳 Kitchen" Clicked="OnKitchenViewClicked"
+                                    BackgroundColor="Transparent" TextColor="#B89292"
+                                    FontSize="11" Padding="12,0" HeightRequest="28"/>
+                        </Border>
+                    </HorizontalStackLayout>
+                </ScrollView>
+                <SearchBar x:Name="OrderSearchBar" Grid.Column="1"
+                           Placeholder="Search..." TextChanged="OnSearchTextChanged"
+                           BackgroundColor="White" HeightRequest="30" FontSize="11"
+                           CancelButtonColor="#B89292"/>
+                <HorizontalStackLayout Grid.Column="2" Spacing="4" VerticalOptions="Center">
+                    <Label Text="Arch." FontSize="10" TextColor="#B89292" VerticalOptions="Center"/>
+                    <Switch x:Name="ArchiveToggle" IsToggled="False"
+                            Toggled="OnToggleArchives" VerticalOptions="Center" Scale="0.6"/>
+                </HorizontalStackLayout>
             </Grid>
         </Border>
 
-        <Grid Grid.Row="4" x:Name="ArchiveFilterBar" ColumnDefinitions="*, *" ColumnSpacing="8" IsVisible="False" ZIndex="1">
-            <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="6"
-                    StrokeThickness="1" Stroke="{StaticResource Gray200}">
-                <Picker x:Name="DateRangePicker" Title="Date" TextColor="{StaticResource Gray900}"
-                        TitleColor="{StaticResource Gray500}" BackgroundColor="{StaticResource Gray50}"
-                        FontSize="11" SelectedIndexChanged="OnDateFilterChanged">
+        <Border Grid.Row="3" x:Name="ArchiveFilterBar"
+                StrokeShape="RoundRectangle 10"
+                BackgroundColor="#FDF5F5" Stroke="Transparent"
+                Padding="8" IsVisible="False">
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                <Picker x:Name="DateRangePicker" Title="Date"
+                        TextColor="#2C2525" TitleColor="#B89292"
+                        BackgroundColor="White" FontSize="11"
+                        SelectedIndexChanged="OnDateFilterChanged">
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
                             <x:String>Today</x:String>
@@ -137,12 +128,10 @@
                         </x:Array>
                     </Picker.ItemsSource>
                 </Picker>
-            </Border>
-            <Border Grid.Column="1" StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="6"
-                    StrokeThickness="1" Stroke="{StaticResource Gray200}">
-                <Picker x:Name="ArchiveStatusPicker" Title="Status" TextColor="{StaticResource Gray900}"
-                        TitleColor="{StaticResource Gray500}" BackgroundColor="{StaticResource Gray50}"
-                        FontSize="11" SelectedIndexChanged="OnDateFilterChanged">
+                <Picker Grid.Column="1" x:Name="ArchiveStatusPicker"
+                        Title="Status" TextColor="#2C2525" TitleColor="#B89292"
+                        BackgroundColor="White" FontSize="11" WidthRequest="120"
+                        SelectedIndexChanged="OnDateFilterChanged">
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
                             <x:String>All</x:String>
@@ -151,22 +140,24 @@
                         </x:Array>
                     </Picker.ItemsSource>
                 </Picker>
-            </Border>
-        </Grid>
+            </Grid>
+        </Border>
 
-        <RefreshView Grid.Row="5" x:Name="OrdersRefreshView" Refreshing="OnRefreshing">
+        <RefreshView Grid.Row="4" x:Name="OrdersRefreshView" Refreshing="OnRefreshing"
+                      RefreshColor="#E27575">
             <Grid>
                 <CollectionView x:Name="OrdersCollectionView"
                                 ItemsSource="{Binding FilteredOrders}"
                                 RemainingItemsThreshold="5"
                                 RemainingItemsThresholdReached="OnLoadMore">
                     <CollectionView.EmptyView>
-                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="6"
-                                             Padding="0,60">
-                            <Label Text="No orders yet" FontSize="22" FontAttributes="Bold"
-                                   TextColor="{StaticResource Gray300}" HorizontalTextAlignment="Center"/>
-                            <Label Text="Tap + New to create one"
-                                   FontSize="13" TextColor="{StaticResource Gray400}" HorizontalTextAlignment="Center"/>
+                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center"
+                                             Spacing="8" Padding="0,80">
+                            <Label Text="No orders yet" FontSize="20" FontAttributes="Bold"
+                                   TextColor="#D4B8B8" HorizontalTextAlignment="Center"/>
+                            <Label Text="Tap the + button to create\nyour first order"
+                                   FontSize="13" TextColor="#D4B8B8"
+                                   HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
                     </CollectionView.EmptyView>
                     <CollectionView.ItemTemplate>
@@ -178,80 +169,86 @@
 
                 <CollectionView x:Name="KitchenCollectionView" IsVisible="False">
                     <CollectionView.EmptyView>
-                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="6"
-                                             Padding="0,60">
-                            <Label Text="No pending orders" FontSize="22" FontAttributes="Bold"
-                                   TextColor="{StaticResource Gray300}" HorizontalTextAlignment="Center"/>
-                            <Label Text="Pending orders appear here for batch prep"
-                                   FontSize="13" TextColor="{StaticResource Gray400}" HorizontalTextAlignment="Center"/>
+                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center"
+                                             Spacing="8" Padding="0,80">
+                            <Label Text="Kitchen is clear" FontSize="20" FontAttributes="Bold"
+                                   TextColor="#D4B8B8" HorizontalTextAlignment="Center"/>
+                            <Label Text="No orders to prepare right now"
+                                   FontSize="13" TextColor="#D4B8B8"
+                                   HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
                     </CollectionView.EmptyView>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="local:KitchenItemGroup">
-                            <Border StrokeShape="RoundRectangle 10" StrokeThickness="1"
-                                    Stroke="{StaticResource Gray200}" Padding="12" Margin="0,0,0,6"
+                            <Border StrokeShape="RoundRectangle 10"
+                                    Stroke="#E8D4D4" StrokeThickness="1"
+                                    Padding="12" Margin="0,0,0,6"
                                     BackgroundColor="White">
                                 <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
-                                    <Border StrokeShape="RoundRectangle 6" WidthRequest="36" HeightRequest="36"
-                                            BackgroundColor="{StaticResource PrimaryLight}" Stroke="Transparent"
+                                    <Border StrokeShape="RoundRectangle 6"
+                                            WidthRequest="34" HeightRequest="34"
+                                            BackgroundColor="#FDE8E8" Stroke="Transparent"
                                             VerticalOptions="Center" HorizontalOptions="Center">
-                                        <Label Text="{Binding TotalQty}" FontSize="15" FontAttributes="Bold"
-                                               TextColor="{StaticResource PrimaryDark}" HorizontalOptions="Center"
+                                        <Label Text="{Binding TotalQty}" FontSize="14"
+                                               FontAttributes="Bold"
+                                               TextColor="#E27575" HorizontalOptions="Center"
                                                VerticalOptions="Center"/>
                                     </Border>
                                     <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
-                                        <Label Text="{Binding ItemName}" FontSize="14" FontAttributes="Bold"
-                                               TextColor="{StaticResource Gray900}" LineBreakMode="TailTruncation" MaxLines="1"/>
-                                        <Label Text="{Binding OrderCount, StringFormat='From {0} order(s)'}"
-                                               FontSize="10" TextColor="{StaticResource Gray500}"/>
+                                        <Label Text="{Binding ItemName}" FontSize="14"
+                                               FontAttributes="Bold"
+                                               TextColor="#2C2525"
+                                               LineBreakMode="TailTruncation" MaxLines="1"/>
+                                        <Label Text="{Binding OrderCount, StringFormat='{0} order(s)'}"
+                                               FontSize="10" TextColor="#B89292"/>
                                     </VerticalStackLayout>
                                     <Label Grid.Column="2" Text="{Binding TotalQty, StringFormat='x{0}'}"
                                            FontSize="18" FontAttributes="Bold"
-                                           TextColor="{StaticResource PrimaryDark}" VerticalOptions="Center"/>
+                                           TextColor="#E27575" VerticalOptions="Center"/>
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
-                <VerticalStackLayout x:Name="SkeletonLoading" Spacing="8" Padding="0" IsVisible="False">
-                    <Border StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Gray100}"
-                            Stroke="Transparent" Padding="14" HeightRequest="72">
-                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
-                            <VerticalStackLayout Spacing="6" VerticalOptions="Center">
-                                <BoxView CornerRadius="3" HeightRequest="12" WidthRequest="140"
-                                         Color="{StaticResource Gray200}" HorizontalOptions="Start"/>
-                                <BoxView CornerRadius="3" HeightRequest="8" WidthRequest="80"
-                                         Color="{StaticResource Gray200}" HorizontalOptions="Start"/>
-                            </VerticalStackLayout>
-                            <BoxView Grid.Column="1" CornerRadius="3" HeightRequest="28" WidthRequest="50"
-                                     Color="{StaticResource Gray200}" VerticalOptions="Center"/>
-                        </Grid>
-                    </Border>
-                    <Border StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Gray100}"
-                            Stroke="Transparent" Padding="14" HeightRequest="72">
+                <VerticalStackLayout x:Name="SkeletonLoading" Spacing="10" Padding="0" IsVisible="False">
+                    <Border StrokeShape="RoundRectangle 12" BackgroundColor="#FDF5F5"
+                            Stroke="Transparent" Padding="16" HeightRequest="80">
                         <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
                             <VerticalStackLayout Spacing="6" VerticalOptions="Center">
                                 <BoxView CornerRadius="3" HeightRequest="12" WidthRequest="120"
-                                         Color="{StaticResource Gray200}" HorizontalOptions="Start"/>
-                                <BoxView CornerRadius="3" HeightRequest="8" WidthRequest="70"
-                                         Color="{StaticResource Gray200}" HorizontalOptions="Start"/>
+                                         Color="#F5E8E8" HorizontalOptions="Start"/>
+                                <BoxView CornerRadius="3" HeightRequest="8" WidthRequest="80"
+                                         Color="#F5E8E8" HorizontalOptions="Start"/>
                             </VerticalStackLayout>
                             <BoxView Grid.Column="1" CornerRadius="3" HeightRequest="28" WidthRequest="50"
-                                     Color="{StaticResource Gray200}" VerticalOptions="Center"/>
+                                     Color="#F5E8E8" VerticalOptions="Center"/>
                         </Grid>
                     </Border>
-                    <Border StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Gray100}"
-                            Stroke="Transparent" Padding="14" HeightRequest="72">
+                    <Border StrokeShape="RoundRectangle 12" BackgroundColor="#FDF5F5"
+                            Stroke="Transparent" Padding="16" HeightRequest="80">
                         <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
                             <VerticalStackLayout Spacing="6" VerticalOptions="Center">
-                                <BoxView CornerRadius="3" HeightRequest="12" WidthRequest="130"
-                                         Color="{StaticResource Gray200}" HorizontalOptions="Start"/>
-                                <BoxView CornerRadius="3" HeightRequest="8" WidthRequest="90"
-                                         Color="{StaticResource Gray200}" HorizontalOptions="Start"/>
+                                <BoxView CornerRadius="3" HeightRequest="12" WidthRequest="100"
+                                         Color="#F5E8E8" HorizontalOptions="Start"/>
+                                <BoxView CornerRadius="3" HeightRequest="8" WidthRequest="70"
+                                         Color="#F5E8E8" HorizontalOptions="Start"/>
                             </VerticalStackLayout>
                             <BoxView Grid.Column="1" CornerRadius="3" HeightRequest="28" WidthRequest="50"
-                                     Color="{StaticResource Gray200}" VerticalOptions="Center"/>
+                                     Color="#F5E8E8" VerticalOptions="Center"/>
+                        </Grid>
+                    </Border>
+                    <Border StrokeShape="RoundRectangle 12" BackgroundColor="#FDF5F5"
+                            Stroke="Transparent" Padding="16" HeightRequest="80">
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                            <VerticalStackLayout Spacing="6" VerticalOptions="Center">
+                                <BoxView CornerRadius="3" HeightRequest="12" WidthRequest="110"
+                                         Color="#F5E8E8" HorizontalOptions="Start"/>
+                                <BoxView CornerRadius="3" HeightRequest="8" WidthRequest="90"
+                                         Color="#F5E8E8" HorizontalOptions="Start"/>
+                            </VerticalStackLayout>
+                            <BoxView Grid.Column="1" CornerRadius="3" HeightRequest="28" WidthRequest="50"
+                                     Color="#F5E8E8" VerticalOptions="Center"/>
                         </Grid>
                     </Border>
                 </VerticalStackLayout>
