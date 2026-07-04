@@ -66,41 +66,37 @@ namespace Cremory.App.Controls
             }
         }
 
-        private async void OnCancelSwipe(object sender, EventArgs e)
+        private async void OnMoreClicked(object sender, EventArgs e)
         {
             var order = Order;
             if (order == null) return;
-
-            if (order.Status == OrderStatus.Completed || order.Status == OrderStatus.Cancelled)
-                return;
-
             var page = GetCurrentPage();
             if (page == null) return;
 
-            var confirm = await page.DisplayAlert("Cancel Order",
-                $"Cancel order {order.OrderId} for {order.CustomerName}?", "Yes, Cancel", "No");
-            if (!confirm) return;
+            var action = await page.DisplayActionSheet(
+                $"Order {order.OrderId}",
+                "Close", null,
+                "Edit",
+                order.Status != OrderStatus.Completed && order.Status != OrderStatus.Cancelled ? "Cancel" : null,
+                "Delete"
+            );
 
-            try
+            switch (action)
             {
-                var api = App.ApiService;
-                if (api == null) return;
-                await api.UpdateOrderStatusAsync(order.OrderId, OrderStatus.Cancelled);
-            }
-            catch
-            {
-                var page2 = GetCurrentPage();
-                if (page2 != null)
-                    await page2.DisplayAlert("Error", "Failed to cancel order.", "OK");
+                case "Edit":
+                    await OpenEditPage(order, page);
+                    break;
+                case "Cancel":
+                    await CancelOrder(order, page);
+                    break;
+                case "Delete":
+                    await DeleteOrder(order, page);
+                    break;
             }
         }
 
-        private async void OnEditSwipe(object sender, EventArgs e)
+        private async Task OpenEditPage(OrderSummary order, Page page)
         {
-            var order = Order;
-            if (order == null) return;
-            var page = GetCurrentPage();
-            if (page == null) return;
             var editPage = new EditOrderPage(new OrderDto
             {
                 OrderId = order.OrderId,
@@ -116,15 +112,28 @@ namespace Cremory.App.Controls
             await page.Navigation.PushModalAsync(new NavigationPage(editPage));
         }
 
-        private async void OnDeleteSwipe(object sender, EventArgs e)
+        private async Task CancelOrder(OrderSummary order, Page page)
         {
-            var order = Order;
-            if (order == null) return;
-            var page = GetCurrentPage();
-            if (page == null) return;
+            var confirm = await page.DisplayAlert("Cancel Order",
+                $"Cancel order for {order.CustomerName}?", "Yes, Cancel", "No");
+            if (!confirm) return;
 
+            try
+            {
+                var api = App.ApiService;
+                if (api == null) return;
+                await api.UpdateOrderStatusAsync(order.OrderId, OrderStatus.Cancelled);
+            }
+            catch
+            {
+                await page.DisplayAlert("Error", "Failed to cancel order.", "OK");
+            }
+        }
+
+        private async Task DeleteOrder(OrderSummary order, Page page)
+        {
             var confirm = await page.DisplayAlert("Delete Order",
-                $"Permanently delete order {order.OrderId} for {order.CustomerName}?\nThis cannot be undone.",
+                $"Permanently delete order for {order.CustomerName}?\nThis cannot be undone.",
                 "Delete", "Cancel");
             if (!confirm) return;
 
@@ -132,15 +141,8 @@ namespace Cremory.App.Controls
             if (api == null) return;
 
             var (success, error) = await api.DeleteOrderAsync(order.OrderId);
-            if (success)
-            {
-            }
-            else
-            {
-                var page2 = GetCurrentPage();
-                if (page2 != null)
-                    await page2.DisplayAlert("Error", $"Failed to delete: {error}", "OK");
-            }
+            if (!success)
+                await page.DisplayAlert("Error", $"Failed to delete: {error}", "OK");
         }
 
         private static Page? GetCurrentPage()
