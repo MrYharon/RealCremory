@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Cremory.App.OrderOptionsPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#80000000">
+
+    <Grid>
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Tapped="OnBackgroundTapped"/>
+        </Grid.GestureRecognizers>
+
+        <Border x:Name="Sheet"
+                VerticalOptions="End"
+                BackgroundColor="#FFFDFD"
+                StrokeShape="RoundRectangle 20,20,0,0"
+                Stroke="#F5E8E8" StrokeThickness="1"
+                Padding="0" Margin="0">
+            <VerticalStackLayout Spacing="0" Padding="24,12,24,24">
+                <BoxView HeightRequest="4" WidthRequest="36" CornerRadius="2"
+                         Color="#E8D4D4" HorizontalOptions="Center" Margin="0,0,0,16"/>
+
+                <Label FontSize="18" FontAttributes="Bold" TextColor="#2C2525"
+                       HorizontalOptions="Center" Margin="0,0,0,4">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Order Options"/>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label x:Name="OrderTitleLabel" FontSize="12" TextColor="#B89292"
+                       HorizontalOptions="Center" Margin="0,0,0,20"/>
+
+                <Border x:Name="EditOption" StrokeShape="RoundRectangle 12"
+                        BackgroundColor="#FDF5F5" Stroke="Transparent"
+                        Padding="16,14" Margin="0,0,0,8">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnEditTapped"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="✏️  Edit Order" FontSize="15" FontAttributes="Bold"
+                           TextColor="#2C2525"/>
+                </Border>
+
+                <Border x:Name="CancelOption" StrokeShape="RoundRectangle 12"
+                        BackgroundColor="#FDF5F5" Stroke="Transparent"
+                        Padding="16,14" Margin="0,0,0,8">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnCancelTapped"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="🚫  Cancel Order" FontSize="15" FontAttributes="Bold"
+                           TextColor="#2C2525"/>
+                </Border>
+
+                <Border x:Name="DeleteOption" StrokeShape="RoundRectangle 12"
+                        BackgroundColor="#FEF2F2" Stroke="#F5D0D0" StrokeThickness="1"
+                        Padding="16,14" Margin="0,0,0,4">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnDeleteTapped"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="🗑️  Delete Order" FontSize="15" FontAttributes="Bold"
+                           TextColor="#E27575"/>
+                </Border>
+
+                <Button Text="Close" Clicked="OnCloseClicked"
+                        BackgroundColor="#F5E8E8" TextColor="#7D5A5A"
+                        FontSize="14" HeightRequest="44" CornerRadius="10"
+                        Margin="0,12,0,0"/>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentPage>

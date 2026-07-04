@@ -175,5 +175,19 @@ namespace Cremory.App
         {
             await Navigation.PopModalAsync();
         }
+
+        private async void OnCopyTemplate(object sender, TappedEventArgs e)
+        {
+            var template = "Customer: (name)\nItems: 2x Croissant, 1x Ube Cake\nTotal: 250.00\nContact: 09171234567\nOrder: Pickup, 2pm";
+            await Clipboard.Default.SetTextAsync(template);
+
+            var label = sender as Label;
+            if (label != null)
+            {
+                label.Text = "✓ Copied!";
+                await Task.Delay(1500);
+                label.Text = "📋 Copy Template";
+            }
+        }
     }
 }

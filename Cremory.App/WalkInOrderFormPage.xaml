@@ -30,7 +30,19 @@
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="Items" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="6">
+                            <Label Text="Items" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
+                            <Border Grid.Column="1" StrokeShape="RoundRectangle 6"
+                                    BackgroundColor="#FDF5F5" Stroke="#E8D4D4" StrokeThickness="1"
+                                    Padding="8,2">
+                                <Label Text="📋 Copy Template" FontSize="10" FontAttributes="Bold"
+                                       TextColor="#7D5A5A" Padding="4,0">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCopyTemplate"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Border>
+                        </Grid>
                         <Border StrokeShape="RoundRectangle 8" Padding="10" Stroke="{StaticResource Gray200}"
                                 BackgroundColor="{StaticResource Gray50}">
                             <Editor x:Name="ItemsEditor" Placeholder="e.g. 2x Croissant, 1x Ube Cake"
@@ -38,7 +50,7 @@
                                     TextColor="{StaticResource Gray900}"
                                     BackgroundColor="Transparent"
                                     AutoSize="TextChanges"
-                                    HeightRequest="64" FontSize="13"/>
+                                    HeightRequest="80" FontSize="13"/>
                         </Border>
                     </VerticalStackLayout>
 

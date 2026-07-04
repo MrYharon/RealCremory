@@ -46,7 +46,7 @@
                         WidthRequest="36" HeightRequest="36"
                         Padding="0" CornerRadius="18"
                         Clicked="OnMoreClicked"/>
-                <Button Grid.Column="3" Text="{Binding ActionButtonText}"
+                <Button x:Name="ActionBtn" Grid.Column="3" Text="{Binding ActionButtonText}"
                         Clicked="OnActionClicked"
                         BackgroundColor="{Binding ActionButtonColor}"
                         TextColor="White"
