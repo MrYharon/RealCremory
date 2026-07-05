@@ -65,9 +65,7 @@ namespace Cremory.API.Controllers
                 var signature = Request.Headers["X-Hub-Signature-256"].FirstOrDefault();
                 if (string.IsNullOrEmpty(signature))
                 {
-                    _logger.LogWarning("Webhook: Missing X-Hub-Signature-256 header");
-                    if (!_env.IsDevelopment())
-                        return Ok();
+                    _logger.LogWarning("Webhook: Missing X-Hub-Signature-256 header - processing without validation");
                 }
                 else if (!IsValidSignature(body.GetRawText(), signature))
                 {
