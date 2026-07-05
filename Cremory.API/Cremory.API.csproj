@@ -21,9 +21,4 @@
     <InternalsVisibleTo Include="Cremory.API.Tests" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="fcm-service-account.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 </Project>

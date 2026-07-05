@@ -23,27 +23,34 @@ namespace Cremory.API.Services
             if (FirebaseApp.DefaultInstance != null)
                 return;
 
-            var json = Environment.GetEnvironmentVariable("FCM_SERVICE_ACCOUNT_JSON");
-            if (!string.IsNullOrEmpty(json))
+            try
             {
-                FirebaseApp.Create(new AppOptions
+                var json = Environment.GetEnvironmentVariable("FCM_SERVICE_ACCOUNT_JSON");
+                if (!string.IsNullOrEmpty(json))
                 {
-                    Credential = GoogleCredential.FromJson(json)
-                });
-                return;
-            }
+                    FirebaseApp.Create(new AppOptions
+                    {
+                        Credential = GoogleCredential.FromJson(json)
+                    });
+                    return;
+                }
 
-            var filePath = Path.Combine(env.ContentRootPath, "fcm-service-account.json");
-            if (File.Exists(filePath))
+                var filePath = Path.Combine(env.ContentRootPath, "fcm-service-account.json");
+                if (File.Exists(filePath))
+                {
+                    FirebaseApp.Create(new AppOptions
+                    {
+                        Credential = GoogleCredential.FromFile(filePath)
+                    });
+                    return;
+                }
+
+                FirebaseApp.Create();
+            }
+            catch (Exception ex)
             {
-                FirebaseApp.Create(new AppOptions
-                {
-                    Credential = GoogleCredential.FromFile(filePath)
-                });
-                return;
+                Console.WriteLine($"Firebase initialization skipped: {ex.Message}");
             }
-
-            FirebaseApp.Create();
         }
 
         public async Task SendOrderNotification(Order order)
