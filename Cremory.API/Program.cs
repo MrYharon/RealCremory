@@ -65,11 +65,8 @@ builder.Services.Configure<MessengerOptions>(options =>
                     }
                 }
 
-                if (!db.Products.Any())
-                {
-                    try { DbInitializer.Seed(db); }
-                    catch (Exception ex) { Console.WriteLine($"Seeding failed: {ex.Message}"); }
-                }
+                try { DbInitializer.Seed(db); }
+                catch (Exception ex) { Console.WriteLine($"Seeding failed: {ex.Message}"); }
             }
 
             app.Use(async (context, next) =>
