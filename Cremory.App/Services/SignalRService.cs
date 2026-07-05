@@ -9,6 +9,7 @@ namespace Cremory.App.Services
         private readonly string _hubUrl;
         private bool _disposed;
         private bool _started;
+        private readonly NotificationService _notifications;
 
         public event Action<OrderDto>? OrderCreated;
         public event Action<OrderDto>? OrderUpdated;
@@ -18,9 +19,10 @@ namespace Cremory.App.Services
         public bool IsConnected =>
             _connection?.State == HubConnectionState.Connected;
 
-        public SignalRService()
+        public SignalRService(NotificationService notifications)
         {
             _hubUrl = AppConfig.SignalrHub;
+            _notifications = notifications;
         }
 
         public async Task EnsureStartedAsync()
@@ -41,7 +43,11 @@ namespace Cremory.App.Services
 
             _connection.On<OrderDto>("OrderCreated", order =>
             {
-                MainThread.BeginInvokeOnMainThread(() => OrderCreated?.Invoke(order));
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    OrderCreated?.Invoke(order);
+                    _notifications.ShowOrderNotification(order);
+                });
             });
 
             _connection.On<OrderDto>("OrderUpdated", order =>

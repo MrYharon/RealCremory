@@ -23,6 +23,7 @@ namespace Cremory.API.Controllers
         private readonly IHubContext<OrderHub> _hubContext;
         private readonly ILogger<MessengerWebhookController> _logger;
         private readonly IWebHostEnvironment _env;
+        private readonly FcmNotificationService _fcm;
         private static readonly JsonSerializerOptions _jsonOptions = new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -35,7 +36,8 @@ namespace Cremory.API.Controllers
             CremoryDbContext context,
             IHubContext<OrderHub> hubContext,
             ILogger<MessengerWebhookController> logger,
-            IWebHostEnvironment env)
+            IWebHostEnvironment env,
+            FcmNotificationService fcm)
         {
             _messenger = messenger.Value;
             _orderParser = orderParser;
@@ -43,6 +45,7 @@ namespace Cremory.API.Controllers
             _hubContext = hubContext;
             _logger = logger;
             _env = env;
+            _fcm = fcm;
         }
 
         [HttpGet("webhook")]
@@ -109,6 +112,7 @@ namespace Cremory.API.Controllers
                     await _context.SaveChangesAsync();
 
                     await _hubContext.Clients.All.SendAsync("OrderCreated", order);
+                    await _fcm.SendOrderNotification(order);
                 }
             }
 

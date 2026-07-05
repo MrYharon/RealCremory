@@ -375,3 +375,6 @@ SYSTEM_STATE_SUMMARY.md
 
 # Local dev scripts with secrets
 start_api.cmd
+
+# Firebase service account (contains private key)
+fcm-service-account.json

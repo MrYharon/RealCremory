@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "438591289663",
+    "project_id": "cremory-d58f8",
+    "storage_bucket": "cremory-d58f8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:438591289663:android:052886f97c17d046fabb8a",
+        "android_client_info": {
+          "package_name": "com.companyname.cremory.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNSZa3vgNawcq1tZihQu-kUMihkAUR0Y4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

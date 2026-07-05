@@ -38,6 +38,7 @@ builder.Services.Configure<MessengerOptions>(options =>
         ?? builder.Configuration.GetSection(MessengerOptions.SectionName)["AppSecret"] ?? "";
 });
             builder.Services.AddScoped<OrderParserService>();
+            builder.Services.AddScoped<FcmNotificationService>();
 
             builder.Services.AddCors(options =>
             {
@@ -46,6 +47,8 @@ builder.Services.Configure<MessengerOptions>(options =>
             });
 
             var app = builder.Build();
+
+            FcmNotificationService.InitializeFirebase(app.Environment);
 
             using (var scope = app.Services.CreateScope())
             {

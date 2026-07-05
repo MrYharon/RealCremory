@@ -16,6 +16,7 @@ namespace Cremory.API.Data
         public DbSet<Recipe> Recipes { get; set; }
         public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<DeviceToken> DeviceTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,6 +29,7 @@ namespace Cremory.API.Data
             modelBuilder.Entity<Recipe>().ToTable("RECIPES");
             modelBuilder.Entity<RecipeIngredient>().ToTable("RECIPE_INGREDIENTS");
             modelBuilder.Entity<Order>().ToTable("ORDERS");
+            modelBuilder.Entity<DeviceToken>().ToTable("DEVICE_TOKENS");
 
             modelBuilder.Entity<Product>(entity =>
             {

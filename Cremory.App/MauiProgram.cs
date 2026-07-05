@@ -17,6 +17,7 @@ namespace Cremory.App
                 });
 
             builder.Services.AddSingleton<ApiService>();
+            builder.Services.AddSingleton<NotificationService>();
             builder.Services.AddSingleton<SignalRService>();
 
             builder.Services.AddTransient<MainPage>();

@@ -7,6 +7,7 @@ namespace Cremory.App.Services
     public class ApiService
     {
         private readonly HttpClient _httpClient;
+        public HttpClient HttpClient => _httpClient;
 
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
