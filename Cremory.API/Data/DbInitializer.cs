@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Cremory.API.Models;
 
 namespace Cremory.API.Data
@@ -6,9 +7,15 @@ namespace Cremory.API.Data
     {
         public static void Seed(CremoryDbContext context)
         {
-            context.Products.RemoveRange(context.Products);
-            context.Categories.RemoveRange(context.Categories);
-            context.SaveChanges();
+            try
+            {
+                context.Database.ExecuteSqlRaw("DELETE FROM \"RECIPE_INGREDIENTS\"");
+                context.Database.ExecuteSqlRaw("DELETE FROM \"RECIPES\"");
+                context.Database.ExecuteSqlRaw("DELETE FROM \"PRODUCTS\"");
+                context.Database.ExecuteSqlRaw("DELETE FROM \"CATEGORIES\"");
+                context.Database.ExecuteSqlRaw("DELETE FROM \"APP_SETTINGS\"");
+            }
+            catch { }
 
             var basque = new Category { Name = "Basque Burnt Cheesecake", DisplayOrder = 1 };
             var bread = new Category { Name = "Korean Cream Cheese Bread", DisplayOrder = 2 };
