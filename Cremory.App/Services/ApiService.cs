@@ -443,5 +443,42 @@ namespace Cremory.App.Services
                 return false;
             }
         }
+
+        public async Task<List<LowStockProductDto>> GetLowStockProductsAsync()
+        {
+            return await HttpGetAsync<List<LowStockProductDto>>("Settings/low-stock", "lowstock") ?? [];
+        }
+
+        public async Task<bool> GetAutoDeductEnabledAsync()
+        {
+            try
+            {
+                var result = await _httpClient.GetFromJsonAsync<AutoDeductResponse>("Settings/auto-deduct", JsonOptions);
+                return result?.AutoDeduct ?? true;
+            }
+            catch
+            {
+                return true;
+            }
+        }
+
+        public async Task<bool> SetAutoDeductEnabledAsync(bool enabled)
+        {
+            try
+            {
+                var payload = new { enabled };
+                var response = await _httpClient.PutAsJsonAsync("Settings/auto-deduct", payload, JsonOptions);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private class AutoDeductResponse
+        {
+            public bool AutoDeduct { get; set; }
+        }
     }
 }

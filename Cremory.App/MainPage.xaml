@@ -9,7 +9,7 @@
              Title="Live Orders"
              BackgroundColor="{StaticResource Gray50}">
 
-    <Grid RowDefinitions="Auto, Auto, Auto, *" Padding="20" RowSpacing="18">
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, *" Padding="20" RowSpacing="14">
 
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" ColumnSpacing="16">
             <VerticalStackLayout>
@@ -60,7 +60,25 @@
             </HorizontalStackLayout>
         </ScrollView>
 
-        <Border Grid.Row="2" StrokeShape="RoundRectangle 10" BackgroundColor="White" Padding="16" StrokeThickness="1" Stroke="{StaticResource Gray200}">
+        <Border x:Name="LowStockBanner" Grid.Row="2" StrokeShape="RoundRectangle 10" BackgroundColor="#FEF2F2"
+                Padding="12" StrokeThickness="1" Stroke="#FECACA" IsVisible="False">
+            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+                <Label Text="!" FontSize="16" FontAttributes="Bold" TextColor="#991B1B"
+                       VerticalOptions="Center" HorizontalOptions="Center"
+                       WidthRequest="28" HeightRequest="28" BackgroundColor="#FEE2E2"
+                       HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
+                <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                    <Label x:Name="LowStockTitle" FontSize="13" FontAttributes="Bold" TextColor="#991B1B"
+                           Text="Low Stock Alert"/>
+                    <Label x:Name="LowStockCount" FontSize="11" TextColor="#B91C1C"/>
+                </VerticalStackLayout>
+                <Button Grid.Column="2" Text="View" FontSize="11" HeightRequest="30" Padding="10,0"
+                        BackgroundColor="#DC2626" TextColor="White" FontAttributes="Bold"
+                        Clicked="OnViewLowStockClicked"/>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="3" StrokeShape="RoundRectangle 10" BackgroundColor="White" Padding="16" StrokeThickness="1" Stroke="{StaticResource Gray200}">
             <Grid ColumnDefinitions="Auto, Auto, *" ColumnSpacing="24">
                 <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
                     <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5" BackgroundColor="{StaticResource Success}" VerticalOptions="Center"/>
@@ -74,7 +92,7 @@
             </Grid>
         </Border>
 
-        <RefreshView Grid.Row="3" x:Name="MainRefreshView" Refreshing="OnRefreshing">
+        <RefreshView Grid.Row="4" x:Name="MainRefreshView" Refreshing="OnRefreshing">
             <Grid>
                 <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
                                    Color="{StaticResource Primary}" VerticalOptions="Start" HorizontalOptions="Center"

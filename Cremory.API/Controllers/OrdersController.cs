@@ -145,7 +145,11 @@ namespace Cremory.API.Controllers
 
             if (request.Status == OrderStatus.Completed)
             {
-                await DeductStockFromItems(order.Items);
+                var setting = await _context.AppSettings.FindAsync("auto_deduct");
+                if (setting?.Value != "false")
+                {
+                    await DeductStockFromItems(order.Items);
+                }
             }
 
             await _context.SaveChangesAsync();
@@ -188,23 +192,18 @@ namespace Cremory.API.Controllers
             if (string.IsNullOrWhiteSpace(itemsText))
                 return;
 
-            var products = await _context.Products.Where(p => p.IsActive).ToListAsync();
+            var products = await _context.Products
+                .Where(p => p.IsActive && p.AutoDeduct)
+                .ToListAsync();
             var textLower = itemsText.ToLowerInvariant();
             var updated = new HashSet<int>();
 
             foreach (var product in products)
             {
-                var matchNames = new[]
-                {
-                    product.Name?.ToLowerInvariant(),
-                    product.Variant?.ToLowerInvariant(),
-                    product.Flavor?.ToLowerInvariant()
-                }.Where(n => !string.IsNullOrEmpty(n)).Distinct();
-
-                if (!matchNames.Any(name => textLower.Contains(name)))
+                if (!AllFieldsMatch(textLower, product))
                     continue;
 
-                var qty = ParseQuantityPrefix(textLower, product);
+                var qty = ResolveQuantity(textLower, product);
                 if (qty > 0 && !updated.Contains(product.ProductId))
                 {
                     product.CurrentStock = Math.Max(0, product.CurrentStock - qty);
@@ -213,27 +212,51 @@ namespace Cremory.API.Controllers
             }
         }
 
-        private static int ParseQuantityPrefix(string textLower, Product product)
+        private static bool AllFieldsMatch(string textLower, Product product)
         {
-            var keywords = new[]
+            var fields = new[]
             {
+                product.Name?.ToLowerInvariant(),
                 product.Flavor?.ToLowerInvariant(),
-                product.Variant?.ToLowerInvariant(),
-                product.Name?.ToLowerInvariant()
-            }.Where(n => !string.IsNullOrEmpty(n)).Distinct();
+                product.Variant?.ToLowerInvariant()
+            };
 
-            foreach (var keyword in keywords)
+            var matchedAny = false;
+            foreach (var field in fields)
             {
-                var idx = textLower.IndexOf(keyword);
-                if (idx < 0) continue;
+                if (string.IsNullOrEmpty(field)) continue;
+                if (!textLower.Contains(field)) return false;
+                matchedAny = true;
+            }
+            return matchedAny;
+        }
 
-                var before = idx > 3 ? textLower[(idx - 3)..idx] : textLower[..idx];
-                var numMatch = System.Text.RegularExpressions.Regex.Match(before, @"(\d+)\s*[xX]?\s*$");
-                if (numMatch.Success && int.TryParse(numMatch.Groups[1].Value, out var qty))
-                    return qty;
+        private static int ResolveQuantity(string textLower, Product product)
+        {
+            var unitQty = 1;
+
+            if (!string.IsNullOrEmpty(product.Variant))
+            {
+                var variantLower = product.Variant.ToLowerInvariant();
+                var boxMatch = System.Text.RegularExpressions.Regex.Match(variantLower, @"box\s+of\s+(\d+)");
+                if (boxMatch.Success && int.TryParse(boxMatch.Groups[1].Value, out var boxSize))
+                    unitQty = boxSize;
             }
 
-            return 1;
+            if (!string.IsNullOrEmpty(product.Name))
+            {
+                var nameLower = product.Name.ToLowerInvariant();
+                var idx = textLower.IndexOf(nameLower);
+                if (idx >= 0)
+                {
+                    var before = idx > 4 ? textLower[(idx - 4)..idx] : textLower[..idx];
+                    var prefix = System.Text.RegularExpressions.Regex.Match(before, @"(\d+)\s*[xX]?\s*$");
+                    if (prefix.Success && int.TryParse(prefix.Groups[1].Value, out var mult))
+                        return mult * unitQty;
+                }
+            }
+
+            return unitQty;
         }
     }
 

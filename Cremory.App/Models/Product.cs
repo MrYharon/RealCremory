@@ -12,6 +12,8 @@ namespace Cremory.App.Models
         public decimal? AddOnPricePerUnit { get; set; }
         public bool IsActive { get; set; }
         public int DisplayOrder { get; set; }
+        public string? Unit { get; set; }
+        public bool AutoDeduct { get; set; }
         public int CurrentStock { get; set; }
         public int LowStockThreshold { get; set; } = 10;
         public double ActiveOpacity => IsActive ? 1.0 : 0.5;
@@ -53,5 +55,16 @@ namespace Cremory.App.Models
     {
         public int ProductId { get; set; }
         public int NewStock { get; set; }
+    }
+
+    public class LowStockProductDto
+    {
+        public int ProductId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string? Variant { get; set; }
+        public string? Flavor { get; set; }
+        public int CurrentStock { get; set; }
+        public int LowStockThreshold { get; set; }
+        public string? Unit { get; set; }
     }
 }

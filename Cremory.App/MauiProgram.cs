@@ -28,6 +28,7 @@ namespace Cremory.App
             builder.Services.AddTransient<OrderParserPage>();
             builder.Services.AddTransient<ProductPage>();
             builder.Services.AddTransient<RecipePage>();
+            builder.Services.AddTransient<SettingsPage>();
 
 #if DEBUG
             builder.Logging.AddDebug();

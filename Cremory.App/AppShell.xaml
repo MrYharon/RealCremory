@@ -56,4 +56,8 @@
         <ShellContent ContentTemplate="{DataTemplate local:AnalyticsPage}" Route="AnalyticsPage" />
     </FlyoutItem>
 
+    <FlyoutItem Title="Settings">
+        <ShellContent ContentTemplate="{DataTemplate local:SettingsPage}" Route="SettingsPage" />
+    </FlyoutItem>
+
 </Shell>

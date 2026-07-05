@@ -54,7 +54,7 @@
                                 Stroke="{StaticResource Gray200}" Padding="16" Margin="0,0,0,10"
                                 Opacity="{Binding ActiveOpacity}"
                                 BackgroundColor="White">
-                            <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto" RowSpacing="6">
+                            <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="4">
                                 <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="8">
                                     <Label FontSize="16" FontAttributes="Bold"
                                            TextColor="{StaticResource Gray900}"
@@ -88,6 +88,24 @@
                                         </MultiBinding>
                                     </Label.Text>
                                 </Label>
+                                <HorizontalStackLayout Grid.Row="3" Grid.ColumnSpan="2" Spacing="8">
+                                    <Label FontSize="11" TextColor="{StaticResource Gray400}">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="Stock: {0}/{1} {2}">
+                                                <Binding Path="CurrentStock"/>
+                                                <Binding Path="LowStockThreshold"/>
+                                                <Binding Path="Unit"/>
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+                                    <Border StrokeShape="RoundRectangle 4" Padding="6,2"
+                                            BackgroundColor="{StaticResource Danger}"
+                                            Stroke="Transparent"
+                                            IsVisible="{Binding IsLowStock}">
+                                        <Label Text="Low!" FontSize="9" FontAttributes="Bold"
+                                               TextColor="White"/>
+                                    </Border>
+                                </HorizontalStackLayout>
                             </Grid>
                         </Border>
                     </SwipeView>

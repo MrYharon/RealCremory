@@ -7,7 +7,7 @@
              Title="{Binding Title}"
              BackgroundColor="{StaticResource Gray50}">
 
-    <Grid RowDefinitions="*, Auto" Padding="20" RowSpacing="16">
+    <Grid RowDefinitions="*, Auto" Padding="20" RowSpacing="12">
         <ScrollView>
             <VerticalStackLayout Spacing="16">
                 <VerticalStackLayout Spacing="6">
@@ -51,9 +51,38 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <Grid ColumnDefinitions="*, Auto" Padding="0,8">
+                <Grid ColumnDefinitions="*, Auto" Padding="0,4">
                     <Label Text="Active" FontSize="15" TextColor="{StaticResource Gray900}" VerticalOptions="Center"/>
                     <Switch x:Name="ActiveSwitch" Grid.Column="1" IsToggled="True" OnColor="{StaticResource Success}"/>
+                </Grid>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Unit" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="12,8" Stroke="{StaticResource Gray200}">
+                        <Entry x:Name="UnitEntry" Placeholder="e.g. piece, box, cake" FontSize="15"
+                               TextColor="{StaticResource Gray900}" PlaceholderColor="{StaticResource Gray400}"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Current Stock" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="12,8" Stroke="{StaticResource Gray200}">
+                        <Entry x:Name="StockEntry" Placeholder="0" Keyboard="Numeric" FontSize="15"
+                               TextColor="{StaticResource Gray900}" PlaceholderColor="{StaticResource Gray400}"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Low Stock Threshold" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="12,8" Stroke="{StaticResource Gray200}">
+                        <Entry x:Name="ThresholdEntry" Placeholder="10" Keyboard="Numeric" FontSize="15"
+                               TextColor="{StaticResource Gray900}" PlaceholderColor="{StaticResource Gray400}"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <Grid ColumnDefinitions="*, Auto" Padding="0,4">
+                    <Label Text="Auto Deduct Stock" FontSize="15" TextColor="{StaticResource Gray900}" VerticalOptions="Center"/>
+                    <Switch x:Name="AutoDeductSwitch" Grid.Column="1" IsToggled="True" OnColor="{StaticResource Success}"/>
                 </Grid>
             </VerticalStackLayout>
         </ScrollView>

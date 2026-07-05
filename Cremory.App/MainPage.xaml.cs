@@ -149,6 +149,8 @@ namespace Cremory.App
 
                     RefreshTotals();
                 });
+
+                _ = LoadLowStockAsync();
             }
             catch
             {
@@ -165,6 +167,38 @@ namespace Cremory.App
                     OnPropertyChanged(nameof(IsLoading));
                 });
             }
+        }
+
+        private async Task LoadLowStockAsync()
+        {
+            try
+            {
+                var lowStock = await _api.GetLowStockProductsAsync();
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    if (lowStock.Count > 0)
+                    {
+                        LowStockBanner.IsVisible = true;
+                        LowStockTitle.Text = $"Low Stock Alert ({lowStock.Count})";
+                        LowStockCount.Text = string.Join(", ", lowStock.Take(3).Select(p =>
+                            $"{p.Name} ({p.CurrentStock}/{p.LowStockThreshold})"));
+                        if (lowStock.Count > 3)
+                            LowStockCount.Text += $" and {lowStock.Count - 3} more";
+                    }
+                    else
+                    {
+                        LowStockBanner.IsVisible = false;
+                    }
+                });
+            }
+            catch { }
+        }
+
+        private async void OnViewLowStockClicked(object sender, EventArgs e)
+        {
+            var shell = Shell.Current;
+            if (shell != null)
+                await shell.GoToAsync("//SettingsPage");
         }
 
         private void RefreshTotals()

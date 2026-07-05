@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Cremory.App.SettingsPage"
+             Title="Settings"
+             BackgroundColor="{StaticResource Gray50}">
+
+    <ScrollView Padding="20">
+        <VerticalStackLayout Spacing="20">
+            <Label Text="Stock Deduction" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
+
+            <Border StrokeShape="RoundRectangle 12" BackgroundColor="White" Padding="16" Stroke="{StaticResource Gray200}">
+                <Grid RowDefinitions="Auto, Auto" RowSpacing="8">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="Auto Deduct Stock" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
+                            <Label Text="Automatically reduce stock when orders are completed" FontSize="13" TextColor="{StaticResource Gray500}"/>
+                        </VerticalStackLayout>
+                        <Switch x:Name="AutoDeductSwitch" Grid.Column="1" IsToggled="True"
+                                OnColor="{StaticResource Success}" Toggled="OnAutoDeductToggled"/>
+                    </Grid>
+                    <Label x:Name="AutoDeductStatus" Grid.Row="1" FontSize="12" TextColor="{StaticResource Gray400}" Text=""/>
+                </Grid>
+            </Border>
+
+            <Label Text="Low Stock Products" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource Gray900}"
+                   Margin="0,8,0,0"/>
+
+            <ActivityIndicator x:Name="LoadingIndicator" IsRunning="False" IsVisible="False"
+                               Color="{StaticResource Primary}" HorizontalOptions="Center"/>
+
+            <VerticalStackLayout x:Name="LowStockList" Spacing="8"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

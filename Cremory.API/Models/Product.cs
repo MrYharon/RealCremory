@@ -53,6 +53,13 @@ namespace Cremory.API.Models
         [Range(0, int.MaxValue)]
         public int LowStockThreshold { get; set; } = 10;
 
+        [Column("UNIT")]
+        [StringLength(20)]
+        public string? Unit { get; set; }
+
+        [Column("AUTO_DEDUCT")]
+        public bool AutoDeduct { get; set; } = true;
+
         [ForeignKey(nameof(CategoryId))]
         public Category? Category { get; set; }
     }

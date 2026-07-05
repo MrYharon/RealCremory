@@ -27,6 +27,10 @@ namespace Cremory.App
                 FlavorEntry.Text = existing.Flavor;
                 PriceEntry.Text = existing.BasePrice.ToString();
                 ActiveSwitch.IsToggled = existing.IsActive;
+                UnitEntry.Text = existing.Unit;
+                StockEntry.Text = existing.CurrentStock.ToString();
+                ThresholdEntry.Text = existing.LowStockThreshold.ToString();
+                AutoDeductSwitch.IsToggled = existing.AutoDeduct;
 
                 var idx = categories.FindIndex(c => c.CategoryId == existing.CategoryId);
                 if (idx >= 0)
@@ -70,6 +74,14 @@ namespace Cremory.App
             product.BasePrice = price;
             product.IsActive = ActiveSwitch.IsToggled;
             product.CategoryId = _categories[CategoryPicker.SelectedIndex].CategoryId;
+            product.Unit = UnitEntry?.Text?.Trim();
+            product.AutoDeduct = AutoDeductSwitch.IsToggled;
+
+            if (int.TryParse(StockEntry?.Text?.Trim(), out var stock))
+                product.CurrentStock = stock;
+
+            if (int.TryParse(ThresholdEntry?.Text?.Trim(), out var threshold))
+                product.LowStockThreshold = threshold;
 
             _tcs.TrySetResult(product);
             await Navigation.PopModalAsync();
