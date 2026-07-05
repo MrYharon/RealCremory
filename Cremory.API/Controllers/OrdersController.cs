@@ -148,7 +148,7 @@ namespace Cremory.API.Controllers
                 var setting = await _context.AppSettings.FindAsync("auto_deduct");
                 if (setting?.Value != "false")
                 {
-                    await DeductStockFromItems(order.Items);
+                    await DeductStockFromItems(order.Items, order.TotalPrice);
                 }
             }
 
@@ -187,7 +187,7 @@ namespace Cremory.API.Controllers
             return $"{prefix}-{timestamp}";
         }
 
-        private async Task DeductStockFromItems(string itemsText)
+        private async Task DeductStockFromItems(string itemsText, decimal totalPrice)
         {
             if (string.IsNullOrWhiteSpace(itemsText))
                 return;
@@ -198,13 +198,28 @@ namespace Cremory.API.Controllers
             var textLower = itemsText.ToLowerInvariant();
             var updated = new HashSet<int>();
 
+            var mentionsBox = textLower.Contains("box");
+            var mentionsRound = textLower.Contains("round") || textLower.Contains("inch");
+
             foreach (var product in products)
             {
-                if (!AllFieldsMatch(textLower, product))
+                if (!FlavorMatches(textLower, product))
                     continue;
 
+                var variant = product.Variant?.ToLowerInvariant() ?? "";
+                var isBox = variant.Contains("box");
+                var isRound = variant.Contains("round") || variant.Contains("inch");
+                var isSolo = !isBox && !isRound;
+
+                if (mentionsBox && !isBox) continue;
+                if (mentionsRound && !isRound) continue;
+                if (!mentionsBox && !mentionsRound && isBox) continue;
+                if (!mentionsBox && !mentionsRound && isRound) continue;
+
+                if (updated.Contains(product.ProductId)) continue;
+
                 var qty = ResolveQuantity(textLower, product);
-                if (qty > 0 && !updated.Contains(product.ProductId))
+                if (qty > 0)
                 {
                     product.CurrentStock = Math.Max(0, product.CurrentStock - qty);
                     updated.Add(product.ProductId);
@@ -212,51 +227,33 @@ namespace Cremory.API.Controllers
             }
         }
 
-        private static bool AllFieldsMatch(string textLower, Product product)
+        private static bool FlavorMatches(string textLower, Product product)
         {
-            var fields = new[]
-            {
-                product.Name?.ToLowerInvariant(),
-                product.Flavor?.ToLowerInvariant(),
-                product.Variant?.ToLowerInvariant()
-            };
-
-            var matchedAny = false;
-            foreach (var field in fields)
-            {
-                if (string.IsNullOrEmpty(field)) continue;
-                if (!textLower.Contains(field)) return false;
-                matchedAny = true;
-            }
-            return matchedAny;
+            var flavor = product.Flavor?.ToLowerInvariant();
+            if (string.IsNullOrEmpty(flavor)) return false;
+            return textLower.Contains(flavor);
         }
 
         private static int ResolveQuantity(string textLower, Product product)
         {
-            var unitQty = 1;
+            var variant = product.Variant?.ToLowerInvariant() ?? "";
+            if (variant.Contains("box") || variant.Contains("round") || variant.Contains("inch"))
+                return 1;
 
-            if (!string.IsNullOrEmpty(product.Variant))
+            var flavor = product.Flavor?.ToLowerInvariant();
+            if (!string.IsNullOrEmpty(flavor))
             {
-                var variantLower = product.Variant.ToLowerInvariant();
-                var boxMatch = System.Text.RegularExpressions.Regex.Match(variantLower, @"box\s+of\s+(\d+)");
-                if (boxMatch.Success && int.TryParse(boxMatch.Groups[1].Value, out var boxSize))
-                    unitQty = boxSize;
-            }
-
-            if (!string.IsNullOrEmpty(product.Name))
-            {
-                var nameLower = product.Name.ToLowerInvariant();
-                var idx = textLower.IndexOf(nameLower);
+                var idx = textLower.IndexOf(flavor);
                 if (idx >= 0)
                 {
                     var before = idx > 4 ? textLower[(idx - 4)..idx] : textLower[..idx];
                     var prefix = System.Text.RegularExpressions.Regex.Match(before, @"(\d+)\s*[xX]?\s*$");
                     if (prefix.Success && int.TryParse(prefix.Groups[1].Value, out var mult))
-                        return mult * unitQty;
+                        return mult;
                 }
             }
 
-            return unitQty;
+            return 1;
         }
     }
 
