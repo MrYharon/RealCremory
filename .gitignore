@@ -370,6 +370,8 @@ SYSTEM_STATE_SUMMARY.md
 
 # Local SQLite development database
 *.db
+*.db-shm
+*.db-wal
 
 # Local dev scripts with secrets
 start_api.cmd

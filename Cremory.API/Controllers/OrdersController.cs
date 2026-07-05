@@ -84,7 +84,6 @@ namespace Cremory.API.Controllers
             order.UpdatedAt = DateTime.UtcNow;
 
             _context.Orders.Add(order);
-            await DeductStockFromItems(order.Items);
             await _context.SaveChangesAsync();
 
             await _hubContext.Clients.All.SendAsync("OrderCreated", order);
@@ -103,7 +102,6 @@ namespace Cremory.API.Controllers
             order.OrderId = GenerateOrderId(order.Source);
 
             _context.Orders.Add(order);
-            await DeductStockFromItems(order.Items);
             await _context.SaveChangesAsync();
 
             await _hubContext.Clients.All.SendAsync("OrderCreated", order);
@@ -144,6 +142,11 @@ namespace Cremory.API.Controllers
 
             order.Status = request.Status;
             order.UpdatedAt = DateTime.UtcNow;
+
+            if (request.Status == OrderStatus.Completed)
+            {
+                await DeductStockFromItems(order.Items);
+            }
 
             await _context.SaveChangesAsync();
 
