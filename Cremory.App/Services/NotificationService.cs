@@ -1,6 +1,8 @@
+#if ANDROID
 using Android.App;
 using Android.Content;
 using Android.OS;
+#endif
 using Cremory.App.Models;
 
 namespace Cremory.App.Services
@@ -10,6 +12,7 @@ namespace Cremory.App.Services
         public const string ChannelId = "order_notifications";
         private const string ChannelName = "Order Notifications";
 
+#if ANDROID
         public static void CreateNotificationChannel()
         {
             if (Build.VERSION.SdkInt < BuildVersionCodes.O)
@@ -58,5 +61,9 @@ namespace Cremory.App.Services
             var manager = (NotificationManager?)context.GetSystemService(Context.NotificationService);
             manager?.Notify(order.OrderId.GetHashCode(), notification);
         }
+#else
+        public static void CreateNotificationChannel() { }
+        public void ShowOrderNotification(OrderDto order) { }
+#endif
     }
 }
