@@ -23,13 +23,7 @@
                 </Grid>
             </Border>
 
-            <Label Text="Low Stock Products" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource Gray900}"
-                   Margin="0,8,0,0"/>
 
-            <ActivityIndicator x:Name="LoadingIndicator" IsRunning="False" IsVisible="False"
-                               Color="{StaticResource Primary}" HorizontalOptions="Center"/>
-
-            <VerticalStackLayout x:Name="LowStockList" Spacing="8"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

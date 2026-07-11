@@ -125,25 +125,43 @@
                 <Border StrokeShape="RoundRectangle 12" BackgroundColor="White" Padding="16"
                         Stroke="{StaticResource Gray200}">
                     <VerticalStackLayout Spacing="6">
-                        <Label Text="Order Sources" FontSize="14" FontAttributes="Bold"
+                        <Label Text="Low Stock Products" FontSize="14" FontAttributes="Bold"
                                TextColor="{StaticResource Gray900}"/>
                         <BoxView HeightRequest="1" Color="{StaticResource Gray100}"/>
-                        <Grid RowDefinitions="Auto, Auto" RowSpacing="14" ColumnDefinitions="*, Auto" Margin="0,8,0,0">
-                            <Label Grid.Row="0" Grid.Column="0" Text="Facebook" FontSize="12"
-                                   TextColor="{StaticResource Gray700}"/>
-                            <Label x:Name="FbPctLabel" Grid.Row="0" Grid.Column="1" Text="--" FontSize="14"
-                                   FontAttributes="Bold" TextColor="{StaticResource Info}" HorizontalOptions="End"/>
-                            <Label Grid.Row="1" Grid.Column="0" Text="Walk-in" FontSize="12"
-                                   TextColor="{StaticResource Gray700}"/>
-                            <Label x:Name="WalkInPctLabel" Grid.Row="1" Grid.Column="1" Text="--" FontSize="14"
-                                   FontAttributes="Bold" TextColor="{StaticResource Success}" HorizontalOptions="End"/>
-                        </Grid>
-                        <VerticalStackLayout Spacing="8" Margin="0,4,0,0">
-                            <ProgressBar x:Name="FbProgress" Progress="0" ProgressColor="{StaticResource Info}"
-                                         HeightRequest="6"/>
-                            <ProgressBar x:Name="WalkInProgress" Progress="0" ProgressColor="{StaticResource Success}"
-                                         HeightRequest="6"/>
-                        </VerticalStackLayout>
+                        <CollectionView x:Name="LowStockCollection" HeightRequest="200">
+                            <CollectionView.EmptyView>
+                                <Label Text="All products are well-stocked" FontSize="12"
+                                       TextColor="{StaticResource Gray400}"
+                                       HorizontalTextAlignment="Center" Padding="0,20"/>
+                            </CollectionView.EmptyView>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:LowStockProductDto">
+                                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="#FFF5F5"
+                                            Padding="10" Margin="0,0,0,6" Stroke="#FECACA" StrokeThickness="1">
+                                        <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" RowSpacing="2">
+                                            <Label Text="{Binding Name}" FontSize="12" FontAttributes="Bold"
+                                                   TextColor="{StaticResource Gray800}"/>
+                                            <Border Grid.Column="1" StrokeShape="RoundRectangle 4"
+                                                    BackgroundColor="{StaticResource Danger}" Stroke="Transparent"
+                                                    Padding="6,2" VerticalOptions="Start">
+                                                <Label Text="Low!" FontSize="9" FontAttributes="Bold" TextColor="White"/>
+                                            </Border>
+                                            <Label Grid.Row="1" Grid.ColumnSpan="2" FontSize="11"
+                                                   TextColor="{StaticResource Gray500}">
+                                                <Label.Text>
+                                                    <MultiBinding StringFormat="{}{0} · Stock: {1}/{2} {3}">
+                                                        <Binding Path="Variant"/>
+                                                        <Binding Path="CurrentStock"/>
+                                                        <Binding Path="LowStockThreshold"/>
+                                                        <Binding Path="Unit"/>
+                                                    </MultiBinding>
+                                                </Label.Text>
+                                            </Label>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
                     </VerticalStackLayout>
                 </Border>
             </Grid>

@@ -41,12 +41,6 @@ namespace Cremory.App
                 if (dashboard != null)
                 {
                     PopularItemsCollection.ItemsSource = dashboard.PopularItems;
-
-                    FbPctLabel.Text = $"{dashboard.FacebookPct}%";
-                    WalkInPctLabel.Text = $"{dashboard.WalkInPct}%";
-                    FbProgress.Progress = dashboard.FacebookPct / 100.0;
-                    WalkInProgress.Progress = dashboard.WalkInPct / 100.0;
-
                     LowStockLabel.Text = dashboard.LowStockCount.ToString();
                 }
 
@@ -70,6 +64,9 @@ namespace Cremory.App
 
                 if (dashboard != null)
                     BuildWeeklyChart(dashboard.WeeklySales, dashboard.WeekLabels);
+
+                var lowStock = await _api.GetLowStockProductsAsync();
+                LowStockCollection.ItemsSource = lowStock;
             }
             catch
             {
