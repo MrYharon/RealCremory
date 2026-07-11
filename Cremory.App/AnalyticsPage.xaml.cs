@@ -40,8 +40,10 @@ namespace Cremory.App
 
                 if (dashboard != null)
                 {
-                    PopularItemsCollection.ItemsSource = dashboard.PopularItems;
-                    LowStockLabel.Text = dashboard.LowStockCount.ToString();
+                    FbPctLabel.Text = $"{dashboard.FacebookPct}%";
+                    WalkInPctLabel.Text = $"{dashboard.WalkInPct}%";
+                    FbProgress.Progress = dashboard.FacebookPct / 100.0;
+                    WalkInProgress.Progress = dashboard.WalkInPct / 100.0;
                 }
 
                 if (finance != null)
