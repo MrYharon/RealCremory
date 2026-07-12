@@ -140,7 +140,9 @@ namespace Cremory.App
 
             try
             {
-                await _signalR.EnsureStartedAsync();
+                var connectTask = _signalR.EnsureStartedAsync();
+                var timeoutTask = Task.Delay(5000);
+                await Task.WhenAny(connectTask, timeoutTask);
                 _currentPage = 1;
                 _hasMorePages = true;
 

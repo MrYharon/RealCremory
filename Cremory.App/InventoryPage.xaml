@@ -6,42 +6,25 @@
              Title="Inventory"
              BackgroundColor="{StaticResource Gray50}">
 
-    <Grid RowDefinitions="Auto, Auto, Auto, *" Padding="16" RowSpacing="12">
+    <Grid RowDefinitions="Auto, Auto, *" Padding="16" RowSpacing="12">
         <VerticalStackLayout Grid.Row="0" Spacing="4">
             <Label Text="Inventory" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource Gray900}"/>
             <Label Text="Stock levels and finished goods" FontSize="12" TextColor="{StaticResource Gray500}"/>
         </VerticalStackLayout>
 
-        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="10">
-            <Border Grid.Column="0" StrokeShape="RoundRectangle 8" Padding="0" StrokeThickness="0"
-                    BackgroundColor="Transparent">
-                <Button x:Name="IngredientsTabBtn" Text="Ingredients"
-                        Clicked="OnIngredientsTabClicked"
-                        BackgroundColor="{StaticResource Primary}" TextColor="White"
-                        FontSize="13" FontAttributes="Bold" CornerRadius="8" HeightRequest="38"/>
-            </Border>
-            <Border Grid.Column="1" StrokeShape="RoundRectangle 8" Padding="0" StrokeThickness="0"
-                    BackgroundColor="Transparent">
-                <Button x:Name="FinishedStockTabBtn" Text="Finished Stock"
-                        Clicked="OnFinishedStockTabClicked"
-                        BackgroundColor="{StaticResource Gray200}" TextColor="{StaticResource Gray700}"
-                        FontSize="13" CornerRadius="8" HeightRequest="38"/>
-            </Border>
-        </Grid>
-
-        <Border Grid.Row="2" StrokeShape="RoundRectangle 8" BackgroundColor="White"
+        <Border Grid.Row="1" StrokeShape="RoundRectangle 8" BackgroundColor="White"
                 Padding="10" StrokeThickness="1" Stroke="{StaticResource Gray200}">
             <SearchBar x:Name="InventorySearchBar" Placeholder="Search..."
                        TextChanged="OnSearchTextChanged"
                        BackgroundColor="{StaticResource Gray50}" FontSize="12" HeightRequest="36"/>
         </Border>
 
-        <RefreshView Grid.Row="3" x:Name="InventoryRefreshView" Refreshing="OnRefreshing">
+        <RefreshView Grid.Row="2" x:Name="InventoryRefreshView" Refreshing="OnRefreshing">
             <Grid>
                 <ActivityIndicator x:Name="LoadingIndicator" IsRunning="False" IsVisible="False"
                                    Color="{StaticResource Primary}" VerticalOptions="Center" HorizontalOptions="Center"/>
 
-                <CollectionView x:Name="IngredientsCollectionView" IsVisible="True">
+                <CollectionView x:Name="IngredientsCollectionView">
                     <CollectionView.EmptyView>
                         <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8"
                                              Padding="0,40">
@@ -107,119 +90,6 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-
-                <CollectionView x:Name="StockCollectionView" IsVisible="False">
-                    <CollectionView.EmptyView>
-                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8"
-                                             Padding="0,40">
-                            <Label Text="No products with stock tracking" FontSize="18" FontAttributes="Bold"
-                                   TextColor="{StaticResource Gray400}" HorizontalTextAlignment="Center"/>
-                            <Label Text="Add products to the menu to track finished goods stock"
-                                   FontSize="12" TextColor="{StaticResource Gray400}" HorizontalTextAlignment="Center"/>
-                        </VerticalStackLayout>
-                    </CollectionView.EmptyView>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:ProductStockDto">
-                            <Border StrokeShape="RoundRectangle 10" StrokeThickness="1"
-                                    Stroke="{StaticResource Gray200}" Padding="12" Margin="0,0,0,8"
-                                    BackgroundColor="White">
-                                <Grid RowSpacing="8">
-                                    <Grid ColumnDefinitions="*, Auto, Auto, Auto" ColumnSpacing="6">
-                                        <VerticalStackLayout Spacing="1">
-                                            <HorizontalStackLayout Spacing="6">
-                                                <Label Text="{Binding Name}" FontSize="15" FontAttributes="Bold"
-                                                       TextColor="{StaticResource Gray900}"
-                                                       LineBreakMode="TailTruncation" MaxLines="1"/>
-                                                <Border StrokeShape="RoundRectangle 4" Padding="5,1"
-                                                        BackgroundColor="{StaticResource Danger}"
-                                                        Stroke="Transparent" IsVisible="{Binding IsLowStock}">
-                                                    <Label Text="Low" FontSize="8" FontAttributes="Bold"
-                                                           TextColor="White"/>
-                                                </Border>
-                                            </HorizontalStackLayout>
-                                            <Label FontSize="11" TextColor="{StaticResource Gray500}"
-                                                   LineBreakMode="TailTruncation" MaxLines="1">
-                                                <Label.Text>
-                                                    <MultiBinding StringFormat="{}{0} — {1}">
-                                                        <Binding Path="Variant"/>
-                                                        <Binding Path="Flavor"/>
-                                                    </MultiBinding>
-                                                </Label.Text>
-                                            </Label>
-                                        </VerticalStackLayout>
-                                        <Button Grid.Column="1" Text="−" FontSize="16"
-                                                BackgroundColor="{StaticResource Gray100}"
-                                                TextColor="{StaticResource Gray700}"
-                                                CornerRadius="6" Padding="0" HeightRequest="34" WidthRequest="36"
-                                                Clicked="OnDecrementStockClicked"/>
-                                        <Border Grid.Column="2" StrokeShape="RoundRectangle 6"
-                                                BackgroundColor="{StaticResource PrimaryLight}"
-                                                Stroke="{StaticResource Primary}" StrokeThickness="1" Padding="10,4"
-                                                VerticalOptions="Center" MinimumWidthRequest="44">
-                                            <Label Text="{Binding CurrentStock}" FontSize="18" FontAttributes="Bold"
-                                                   TextColor="{StaticResource PrimaryDark}" HorizontalOptions="Center"/>
-                                        </Border>
-                                        <Button Grid.Column="3" Text="+" FontSize="16"
-                                                BackgroundColor="{StaticResource Primary}"
-                                                TextColor="White"
-                                                CornerRadius="6" Padding="0" HeightRequest="34" WidthRequest="36"
-                                                Clicked="OnIncrementStockClicked"/>
-                                    </Grid>
-                                    <HorizontalStackLayout Spacing="6">
-                                        <Button Text="Set Exact" FontSize="10" Padding="8,2" HeightRequest="28"
-                                                CornerRadius="5" BackgroundColor="{StaticResource Info}"
-                                                TextColor="White" Clicked="OnSetExactStockClicked"/>
-                                        <Button Text="Record Production" FontSize="10" Padding="8,2" HeightRequest="28"
-                                                CornerRadius="5" BackgroundColor="{StaticResource Success}"
-                                                TextColor="White" Clicked="OnRecordProductionClicked"/>
-                                    </HorizontalStackLayout>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-
-                <VerticalStackLayout x:Name="SkeletonLoading" Spacing="8" Padding="0" IsVisible="False">
-                    <Border StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Gray100}"
-                            Stroke="Transparent" Padding="12" HeightRequest="72">
-                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
-                            <VerticalStackLayout Spacing="6" VerticalOptions="Center">
-                                <BoxView CornerRadius="3" HeightRequest="12" WidthRequest="140"
-                                         Color="{StaticResource Gray200}" HorizontalOptions="Start"/>
-                                <BoxView CornerRadius="3" HeightRequest="8" WidthRequest="80"
-                                         Color="{StaticResource Gray200}" HorizontalOptions="Start"/>
-                            </VerticalStackLayout>
-                            <BoxView Grid.Column="1" CornerRadius="3" HeightRequest="28" WidthRequest="50"
-                                     Color="{StaticResource Gray200}" VerticalOptions="Center"/>
-                        </Grid>
-                    </Border>
-                    <Border StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Gray100}"
-                            Stroke="Transparent" Padding="12" HeightRequest="72">
-                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
-                            <VerticalStackLayout Spacing="6" VerticalOptions="Center">
-                                <BoxView CornerRadius="3" HeightRequest="12" WidthRequest="120"
-                                         Color="{StaticResource Gray200}" HorizontalOptions="Start"/>
-                                <BoxView CornerRadius="3" HeightRequest="8" WidthRequest="70"
-                                         Color="{StaticResource Gray200}" HorizontalOptions="Start"/>
-                            </VerticalStackLayout>
-                            <BoxView Grid.Column="1" CornerRadius="3" HeightRequest="28" WidthRequest="50"
-                                     Color="{StaticResource Gray200}" VerticalOptions="Center"/>
-                        </Grid>
-                    </Border>
-                    <Border StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Gray100}"
-                            Stroke="Transparent" Padding="12" HeightRequest="72">
-                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
-                            <VerticalStackLayout Spacing="6" VerticalOptions="Center">
-                                <BoxView CornerRadius="3" HeightRequest="12" WidthRequest="130"
-                                         Color="{StaticResource Gray200}" HorizontalOptions="Start"/>
-                                <BoxView CornerRadius="3" HeightRequest="8" WidthRequest="90"
-                                         Color="{StaticResource Gray200}" HorizontalOptions="Start"/>
-                            </VerticalStackLayout>
-                            <BoxView Grid.Column="1" CornerRadius="3" HeightRequest="28" WidthRequest="50"
-                                     Color="{StaticResource Gray200}" VerticalOptions="Center"/>
-                        </Grid>
-                    </Border>
-                </VerticalStackLayout>
             </Grid>
         </RefreshView>
     </Grid>
