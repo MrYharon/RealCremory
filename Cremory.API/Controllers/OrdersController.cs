@@ -198,8 +198,13 @@ namespace Cremory.API.Controllers
             var textLower = itemsText.ToLowerInvariant();
             var updated = new HashSet<int>();
 
-            var mentionsBox = textLower.Contains("box");
-            var mentionsRound = textLower.Contains("round") || textLower.Contains("inch");
+            var markerBox = textLower.Contains("[box");
+            var markerRound = textLower.Contains("[round]") || textLower.Contains("[cake]");
+            var markerSolo = textLower.Contains("[solo]");
+            var hasMarker = markerBox || markerRound || markerSolo;
+
+            var mentionsBox = hasMarker ? markerBox : textLower.Contains("box");
+            var mentionsRound = hasMarker ? markerRound : (textLower.Contains("round") || textLower.Contains("inch"));
 
             foreach (var product in products)
             {

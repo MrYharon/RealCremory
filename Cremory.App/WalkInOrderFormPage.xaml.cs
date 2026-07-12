@@ -14,6 +14,17 @@ namespace Cremory.App
 
     public partial class WalkInOrderFormPage : ContentPage
     {
+        private static string GetMarker(string? variant)
+        {
+            if (string.IsNullOrEmpty(variant)) return "[SOLO]";
+            var v = variant.ToLowerInvariant();
+            if (v.Contains("box of 2")) return "[BOX2]";
+            if (v.Contains("box of 4")) return "[BOX4]";
+            if (v.Contains("box")) return "[BOX]";
+            if (v.Contains("inch") || v.Contains("round")) return "[ROUND]";
+            return "[SOLO]";
+        }
+
         private readonly ApiService _api;
         private readonly ObservableCollection<ProductStepperItem> _stepperItems = [];
         private decimal _quickTotal;
@@ -47,7 +58,7 @@ namespace Cremory.App
                         _stepperItems.Add(new ProductStepperItem
                         {
                             ProductId = item.ProductId,
-                            DisplayName = $"{item.Variant} {item.Flavor}".Trim(),
+                            DisplayName = $"{item.Variant} {item.Flavor} {GetMarker(item.Variant)}".Trim(),
                             BasePrice = item.BasePrice
                         });
                     }
