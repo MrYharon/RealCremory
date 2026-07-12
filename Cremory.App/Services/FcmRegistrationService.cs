@@ -39,9 +39,5 @@ namespace Cremory.App.Services
             }
         }
 
-        public static void ResetRegistration()
-        {
-            _registered = false;
-        }
     }
 }

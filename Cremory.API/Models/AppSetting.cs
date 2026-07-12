@@ -7,11 +7,11 @@ namespace Cremory.API.Models
     public class AppSetting
     {
         [Key]
-        [Column("SETTING_KEY")]
+        [Column("KEY")]
         [StringLength(100)]
         public string Key { get; set; } = string.Empty;
 
-        [Column("SETTING_VALUE")]
+        [Column("VALUE")]
         public string Value { get; set; } = string.Empty;
     }
 }

@@ -32,7 +32,6 @@ namespace Cremory.API.Controllers
             var todayRev = today.Sum(o => o.TotalPrice);
             var weekRev = thisWeek.Sum(o => o.TotalPrice);
             var monthRev = thisMonth.Sum(o => o.TotalPrice);
-            var daysInMonth = Math.Max(1, (int)(now - now.AddDays(-30)).TotalDays);
             var daysElapsed = Math.Max(1, (int)(now - now.AddDays(-30).Date).TotalDays);
             var estimatedCost = monthRev * 0.32m;
             var netProfit = monthRev - estimatedCost;
