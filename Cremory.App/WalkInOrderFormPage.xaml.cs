@@ -189,7 +189,7 @@ namespace Cremory.App
 
         private async void OnCopyTemplate(object sender, TappedEventArgs e)
         {
-            var template = "Customer: (name)\nItems: 2x Croissant, 1x Ube Cake\nTotal: 250.00\nContact: 09171234567\nOrder: Pickup, 2pm";
+            var template = "!ORDER SUMMARY: (name)\n* 1 x Box of 4\n  - 2 Classic Cheesecake\n  - 1 Biscoff\n  - 1 Cookies & Cream\n* 2 x Classic Cheesecake\nTotal: PHP 1670\nContact: 09170000000";
             await Clipboard.Default.SetTextAsync(template);
 
             var label = sender as Label;
