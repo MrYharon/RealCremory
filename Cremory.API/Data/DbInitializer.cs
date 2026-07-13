@@ -9,6 +9,7 @@ namespace Cremory.API.Data
         {
             try
             {
+                context.Database.ExecuteSqlRaw("DELETE FROM \"ORDERS\"");
                 context.Database.ExecuteSqlRaw("DELETE FROM \"RECIPE_INGREDIENTS\"");
                 context.Database.ExecuteSqlRaw("DELETE FROM \"RECIPES\"");
                 context.Database.ExecuteSqlRaw("DELETE FROM \"PRODUCTS\"");
@@ -33,8 +34,8 @@ namespace Cremory.API.Data
                 new() { CategoryId = basque.CategoryId, Name = "Basque Burnt Cheesecake", Variant = "Solo", Flavor = "Cookie Biscoff", BasePrice = 45, Unit = "piece", CurrentStock = 50, LowStockThreshold = 10, DisplayOrder = 6, AutoDeduct = true },
 
                 // Basque Burnt Cheesecake - Box of 4
-                new() { CategoryId = basque.CategoryId, Name = "Basque Burnt Cheesecake", Variant = "Box of 4", Flavor = "All Classic", BasePrice = 135, Unit = "box", CurrentStock = 30, LowStockThreshold = 5, DisplayOrder = 7, AutoDeduct = true },
-                new() { CategoryId = basque.CategoryId, Name = "Basque Burnt Cheesecake", Variant = "Box of 4", Flavor = "Mix of Flavors", BasePrice = 150, AddOnDescription = "Choose any from the available flavors. Add P5 per piece on every Cookie Biscoff", AddOnPricePerUnit = 5, Unit = "box", CurrentStock = 30, LowStockThreshold = 5, DisplayOrder = 8, AutoDeduct = true },
+                new() { CategoryId = basque.CategoryId, Name = "Basque Burnt Cheesecake", Variant = "Box of 4", Flavor = "All Classic", BasePrice = 135, Unit = "box", CurrentStock = 30, LowStockThreshold = 5, DisplayOrder = 7, AutoDeduct = false },
+                new() { CategoryId = basque.CategoryId, Name = "Basque Burnt Cheesecake", Variant = "Box of 4", Flavor = "Mix of Flavors", BasePrice = 150, AddOnDescription = "Choose any from the available flavors. Add P5 per piece on every Cookie Biscoff", AddOnPricePerUnit = 5, Unit = "box", CurrentStock = 30, LowStockThreshold = 5, DisplayOrder = 8, AutoDeduct = false },
 
                 // Basque Burnt Cheesecake - 6 Inch Round
                 new() { CategoryId = basque.CategoryId, Name = "Basque Burnt Cheesecake", Variant = "6 Inch Round", Flavor = "Classic Cheesecake", BasePrice = 460, Unit = "cake", CurrentStock = 10, LowStockThreshold = 2, DisplayOrder = 9, AutoDeduct = true },
@@ -53,7 +54,7 @@ namespace Cremory.API.Data
                 new() { CategoryId = bread.CategoryId, Name = "Korean Cream Cheese Bread", Variant = "Solo", Flavor = "Choco Dream", BasePrice = 38, Unit = "piece", CurrentStock = 40, LowStockThreshold = 10, DisplayOrder = 4, AutoDeduct = true },
 
                 // Korean Cream Cheese Bread - Box of 2
-                new() { CategoryId = bread.CategoryId, Name = "Korean Cream Cheese Bread", Variant = "Box of 2", Flavor = "Mix of Flavors", BasePrice = 75, AddOnDescription = "Add P5 per piece on every Cheesy Bacon", AddOnPricePerUnit = 5, Unit = "box", CurrentStock = 30, LowStockThreshold = 5, DisplayOrder = 5, AutoDeduct = true },
+                new() { CategoryId = bread.CategoryId, Name = "Korean Cream Cheese Bread", Variant = "Box of 2", Flavor = "Mix of Flavors", BasePrice = 75, AddOnDescription = "Add P5 per piece on every Cheesy Bacon", AddOnPricePerUnit = 5, Unit = "box", CurrentStock = 30, LowStockThreshold = 5, DisplayOrder = 5, AutoDeduct = false },
             };
 
             context.Products.AddRange(products);

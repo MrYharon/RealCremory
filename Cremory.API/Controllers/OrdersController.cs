@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
@@ -195,70 +196,123 @@ namespace Cremory.API.Controllers
             var products = await _context.Products
                 .Where(p => p.IsActive && p.AutoDeduct)
                 .ToListAsync();
-            var textLower = itemsText.ToLowerInvariant();
+
+            var parsedItems = ParseBulletItems(itemsText);
             var updated = new HashSet<int>();
 
-            var markerBox = textLower.Contains("[box");
-            var markerRound = textLower.Contains("[round]") || textLower.Contains("[cake]");
-            var markerSolo = textLower.Contains("[solo]");
-            var hasMarker = markerBox || markerRound || markerSolo;
-
-            var mentionsBox = hasMarker ? markerBox : textLower.Contains("box");
-            var mentionsRound = hasMarker ? markerRound : (textLower.Contains("round") || textLower.Contains("inch"));
-
-            foreach (var product in products)
+            foreach (var item in parsedItems)
             {
-                if (!FlavorMatches(textLower, product))
+                if (item.SubItems.Count > 0)
+                {
+                    foreach (var sub in item.SubItems)
+                    {
+                        var product = MatchByFlavor(products, sub.Flavor, p => p.Variant == "Solo");
+                        if (product != null && !updated.Contains(product.ProductId))
+                        {
+                            product.CurrentStock = Math.Max(0, product.CurrentStock - sub.Qty);
+                            updated.Add(product.ProductId);
+                        }
+                    }
+                }
+                else
+                {
+                    var isRound = item.Name.Contains("round", StringComparison.OrdinalIgnoreCase)
+                        || item.Name.Contains("inch", StringComparison.OrdinalIgnoreCase);
+                    var product = MatchByFlavor(products, item.Name,
+                        p => isRound
+                            ? p.Variant == "6 Inch Round"
+                            : p.Variant != "Box of 4" && p.Variant != "Box of 2");
+                    if (product != null && !updated.Contains(product.ProductId))
+                    {
+                        product.CurrentStock = Math.Max(0, product.CurrentStock - item.Qty);
+                        updated.Add(product.ProductId);
+                    }
+                }
+            }
+        }
+
+        private static List<ParsedItem> ParseBulletItems(string text)
+        {
+            var result = new List<ParsedItem>();
+            var lines = text.Split('\n');
+            ParsedItem? current = null;
+
+            foreach (var line in lines)
+            {
+                var trimmed = line.Trim();
+                if (string.IsNullOrWhiteSpace(trimmed)) continue;
+
+                var topMatch = Regex.Match(trimmed, @"^\*\s*(\d+)\s*x\s*(.+)$", RegexOptions.IgnoreCase);
+                if (topMatch.Success)
+                {
+                    current = new ParsedItem
+                    {
+                        Qty = int.Parse(topMatch.Groups[1].Value),
+                        Name = topMatch.Groups[2].Value.Trim(),
+                        SubItems = []
+                    };
+                    result.Add(current);
+                    continue;
+                }
+
+                var subMatch = Regex.Match(trimmed, @"^[-•]\s*(\d+)\s+(.+)$");
+                if (subMatch.Success && current != null)
+                {
+                    current.SubItems.Add(new SubItem
+                    {
+                        Qty = int.Parse(subMatch.Groups[1].Value),
+                        Flavor = subMatch.Groups[2].Value.Trim()
+                    });
+                }
+            }
+
+            return result;
+        }
+
+        private static Product? MatchByFlavor(IEnumerable<Product> products, string searchText, Func<Product, bool> filter)
+        {
+            var searchLower = searchText.ToLowerInvariant().Trim();
+            Product? best = null;
+            int bestScore = -1;
+
+            foreach (var p in products.Where(filter))
+            {
+                var flavor = p.Flavor?.ToLowerInvariant() ?? "";
+                if (string.IsNullOrEmpty(flavor)) continue;
+
+                int score;
+                if (searchLower.Equals(flavor))
+                    score = 4;
+                else if (flavor.StartsWith(searchLower))
+                    score = 3;
+                else if (flavor.Contains(searchLower))
+                    score = 2;
+                else if (searchLower.Contains(flavor))
+                    score = 1;
+                else
                     continue;
 
-                var variant = product.Variant?.ToLowerInvariant() ?? "";
-                var isBox = variant.Contains("box");
-                var isRound = variant.Contains("round") || variant.Contains("inch");
-                var isSolo = !isBox && !isRound;
-
-                if (mentionsBox && !isBox) continue;
-                if (mentionsRound && !isRound) continue;
-                if (!mentionsBox && !mentionsRound && isBox) continue;
-                if (!mentionsBox && !mentionsRound && isRound) continue;
-
-                if (updated.Contains(product.ProductId)) continue;
-
-                var qty = ResolveQuantity(textLower, product);
-                if (qty > 0)
+                if (score > bestScore)
                 {
-                    product.CurrentStock = Math.Max(0, product.CurrentStock - qty);
-                    updated.Add(product.ProductId);
-                }
-            }
-        }
-
-        private static bool FlavorMatches(string textLower, Product product)
-        {
-            var flavor = product.Flavor?.ToLowerInvariant();
-            if (string.IsNullOrEmpty(flavor)) return false;
-            return textLower.Contains(flavor);
-        }
-
-        private static int ResolveQuantity(string textLower, Product product)
-        {
-            var variant = product.Variant?.ToLowerInvariant() ?? "";
-            if (variant.Contains("box") || variant.Contains("round") || variant.Contains("inch"))
-                return 1;
-
-            var flavor = product.Flavor?.ToLowerInvariant();
-            if (!string.IsNullOrEmpty(flavor))
-            {
-                var idx = textLower.IndexOf(flavor);
-                if (idx >= 0)
-                {
-                    var before = idx > 4 ? textLower[(idx - 4)..idx] : textLower[..idx];
-                    var prefix = System.Text.RegularExpressions.Regex.Match(before, @"(\d+)\s*[xX]?\s*$");
-                    if (prefix.Success && int.TryParse(prefix.Groups[1].Value, out var mult))
-                        return mult;
+                    bestScore = score;
+                    best = p;
                 }
             }
 
-            return 1;
+            return best;
+        }
+
+        private class ParsedItem
+        {
+            public int Qty { get; set; }
+            public string Name { get; set; } = string.Empty;
+            public List<SubItem> SubItems { get; set; } = [];
+        }
+
+        private class SubItem
+        {
+            public int Qty { get; set; }
+            public string Flavor { get; set; } = string.Empty;
         }
     }
 
