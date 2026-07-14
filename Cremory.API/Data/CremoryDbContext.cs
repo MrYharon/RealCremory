@@ -11,7 +11,6 @@ namespace Cremory.API.Data
 
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<User> Users { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<DeviceToken> DeviceTokens { get; set; }
         public DbSet<AppSetting> AppSettings { get; set; }
@@ -22,7 +21,6 @@ namespace Cremory.API.Data
 
             modelBuilder.Entity<Category>().ToTable("CATEGORIES");
             modelBuilder.Entity<Product>().ToTable("PRODUCTS");
-            modelBuilder.Entity<User>().ToTable("USERS");
             modelBuilder.Entity<Order>().ToTable("ORDERS");
             modelBuilder.Entity<DeviceToken>().ToTable("DEVICE_TOKENS");
             modelBuilder.Entity<AppSetting>().ToTable("APP_SETTINGS");
