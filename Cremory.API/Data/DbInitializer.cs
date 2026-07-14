@@ -10,8 +10,6 @@ namespace Cremory.API.Data
             try
             {
                 context.Database.ExecuteSqlRaw("DELETE FROM \"ORDERS\"");
-                context.Database.ExecuteSqlRaw("DELETE FROM \"RECIPE_INGREDIENTS\"");
-                context.Database.ExecuteSqlRaw("DELETE FROM \"RECIPES\"");
                 context.Database.ExecuteSqlRaw("DELETE FROM \"PRODUCTS\"");
                 context.Database.ExecuteSqlRaw("DELETE FROM \"CATEGORIES\"");
                 context.Database.ExecuteSqlRaw("DELETE FROM \"APP_SETTINGS\"");

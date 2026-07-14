@@ -69,8 +69,6 @@ namespace Cremory.API.Controllers
         {
             var now = DateTime.UtcNow;
             var orders = await _context.Orders.ToListAsync();
-            var ingredients = await _context.Ingredients.ToListAsync();
-
             var completed = orders.Where(o => o.Status == OrderStatus.Completed).ToList();
 
             var fbCount = completed.Count(o => o.Source == "Facebook");
@@ -119,8 +117,6 @@ namespace Cremory.API.Controllers
                 .Select(kv => new PopularItemDto { Name = kv.Key, Count = kv.Value })
                 .ToList();
 
-            var lowStock = ingredients.Count(i => i.StockQuantity <= i.ReorderLevel);
-
             return Ok(new DashboardAnalyticsDto
             {
                 PopularItems = popular,
@@ -128,7 +124,7 @@ namespace Cremory.API.Controllers
                 WalkInPct = walkInPct,
                 WeeklySales = weeklySales,
                 WeekLabels = weekLabels,
-                LowStockCount = lowStock,
+                LowStockCount = 0,
                 AvgOrderValue = completed.Count > 0
                     ? Math.Round(completed.Sum(o => o.TotalPrice) / completed.Count, 2)
                     : 0

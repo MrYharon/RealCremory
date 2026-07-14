@@ -88,57 +88,6 @@ namespace Cremory.App.Services
             }
         }
 
-        public async Task<List<Ingredient>> GetIngredientsAsync()
-        {
-            return await HttpGetAsync<List<Ingredient>>("Ingredients", "ingredients") ?? [];
-        }
-
-        public async Task<(bool Success, string? Error)> CreateIngredientAsync(Ingredient ingredient)
-        {
-            try
-            {
-                var response = await _httpClient.PostAsJsonAsync("Ingredients", ingredient, JsonOptions);
-                if (response.IsSuccessStatusCode) return (true, null);
-                var body = await response.Content.ReadAsStringAsync();
-                return (false, body);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
-                return (false, ex.Message);
-            }
-        }
-
-        public async Task<(bool Success, string? Error)> UpdateIngredientAsync(Ingredient ingredient)
-        {
-            try
-            {
-                var response = await _httpClient.PutAsJsonAsync($"Ingredients/{ingredient.IngredientId}", ingredient, JsonOptions);
-                if (response.IsSuccessStatusCode) return (true, null);
-                var body = await response.Content.ReadAsStringAsync();
-                return (false, body);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
-                return (false, ex.Message);
-            }
-        }
-
-        public async Task<bool> DeleteIngredientAsync(int ingredientId)
-        {
-            try
-            {
-                var response = await _httpClient.DeleteAsync($"Ingredients/{ingredientId}");
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
-                return false;
-            }
-        }
-
         public async Task<List<Category>> GetCategoriesAsync()
         {
             return await HttpGetAsync<List<Category>>("Products/categories", "categories") ?? [];
@@ -384,57 +333,6 @@ namespace Cremory.App.Services
             try
             {
                 var response = await _httpClient.DeleteAsync($"Products/{productId}");
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
-                return false;
-            }
-        }
-
-        public async Task<List<Recipe>> GetRecipesAsync()
-        {
-            return await HttpGetAsync<List<Recipe>>("Recipes", "recipes") ?? [];
-        }
-
-        public async Task<(bool Success, string? Error)> CreateRecipeAsync(Recipe recipe)
-        {
-            try
-            {
-                var response = await _httpClient.PostAsJsonAsync("Recipes", recipe, JsonOptions);
-                if (response.IsSuccessStatusCode) return (true, null);
-                var body = await response.Content.ReadAsStringAsync();
-                return (false, body);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
-                return (false, ex.Message);
-            }
-        }
-
-        public async Task<(bool Success, string? Error)> UpdateRecipeAsync(Recipe recipe)
-        {
-            try
-            {
-                var response = await _httpClient.PutAsJsonAsync($"Recipes/{recipe.RecipeId}", recipe, JsonOptions);
-                if (response.IsSuccessStatusCode) return (true, null);
-                var body = await response.Content.ReadAsStringAsync();
-                return (false, body);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"API Error: {ex.Message}");
-                return (false, ex.Message);
-            }
-        }
-
-        public async Task<bool> DeleteRecipeAsync(int recipeId)
-        {
-            try
-            {
-                var response = await _httpClient.DeleteAsync($"Recipes/{recipeId}");
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
