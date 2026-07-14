@@ -198,7 +198,7 @@ namespace Cremory.API.Controllers
                 .ToListAsync();
 
             var parsedItems = ParseBulletItems(itemsText);
-            var updated = new HashSet<int>();
+            var deductions = new Dictionary<int, int>();
 
             foreach (var item in parsedItems)
             {
@@ -207,10 +207,11 @@ namespace Cremory.API.Controllers
                     foreach (var sub in item.SubItems)
                     {
                         var product = MatchByFlavor(products, sub.Flavor, p => p.Variant == "Solo");
-                        if (product != null && !updated.Contains(product.ProductId))
+                        if (product != null)
                         {
-                            product.CurrentStock = Math.Max(0, product.CurrentStock - sub.Qty);
-                            updated.Add(product.ProductId);
+                            if (!deductions.ContainsKey(product.ProductId))
+                                deductions[product.ProductId] = 0;
+                            deductions[product.ProductId] += sub.Qty;
                         }
                     }
                 }
@@ -221,13 +222,21 @@ namespace Cremory.API.Controllers
                     var product = MatchByFlavor(products, item.Name,
                         p => isRound
                             ? p.Variant == "6 Inch Round"
-                            : p.Variant != "Box of 4" && p.Variant != "Box of 2");
-                    if (product != null && !updated.Contains(product.ProductId))
+                            : p.Variant == "Solo");
+                    if (product != null)
                     {
-                        product.CurrentStock = Math.Max(0, product.CurrentStock - item.Qty);
-                        updated.Add(product.ProductId);
+                        if (!deductions.ContainsKey(product.ProductId))
+                            deductions[product.ProductId] = 0;
+                        deductions[product.ProductId] += item.Qty;
                     }
                 }
+            }
+
+            foreach (var kvp in deductions)
+            {
+                var product = products.FirstOrDefault(p => p.ProductId == kvp.Key);
+                if (product != null)
+                    product.CurrentStock = Math.Max(0, product.CurrentStock - kvp.Value);
             }
         }
 
@@ -271,13 +280,13 @@ namespace Cremory.API.Controllers
 
         private static Product? MatchByFlavor(IEnumerable<Product> products, string searchText, Func<Product, bool> filter)
         {
-            var searchLower = searchText.ToLowerInvariant().Trim();
+            var searchLower = searchText.ToLowerInvariant().Trim().Replace("&", "and");
             Product? best = null;
             int bestScore = -1;
 
             foreach (var p in products.Where(filter))
             {
-                var flavor = p.Flavor?.ToLowerInvariant() ?? "";
+                var flavor = p.Flavor?.ToLowerInvariant().Replace("&", "and") ?? "";
                 if (string.IsNullOrEmpty(flavor)) continue;
 
                 int score;
