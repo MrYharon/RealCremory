@@ -280,13 +280,13 @@ namespace Cremory.API.Controllers
 
         private static Product? MatchByFlavor(IEnumerable<Product> products, string searchText, Func<Product, bool> filter)
         {
-            var searchLower = searchText.ToLowerInvariant().Trim().Replace("&", "and");
+            var searchLower = searchText.ToLowerInvariant().Trim();
             Product? best = null;
             int bestScore = -1;
 
             foreach (var p in products.Where(filter))
             {
-                var flavor = p.Flavor?.ToLowerInvariant().Replace("&", "and") ?? "";
+                var flavor = p.Flavor?.ToLowerInvariant() ?? "";
                 if (string.IsNullOrEmpty(flavor)) continue;
 
                 int score;
