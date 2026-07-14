@@ -281,34 +281,10 @@ namespace Cremory.API.Controllers
         private static Product? MatchByFlavor(IEnumerable<Product> products, string searchText, Func<Product, bool> filter)
         {
             var searchLower = searchText.ToLowerInvariant().Trim();
-            Product? best = null;
-            int bestScore = -1;
-
-            foreach (var p in products.Where(filter))
-            {
-                var flavor = p.Flavor?.ToLowerInvariant() ?? "";
-                if (string.IsNullOrEmpty(flavor)) continue;
-
-                int score;
-                if (searchLower.Equals(flavor))
-                    score = 4;
-                else if (flavor.StartsWith(searchLower))
-                    score = 3;
-                else if (flavor.Contains(searchLower))
-                    score = 2;
-                else if (searchLower.Contains(flavor))
-                    score = 1;
-                else
-                    continue;
-
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                    best = p;
-                }
-            }
-
-            return best;
+            return products.FirstOrDefault(p =>
+                filter(p) &&
+                p.Flavor != null &&
+                p.Flavor.Trim().Equals(searchLower, StringComparison.OrdinalIgnoreCase));
         }
 
         private class ParsedItem
