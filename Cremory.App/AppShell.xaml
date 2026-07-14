@@ -40,10 +40,6 @@
         <ShellContent ContentTemplate="{DataTemplate local:ProductPage}" Route="ProductPage" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Recipes">
-        <ShellContent ContentTemplate="{DataTemplate local:RecipePage}" Route="RecipePage" />
-    </FlyoutItem>
-
     <FlyoutItem Title="Analytics">
         <ShellContent ContentTemplate="{DataTemplate local:AnalyticsPage}" Route="AnalyticsPage" />
     </FlyoutItem>
