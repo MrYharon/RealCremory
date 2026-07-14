@@ -58,7 +58,7 @@
                                 <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="8">
                                     <Label FontSize="16" FontAttributes="Bold"
                                            TextColor="{StaticResource Gray900}"
-                                           Text="{Binding Name}"/>
+                                            Text="{Binding Flavor}"/>
                                     <Border StrokeShape="RoundRectangle 6" Padding="6,2"
                                             BackgroundColor="{StaticResource Gray400}"
                                             Stroke="Transparent"
@@ -74,8 +74,8 @@
                                        TextColor="{StaticResource Gray500}">
                                     <Label.Text>
                                         <MultiBinding StringFormat="{}{0} · {1}">
+                                            <Binding Path="Name"/>
                                             <Binding Path="Variant"/>
-                                            <Binding Path="Flavor"/>
                                         </MultiBinding>
                                     </Label.Text>
                                 </Label>

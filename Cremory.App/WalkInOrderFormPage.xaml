@@ -54,43 +54,6 @@
                         </Border>
                     </VerticalStackLayout>
 
-                    <VerticalStackLayout Spacing="4">
-                        <Label Text="Quick Add" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
-                        <CollectionView x:Name="ProductStepperView" HeightRequest="180">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="local:ProductStepperItem">
-                                    <Border StrokeShape="RoundRectangle 8" StrokeThickness="1"
-                                            Stroke="{StaticResource Gray200}" Padding="8,5" Margin="0,0,0,4"
-                                            BackgroundColor="{StaticResource Gray50}">
-                                        <Grid ColumnDefinitions="*, Auto, Auto, Auto" ColumnSpacing="6">
-                                            <Label Text="{Binding DisplayName}" FontSize="12"
-                                                   TextColor="{StaticResource Gray800}" VerticalOptions="Center"
-                                                   LineBreakMode="TailTruncation" MaxLines="1"/>
-                                            <Button Grid.Column="1" Text="−" FontSize="14"
-                                                    BackgroundColor="{StaticResource Gray200}"
-                                                    TextColor="{StaticResource Gray700}"
-                                                    CornerRadius="16" WidthRequest="32" HeightRequest="32" Padding="0"
-                                                    Clicked="OnStepperMinus"/>
-                                            <Border Grid.Column="2" StrokeShape="RoundRectangle 6" Padding="6,2"
-                                                    BackgroundColor="{StaticResource PrimaryLight}"
-                                                    Stroke="{StaticResource Primary}" StrokeThickness="1"
-                                                    VerticalOptions="Center" MinimumWidthRequest="36">
-                                                <Label Text="{Binding Quantity}" FontSize="15" FontAttributes="Bold"
-                                                       TextColor="{StaticResource PrimaryDark}"
-                                                       HorizontalOptions="Center"/>
-                                            </Border>
-                                            <Button Grid.Column="3" Text="+" FontSize="14"
-                                                    BackgroundColor="{StaticResource Primary}"
-                                                    TextColor="White"
-                                                    CornerRadius="16" WidthRequest="32" HeightRequest="32" Padding="0"
-                                                    Clicked="OnStepperPlus"/>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </VerticalStackLayout>
-
                     <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
                         <VerticalStackLayout Spacing="4">
                             <Label Text="Total Price" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray700}"/>
