@@ -127,6 +127,10 @@ namespace Cremory.API.Controllers
             existing.AddOnPricePerUnit = product.AddOnPricePerUnit;
             existing.IsActive = product.IsActive;
             existing.DisplayOrder = product.DisplayOrder;
+            existing.CurrentStock = product.CurrentStock;
+            existing.LowStockThreshold = product.LowStockThreshold;
+            existing.Unit = product.Unit;
+            existing.AutoDeduct = product.AutoDeduct;
 
             await _context.SaveChangesAsync();
             return NoContent();
