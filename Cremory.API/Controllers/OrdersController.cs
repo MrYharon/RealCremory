@@ -206,7 +206,8 @@ namespace Cremory.API.Controllers
                 {
                     foreach (var sub in item.SubItems)
                     {
-                        var product = MatchByFlavor(products, sub.Flavor, p => p.Variant == "Solo");
+                        var cleanFlavor = Regex.Replace(sub.Flavor, @"\[.*?\]", "").Trim();
+                        var product = MatchByFlavor(products, cleanFlavor, p => p.Variant == "Solo");
                         if (product != null)
                         {
                             if (!deductions.ContainsKey(product.ProductId))
@@ -217,9 +218,10 @@ namespace Cremory.API.Controllers
                 }
                 else
                 {
-                    var isRound = item.Name.Contains("round", StringComparison.OrdinalIgnoreCase)
-                        || item.Name.Contains("inch", StringComparison.OrdinalIgnoreCase);
-                    var product = MatchByFlavor(products, item.Name,
+                    var cleanName = Regex.Replace(item.Name, @"\[.*?\]", "").Trim();
+                    var isRound = cleanName.Contains("round", StringComparison.OrdinalIgnoreCase)
+                        || cleanName.Contains("inch", StringComparison.OrdinalIgnoreCase);
+                    var product = MatchByFlavor(products, cleanName,
                         p => isRound
                             ? p.Variant == "6 Inch Round"
                             : p.Variant == "Solo");
