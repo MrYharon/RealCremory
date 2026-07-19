@@ -152,7 +152,7 @@
                     <Border StrokeShape="RoundRectangle 8"
                             BackgroundColor="#FDF5F5" Stroke="Transparent"
                             Padding="10,0" HeightRequest="40">
-                        <Entry x:Name="ContactEntry" Placeholder="Contact (opt)"
+                        <Entry x:Name="ContactEntry" Placeholder="Contact number"
                                PlaceholderColor="#B89292" TextColor="#2C2525"
                                BackgroundColor="Transparent" FontSize="12"
                                Keyboard="Telephone"/>

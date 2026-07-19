@@ -262,6 +262,13 @@ namespace Cremory.App
                 return;
             }
 
+            var contact = ContactEntry?.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(contact))
+            {
+                await DisplayAlert("Validation", "Contact number is required.", "OK");
+                return;
+            }
+
             var itemsText = string.Join("\n", _cart.Select(c =>
                 $"* {c.Qty} x {c.Name}" +
                 (string.IsNullOrWhiteSpace(c.Variant) ? "" : $" ({c.Variant})") +
@@ -269,7 +276,6 @@ namespace Cremory.App
             ));
 
             var totalPrice = _cart.Sum(c => c.Subtotal);
-            var contact = ContactEntry?.Text?.Trim();
             var deliveryType = DeliveryTypePicker.SelectedItem?.ToString();
             var address = AddressEntry?.Text?.Trim();
             var paymentStatus = PaymentPicker.SelectedItem?.ToString();
