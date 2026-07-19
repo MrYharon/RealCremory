@@ -46,6 +46,12 @@
                 <Label Text="prep" FontSize="12" TextColor="#B89292" VerticalOptions="Center"/>
             </HorizontalStackLayout>
             <HorizontalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center">
+                <Border StrokeShape="RoundRectangle 8" BackgroundColor="#FDF5F5"
+                        Stroke="#E8D4D4" StrokeThickness="1" HeightRequest="34">
+                    <Button Text="Copy Format" Clicked="OnCopyTemplateClicked"
+                            BackgroundColor="Transparent" TextColor="#B89292"
+                            FontSize="11" Padding="10,0"/>
+                </Border>
                 <Border StrokeShape="RoundRectangle 8" BackgroundColor="#FBC4C4"
                         Stroke="Transparent" HeightRequest="34">
                     <Button Text="+ New" Clicked="OnNewOrderClicked"

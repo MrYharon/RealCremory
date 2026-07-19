@@ -391,14 +391,11 @@ namespace Cremory.App
             await Navigation.PushModalAsync(new NavigationPage(formPage));
         }
 
-        private async void OnCopyTemplate(object sender, EventArgs e)
+        private async void OnCopyTemplateClicked(object sender, EventArgs e)
         {
-            var template = "Customer:\nItems:\nTotal:\nContact:\nOrder:";
+            var template = "* 1 x Basque Burnt Cheesecake (Solo) - Classic Cheesecake\nDelivery: Pick Up\nAddress: \nPayment: Cash";
             await Clipboard.Default.SetTextAsync(template);
-            var btn = (Button)sender;
-            btn.Text = "Copied!";
-            await Task.Delay(1500);
-            btn.Text = "Copy";
+            await DisplayAlert("Copied", "Order format copied to clipboard.\nPaste it in Messenger and edit the items.", "OK");
         }
 
         private void ResetFilterChips()

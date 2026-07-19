@@ -135,7 +135,8 @@ namespace Cremory.App.Services
             }
         }
 
-        public async Task<OrderDto?> CreateWalkInOrderAsync(string customerName, string items, decimal totalPrice, string? contact)
+        public async Task<OrderDto?> CreateWalkInOrderAsync(string customerName, string items, decimal totalPrice,
+            string? contact, string? deliveryType = null, string? address = null, string? paymentStatus = null)
         {
             try
             {
@@ -145,7 +146,10 @@ namespace Cremory.App.Services
                     Items = items,
                     TotalPrice = totalPrice,
                     CustomerContact = contact,
-                    Source = "Walk-in"
+                    Source = "Walk-in",
+                    DeliveryType = string.IsNullOrWhiteSpace(deliveryType) ? null : deliveryType,
+                    Address = string.IsNullOrWhiteSpace(address) ? null : address,
+                    PaymentStatus = string.IsNullOrWhiteSpace(paymentStatus) ? null : paymentStatus
                 };
                 var response = await _httpClient.PostAsJsonAsync("Orders", payload, JsonOptions);
                 if (!response.IsSuccessStatusCode) return null;

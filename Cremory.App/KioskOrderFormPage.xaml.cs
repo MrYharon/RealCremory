@@ -241,6 +241,12 @@ namespace Cremory.App
             SubmitBtn.Opacity = hasItems ? 1.0 : 0.5;
         }
 
+        private void OnDeliveryTypeChanged(object? sender, EventArgs e)
+        {
+            var isDelivery = DeliveryTypePicker.SelectedItem?.ToString() == "Delivery";
+            AddressBorder.IsVisible = isDelivery;
+        }
+
         private async void OnSubmitClicked(object? sender, EventArgs e)
         {
             var name = NameEntry?.Text?.Trim();
@@ -264,13 +270,17 @@ namespace Cremory.App
 
             var totalPrice = _cart.Sum(c => c.Subtotal);
             var contact = ContactEntry?.Text?.Trim();
+            var deliveryType = DeliveryTypePicker.SelectedItem?.ToString();
+            var address = AddressEntry?.Text?.Trim();
+            var paymentStatus = PaymentPicker.SelectedItem?.ToString();
 
             SubmitBtn.IsEnabled = false;
             SubmitBtn.Text = "Saving...";
 
             try
             {
-                var result = await _api.CreateWalkInOrderAsync(name, itemsText, totalPrice, contact);
+                var result = await _api.CreateWalkInOrderAsync(name, itemsText, totalPrice, contact,
+                    deliveryType, address, paymentStatus);
                 if (result != null)
                 {
                     OrderCreated?.Invoke(this, result);

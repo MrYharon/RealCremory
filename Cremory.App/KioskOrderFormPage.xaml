@@ -7,7 +7,7 @@
              BackgroundColor="#FFFDFD"
              Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="Auto, Auto, Auto, *, Auto" Padding="16,0" RowSpacing="0">
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, *, Auto" Padding="16,0" RowSpacing="0">
 
         <!-- Header -->
         <Grid Grid.Row="0" Padding="0,12,0,8" ColumnDefinitions="*, Auto">
@@ -26,20 +26,66 @@
         <!-- Customer Name -->
         <Border Grid.Row="1" StrokeShape="RoundRectangle 10"
                 BackgroundColor="#FDF5F5" Stroke="Transparent"
-                Padding="12,0" HeightRequest="44" Margin="0,0,0,10">
+                Padding="12,0" HeightRequest="44" Margin="0,0,0,6">
             <Entry x:Name="NameEntry" Placeholder="Customer name (required)"
                    PlaceholderColor="#B89292" TextColor="#2C2525"
                    BackgroundColor="Transparent" FontSize="14"/>
         </Border>
 
+        <!-- Delivery Type + Payment Status -->
+        <Grid Grid.Row="2" ColumnDefinitions="*, *" ColumnSpacing="8" Margin="0,0,0,6">
+            <Border StrokeShape="RoundRectangle 10"
+                    BackgroundColor="#FDF5F5" Stroke="Transparent"
+                    Padding="10,0" HeightRequest="40">
+                <Picker x:Name="DeliveryTypePicker" Title="Pick Up"
+                        TextColor="#2C2525" TitleColor="#B89292"
+                        BackgroundColor="Transparent" FontSize="13"
+                        SelectedIndexChanged="OnDeliveryTypeChanged">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Pick Up</x:String>
+                            <x:String>Delivery</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+            </Border>
+            <Border Grid.Column="1" StrokeShape="RoundRectangle 10"
+                    BackgroundColor="#FDF5F5" Stroke="Transparent"
+                    Padding="10,0" HeightRequest="40">
+                <Picker x:Name="PaymentPicker" Title="Payment"
+                        TextColor="#2C2525" TitleColor="#B89292"
+                        BackgroundColor="Transparent" FontSize="13">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Cash</x:String>
+                            <x:String>GCash</x:String>
+                            <x:String>Maya</x:String>
+                            <x:String>Bank Transfer</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+            </Border>
+        </Grid>
+
+        <!-- Address (visible for Delivery) -->
+        <Border Grid.Row="3" x:Name="AddressBorder"
+                StrokeShape="RoundRectangle 10"
+                BackgroundColor="#FDF5F5" Stroke="Transparent"
+                Padding="12,0" HeightRequest="44" Margin="0,0,0,6"
+                IsVisible="False">
+            <Entry x:Name="AddressEntry" Placeholder="Delivery address"
+                   PlaceholderColor="#B89292" TextColor="#2C2525"
+                   BackgroundColor="Transparent" FontSize="13"/>
+        </Border>
+
         <!-- Category Chips -->
-        <ScrollView Grid.Row="2" Orientation="Horizontal"
+        <ScrollView Grid.Row="4" Orientation="Horizontal"
                     HorizontalScrollBarVisibility="Never" Margin="0,0,0,8">
             <HorizontalStackLayout x:Name="CategoryChips" Spacing="6"/>
         </ScrollView>
 
         <!-- Product Grid -->
-        <RefreshView Grid.Row="3" x:Name="MenuRefreshView"
+        <RefreshView Grid.Row="5" x:Name="MenuRefreshView"
                       Refreshing="OnMenuRefreshing" RefreshColor="#E27575">
             <ScrollView>
                 <VerticalStackLayout x:Name="ProductContainer" Spacing="8"/>
@@ -47,7 +93,7 @@
         </RefreshView>
 
         <!-- Cart Bottom Bar -->
-        <Border Grid.Row="4" StrokeShape="RoundRectangle 16,16,0,0"
+        <Border Grid.Row="6" StrokeShape="RoundRectangle 16,16,0,0"
                 BackgroundColor="White" Stroke="#F0E0E0" StrokeThickness="1"
                 Padding="16,12" Margin="0,4,0,0">
             <Grid RowDefinitions="Auto, Auto" RowSpacing="10">
@@ -71,7 +117,7 @@
                                         <Label Text="{Binding DisplayText}"
                                                FontSize="13" FontAttributes="Bold"
                                                TextColor="#2C2525"
-                                               LineBreakMode="TailTruncation"/>
+                                               LineBreakMode="WordWrap"/>
                                         <Label Text="{Binding UnitPriceText}"
                                                FontSize="10" TextColor="#B89292"/>
                                     </VerticalStackLayout>
@@ -124,4 +170,5 @@
             </Grid>
         </Border>
     </Grid>
+
 </ContentPage>
