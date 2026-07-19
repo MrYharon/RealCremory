@@ -19,6 +19,7 @@ namespace Cremory.App
         private readonly ObservableCollection<OrderSummary> _allOrders = [];
         private readonly ObservableCollection<KitchenItemGroup> _kitchenItems = [];
         private string _activeFilter = "Pending";
+        private string? _deliveryTypeFilter;
         private string _searchText = "";
         private bool _showArchives;
         private CancellationTokenSource? _searchCts;
@@ -146,13 +147,13 @@ namespace Cremory.App
                 _currentPage = 1;
                 _hasMorePages = true;
 
-                var (status, dateFrom, dateTo, isArchived) = GetServerFilterParams();
+                var (status, dateFrom, dateTo, isArchived, deliveryType) = GetServerFilterParams();
 
                 var (dtos, totalCount) = await _api.GetOrdersPagedAsync(
                     status: status, search: string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
                     dateFrom: dateFrom, dateTo: dateTo,
                     page: _currentPage, pageSize: 100,
-                    isArchived: isArchived);
+                    isArchived: isArchived, deliveryType: deliveryType);
 
                 _totalCount = totalCount;
                 _hasMorePages = dtos.Count >= 100;
@@ -205,13 +206,13 @@ namespace Cremory.App
             try
             {
                 _currentPage++;
-                var (status, dateFrom, dateTo, isArchived) = GetServerFilterParams();
+                var (status, dateFrom, dateTo, isArchived, deliveryType) = GetServerFilterParams();
 
                 var (dtos, totalCount) = await _api.GetOrdersPagedAsync(
                     status: status, search: string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
                     dateFrom: dateFrom, dateTo: dateTo,
                     page: _currentPage, pageSize: 100,
-                    isArchived: isArchived);
+                    isArchived: isArchived, deliveryType: deliveryType);
 
                 _totalCount = totalCount;
                 _hasMorePages = dtos.Count >= 100;
@@ -232,7 +233,7 @@ namespace Cremory.App
             }
         }
 
-        private (string? Status, DateTime? DateFrom, DateTime? DateTo, bool? IsArchived) GetServerFilterParams()
+        private (string? Status, DateTime? DateFrom, DateTime? DateTo, bool? IsArchived, string? DeliveryType) GetServerFilterParams()
         {
             if (_showArchives)
             {
@@ -252,7 +253,7 @@ namespace Cremory.App
                     "Cancelled" => "Cancelled",
                     _ => null
                 };
-                return (status, dateFrom, dateTo, true);
+                return (status, dateFrom, dateTo, true, null);
             }
 
             var activeStatus = _activeFilter switch
@@ -264,7 +265,8 @@ namespace Cremory.App
                 "Cancelled" => "Cancelled",
                 _ => null
             };
-            return (activeStatus, null, null, null);
+            var deliveryType = _activeFilter == "Completed" ? _deliveryTypeFilter : null;
+            return (activeStatus, null, null, null, deliveryType);
         }
 
         private async void OnLoadMore(object sender, EventArgs e)
@@ -350,6 +352,7 @@ namespace Cremory.App
         {
             _showArchives = !_showArchives;
             ArchiveFilterBar.IsVisible = _showArchives;
+            CompletedFilterBar.IsVisible = false;
             ArchiveToggleBtn.BackgroundColor = _showArchives ? Color.FromArgb("#E27575") : Colors.Transparent;
             ArchiveToggleBtn.Stroke = _showArchives ? Colors.Transparent : Color.FromArgb("#E8D4D4");
             ArchiveLabel.TextColor = _showArchives ? Colors.White : Color.FromArgb("#B89292");
@@ -363,6 +366,13 @@ namespace Cremory.App
         {
             if (_showArchives)
                 await LoadOrdersAsync();
+        }
+
+        private async void OnDeliveryTypeFilterChanged(object sender, EventArgs e)
+        {
+            var selected = DeliveryTypePicker.SelectedItem as string;
+            _deliveryTypeFilter = selected is "All" or null ? null : selected;
+            await LoadOrdersAsync();
         }
 
         private async void OnImportClicked(object sender, EventArgs e)
@@ -432,6 +442,12 @@ namespace Cremory.App
             ArchiveLabel.TextColor = Color.FromArgb("#B89292");
             ArchiveLabel.Text = "Archives";
             ArchiveFilterBar.IsVisible = false;
+            CompletedFilterBar.IsVisible = _activeFilter == "Completed";
+            if (_activeFilter != "Completed")
+            {
+                _deliveryTypeFilter = null;
+                DeliveryTypePicker.SelectedIndex = -1;
+            }
 
             await LoadOrdersAsync();
         }

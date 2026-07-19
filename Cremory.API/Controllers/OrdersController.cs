@@ -33,7 +33,8 @@ namespace Cremory.API.Controllers
             [FromQuery] DateTime? dateTo = null,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 100,
-            [FromQuery] bool? isArchived = null)
+            [FromQuery] bool? isArchived = null,
+            [FromQuery] string? deliveryType = null)
         {
             var query = _context.Orders.AsQueryable();
 
@@ -44,6 +45,9 @@ namespace Cremory.API.Controllers
 
             if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<OrderStatus>(status, true, out var statusFilter))
                 query = query.Where(o => o.Status == statusFilter);
+
+            if (!string.IsNullOrWhiteSpace(deliveryType))
+                query = query.Where(o => o.DeliveryType != null && o.DeliveryType == deliveryType);
 
             if (!string.IsNullOrWhiteSpace(search))
             {

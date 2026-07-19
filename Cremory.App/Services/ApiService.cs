@@ -172,9 +172,10 @@ namespace Cremory.App.Services
             string? status = null, string? search = null,
             DateTime? dateFrom = null, DateTime? dateTo = null,
             int page = 1, int pageSize = 100,
-            bool? isArchived = null)
+            bool? isArchived = null,
+            string? deliveryType = null)
         {
-            var url = BuildOrdersUrl(status, search, dateFrom, dateTo, page, pageSize, isArchived);
+            var url = BuildOrdersUrl(status, search, dateFrom, dateTo, page, pageSize, isArchived, deliveryType);
             try
             {
                 var response = await _httpClient.GetAsync(url);
@@ -210,7 +211,8 @@ namespace Cremory.App.Services
             string? status, string? search,
             DateTime? dateFrom, DateTime? dateTo,
             int page, int pageSize,
-            bool? isArchived = null)
+            bool? isArchived = null,
+            string? deliveryType = null)
         {
             var parts = new List<string>();
             if (!string.IsNullOrWhiteSpace(status)) parts.Add($"status={Uri.EscapeDataString(status)}");
@@ -218,6 +220,7 @@ namespace Cremory.App.Services
             if (dateFrom.HasValue) parts.Add($"dateFrom={dateFrom.Value:yyyy-MM-dd}");
             if (dateTo.HasValue) parts.Add($"dateTo={dateTo.Value:yyyy-MM-dd}");
             if (isArchived.HasValue) parts.Add($"isArchived={isArchived.Value.ToString().ToLower()}");
+            if (!string.IsNullOrWhiteSpace(deliveryType)) parts.Add($"deliveryType={Uri.EscapeDataString(deliveryType)}");
             parts.Add($"page={page}");
             parts.Add($"pageSize={pageSize}");
 

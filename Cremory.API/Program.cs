@@ -74,6 +74,7 @@ builder.Services.Configure<MessengerOptions>(options =>
                         db.Database.ExecuteSqlRaw("ALTER TABLE \"ORDERS\" ADD COLUMN IF NOT EXISTS \"IS_ARCHIVED\" boolean NOT NULL DEFAULT FALSE");
                         db.Database.ExecuteSqlRaw("ALTER TABLE \"ORDERS\" ADD COLUMN IF NOT EXISTS \"DELIVERY_TYPE\" varchar(20) NULL");
                         db.Database.ExecuteSqlRaw("ALTER TABLE \"ORDERS\" ADD COLUMN IF NOT EXISTS \"PAYMENT_STATUS\" varchar(20) NULL");
+                        db.Database.ExecuteSqlRaw("ALTER TABLE \"ORDERS\" ADD COLUMN IF NOT EXISTS \"ADDRESS\" varchar(500) NULL");
 
                         db.Database.ExecuteSqlRaw("""
                             CREATE TABLE IF NOT EXISTS "DEVICE_TOKENS" (

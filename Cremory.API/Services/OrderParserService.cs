@@ -9,6 +9,9 @@ namespace Cremory.API.Services
         private readonly Regex _orderTrigger;
         private readonly Regex _totalRegex;
         private readonly Regex _contactRegex;
+        private readonly Regex _deliveryRegex;
+        private readonly Regex _addressRegex;
+        private readonly Regex _paymentRegex;
 
         public OrderParserService(IOptions<OrderParserOptions> options)
         {
@@ -16,6 +19,9 @@ namespace Cremory.API.Services
             _orderTrigger = new Regex(cfg.TriggerPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
             _totalRegex = new Regex(cfg.TotalPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
             _contactRegex = new Regex(cfg.ContactPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            _deliveryRegex = new Regex(cfg.DeliveryPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            _addressRegex = new Regex(cfg.AddressPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            _paymentRegex = new Regex(cfg.PaymentPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
         }
 
         public ParseResult TryParse(string rawMessage)
@@ -37,6 +43,9 @@ namespace Cremory.API.Services
 
             string totalStr = null!;
             string? contact = null;
+            string? deliveryType = null;
+            string? address = null;
+            string? paymentStatus = null;
             var itemLines = new List<string>();
 
             for (int i = 1; i < lines.Length; i++)
@@ -55,6 +64,32 @@ namespace Cremory.API.Services
                 if (contactMatch.Success)
                 {
                     contact = contactMatch.Groups[1].Value.Trim();
+                    continue;
+                }
+
+                var deliveryMatch = _deliveryRegex.Match(trimmed);
+                if (deliveryMatch.Success)
+                {
+                    var val = deliveryMatch.Groups[1].Value.Trim().ToLower();
+                    if (val.Contains("pick") || val.Contains("pickup"))
+                        deliveryType = "Pick Up";
+                    else
+                        deliveryType = "Delivery";
+                    continue;
+                }
+
+                var addressMatch = _addressRegex.Match(trimmed);
+                if (addressMatch.Success)
+                {
+                    address = addressMatch.Groups[1].Value.Trim();
+                    deliveryType ??= "Delivery";
+                    continue;
+                }
+
+                var paymentMatch = _paymentRegex.Match(trimmed);
+                if (paymentMatch.Success)
+                {
+                    paymentStatus = paymentMatch.Groups[1].Value.Trim();
                     continue;
                 }
 
@@ -81,6 +116,9 @@ namespace Cremory.API.Services
                 TotalPrice = total,
                 Source = "Facebook",
                 CustomerContact = contact,
+                DeliveryType = deliveryType,
+                Address = address,
+                PaymentStatus = paymentStatus,
                 Status = OrderStatus.Pending,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow

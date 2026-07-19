@@ -62,5 +62,9 @@ namespace Cremory.API.Models
         [Column("PAYMENT_STATUS")]
         [StringLength(20)]
         public string? PaymentStatus { get; set; }
+
+        [Column("ADDRESS")]
+        [StringLength(500)]
+        public string? Address { get; set; }
     }
 }

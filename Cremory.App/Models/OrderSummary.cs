@@ -25,6 +25,7 @@ namespace Cremory.App.Models
         public bool IsArchived { get; set; }
         public string? DeliveryType { get; set; }
         public string? PaymentStatus { get; set; }
+        public string? Address { get; set; }
     }
 
     public class OrderSummary : INotifyPropertyChanged
@@ -66,6 +67,7 @@ namespace Cremory.App.Models
         public bool IsArchived { get; set; }
         public string? DeliveryType { get; set; }
         public string? PaymentStatus { get; set; }
+        public string? Address { get; set; }
 
         public static OrderSummary FromDto(OrderDto dto)
         {
@@ -83,6 +85,7 @@ namespace Cremory.App.Models
                 IsArchived = dto.IsArchived,
                 DeliveryType = dto.DeliveryType,
                 PaymentStatus = dto.PaymentStatus,
+                Address = dto.Address,
                 Timestamp = FormatRelativeTime(dto.CreatedAt),
                 IsJustReceived = dto.CreatedAt > DateTime.UtcNow.AddMinutes(-2)
             };

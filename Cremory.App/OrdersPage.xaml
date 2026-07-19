@@ -9,7 +9,7 @@
              Title="Orders"
              BackgroundColor="#FFFDFD">
 
-    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, *" Padding="16,14,16,0" RowSpacing="10">
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, *" Padding="16,14,16,0" RowSpacing="10">
 
         <Border x:Name="NewOrderAlert" Grid.Row="0"
                 StrokeShape="RoundRectangle 10"
@@ -128,7 +128,29 @@
             </ScrollView>
         </Border>
 
-        <Border Grid.Row="4" x:Name="ArchiveFilterBar"
+        <Border Grid.Row="4" x:Name="CompletedFilterBar"
+                StrokeShape="RoundRectangle 10"
+                BackgroundColor="#FDF5F5" Stroke="Transparent"
+                Padding="8" IsVisible="False">
+            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8">
+                <Label Text="Delivery:" FontSize="12" TextColor="#7D5A5A"
+                       VerticalOptions="Center"/>
+                <Picker x:Name="DeliveryTypePicker" Title="All"
+                        TextColor="#2C2525" TitleColor="#B89292"
+                        BackgroundColor="White" FontSize="11"
+                        SelectedIndexChanged="OnDeliveryTypeFilterChanged">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>All</x:String>
+                            <x:String>Delivery</x:String>
+                            <x:String>Pick Up</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="5" x:Name="ArchiveFilterBar"
                 StrokeShape="RoundRectangle 10"
                 BackgroundColor="#FDF5F5" Stroke="Transparent"
                 Padding="8" IsVisible="False">
@@ -161,7 +183,7 @@
             </Grid>
         </Border>
 
-        <RefreshView Grid.Row="5" x:Name="OrdersRefreshView" Refreshing="OnRefreshing"
+        <RefreshView Grid.Row="6" x:Name="OrdersRefreshView" Refreshing="OnRefreshing"
                       RefreshColor="#E27575">
             <Grid>
                 <CollectionView x:Name="OrdersCollectionView"

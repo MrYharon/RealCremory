@@ -38,6 +38,7 @@ namespace Cremory.API.Data
                 entity.Property(o => o.Status).HasConversion<int>();
                 entity.Property(o => o.DeliveryType).HasMaxLength(20);
                 entity.Property(o => o.PaymentStatus).HasMaxLength(20);
+                entity.Property(o => o.Address).HasMaxLength(500);
             });
         }
     }
