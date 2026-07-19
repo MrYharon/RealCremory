@@ -63,7 +63,7 @@ namespace Cremory.App.Platforms.Android
 
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
             {
-                builder.SetChannelId(Services.NotificationService.ChannelId);
+                builder.SetChannelId(Cremory.App.Services.NotificationService.ChannelId);
             }
 
             var notification = builder.Build();

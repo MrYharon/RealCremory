@@ -8,7 +8,9 @@ namespace Cremory.App
     {
         private readonly ApiService _api;
         private readonly SignalRService _signalR;
+        private readonly IBiometricAuthService _biometricAuth;
         private readonly List<OrderSummary> _allOrders = [];
+        private static bool _isAuthenticated;
 
         public ObservableCollection<OrderSummary> ActiveOrders { get; set; } = [];
         public decimal TotalProfitToday { get; set; }
@@ -19,12 +21,13 @@ namespace Cremory.App
 
         private DateTime _lastRefreshTime = DateTime.Now;
 
-        public MainPage(ApiService api, SignalRService signalR)
+        public MainPage(ApiService api, SignalRService signalR, IBiometricAuthService biometricAuth)
         {
             InitializeComponent();
             BindingContext = this;
             _api = api;
             _signalR = signalR;
+            _biometricAuth = biometricAuth;
         }
 
         private IDispatcherTimer? _refreshTimer;
@@ -32,6 +35,18 @@ namespace Cremory.App
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+
+            if (!_isAuthenticated)
+            {
+                var ok = await _biometricAuth.AuthenticateAsync("Scan fingerprint to unlock Cremory");
+                if (!ok)
+                {
+                    Application.Current?.Quit();
+                    return;
+                }
+                _isAuthenticated = true;
+            }
+
             await LoadOrdersAsync();
             SubscribeToSignalR();
             await _signalR.EnsureStartedAsync();

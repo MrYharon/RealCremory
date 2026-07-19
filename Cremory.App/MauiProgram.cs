@@ -1,6 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using Cremory.App.Services;
 
+#if ANDROID
+using Cremory.App.Platforms.Android.Services;
+#endif
+
 namespace Cremory.App
 {
     public static class MauiProgram
@@ -19,6 +23,12 @@ namespace Cremory.App
             builder.Services.AddSingleton<ApiService>();
             builder.Services.AddSingleton<NotificationService>();
             builder.Services.AddSingleton<SignalRService>();
+
+#if ANDROID
+            builder.Services.AddSingleton<IBiometricAuthService, BiometricAuthService>();
+#else
+            builder.Services.AddSingleton<IBiometricAuthService, FallbackBiometricAuthService>();
+#endif
 
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<OrdersPage>();
