@@ -81,6 +81,8 @@ namespace Cremory.API.Services
                 var addressMatch = _addressRegex.Match(trimmed);
                 if (addressMatch.Success)
                 {
+                    if (deliveryType == "Pick Up")
+                        continue;
                     address = addressMatch.Groups[1].Value.Trim();
                     deliveryType ??= "Delivery";
                     continue;
