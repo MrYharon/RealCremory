@@ -135,6 +135,21 @@ namespace Cremory.App.Services
             }
         }
 
+        public async Task<LoginResponse?> LoginAsync(string username, string password)
+        {
+            try
+            {
+                var payload = new { Username = username, Password = password };
+                var response = await _httpClient.PostAsJsonAsync("Auth/login", payload, JsonOptions);
+                if (!response.IsSuccessStatusCode) return null;
+                return await response.Content.ReadFromJsonAsync<LoginResponse>(JsonOptions);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public async Task<OrderDto?> CreateWalkInOrderAsync(string customerName, string items, decimal totalPrice,
             string? contact, string? deliveryType = null, string? address = null, string? paymentStatus = null)
         {

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Cremory.App.LoginPage"
+             BackgroundColor="#FFFDFD"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="*, Auto" Padding="32">
+
+        <VerticalStackLayout VerticalOptions="Center" Spacing="16">
+            <Label Text="The Cremory" FontSize="36" FontAttributes="Bold"
+                   TextColor="#2C2525" HorizontalTextAlignment="Center"/>
+            <Label Text="Bakery POS" FontSize="16" TextColor="#B89292"
+                   HorizontalTextAlignment="Center" Margin="0,0,0,24"/>
+
+            <Border StrokeShape="RoundRectangle 10" BackgroundColor="#FDF5F5"
+                    Stroke="#F0E0E0" Padding="12,0" HeightRequest="48">
+                <Entry x:Name="UsernameEntry" Placeholder="Username"
+                       PlaceholderColor="#B89292" TextColor="#2C2525"
+                       BackgroundColor="Transparent" FontSize="15"
+                       ReturnType="Next"/>
+            </Border>
+
+            <Border StrokeShape="RoundRectangle 10" BackgroundColor="#FDF5F5"
+                    Stroke="#F0E0E0" Padding="12,0" HeightRequest="48">
+                <Entry x:Name="PasswordEntry" Placeholder="Password"
+                       PlaceholderColor="#B89292" TextColor="#2C2525"
+                       BackgroundColor="Transparent" FontSize="15"
+                       IsPassword="True" ReturnType="Done"
+                       Completed="OnPasswordCompleted"/>
+            </Border>
+
+            <Label x:Name="ErrorLabel" Text="" FontSize="12" TextColor="#E27575"
+                   HorizontalTextAlignment="Center" IsVisible="False"/>
+
+            <Button x:Name="LoginBtn" Text="Sign In"
+                    Clicked="OnLoginClicked"
+                    BackgroundColor="#E27575" TextColor="White"
+                    FontAttributes="Bold" FontSize="16"
+                    HeightRequest="48" CornerRadius="10"/>
+        </VerticalStackLayout>
+
+        <Label Grid.Row="1" Text="v1.0" FontSize="11" TextColor="#D4B8B8"
+               HorizontalTextAlignment="Center" Margin="0,0,0,16"/>
+    </Grid>
+
+</ContentPage>

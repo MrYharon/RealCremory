@@ -30,6 +30,7 @@ namespace Cremory.App
             builder.Services.AddSingleton<IBiometricAuthService, FallbackBiometricAuthService>();
 #endif
 
+            builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<OrdersPage>();
             builder.Services.AddTransient<AnalyticsPage>();

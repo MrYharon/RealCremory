@@ -13,6 +13,7 @@ namespace Cremory.API.Data
                 context.Database.ExecuteSqlRaw("DELETE FROM \"PRODUCTS\"");
                 context.Database.ExecuteSqlRaw("DELETE FROM \"CATEGORIES\"");
                 context.Database.ExecuteSqlRaw("DELETE FROM \"APP_SETTINGS\"");
+                context.Database.ExecuteSqlRaw("DELETE FROM \"USERS\"");
             }
             catch { }
 
@@ -57,6 +58,19 @@ namespace Cremory.API.Data
 
             context.Products.AddRange(products);
             context.SaveChanges();
+
+            if (!context.Users.Any())
+            {
+                context.Users.Add(new User
+                {
+                    Username = "admin",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
+                    DisplayName = "Admin",
+                    Role = "admin",
+                    CreatedAt = DateTime.UtcNow
+                });
+                context.SaveChanges();
+            }
         }
     }
 }

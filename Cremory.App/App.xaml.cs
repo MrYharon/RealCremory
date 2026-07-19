@@ -5,16 +5,19 @@ namespace Cremory.App
     public partial class App : Application
     {
         public static ApiService? ApiService { get; private set; }
+        private readonly IServiceProvider _serviceProvider;
 
-        public App(ApiService apiService)
+        public App(ApiService apiService, IServiceProvider serviceProvider)
         {
             InitializeComponent();
             ApiService = apiService;
+            _serviceProvider = serviceProvider;
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            return new Window(new AppShell());
+            var loginPage = _serviceProvider.GetRequiredService<LoginPage>();
+            return new Window(loginPage);
         }
 
         protected override void OnStart()
