@@ -383,7 +383,7 @@ namespace Cremory.App
 
         private async void OnNewOrderClicked(object sender, EventArgs e)
         {
-            var formPage = new WalkInOrderFormPage(_api);
+            var formPage = new KioskOrderFormPage(_api);
             formPage.OrderCreated += async (s, order) =>
             {
                 await LoadOrdersAsync();

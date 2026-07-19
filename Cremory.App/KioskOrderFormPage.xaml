@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Cremory.App.Models"
+             x:Class="Cremory.App.KioskOrderFormPage"
+             Title="New Order"
+             BackgroundColor="#FFFDFD"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, Auto, Auto, *, Auto" Padding="16,0" RowSpacing="0">
+
+        <!-- Header -->
+        <Grid Grid.Row="0" Padding="0,12,0,8" ColumnDefinitions="*, Auto">
+            <VerticalStackLayout Spacing="2">
+                <Label Text="New Order" FontSize="24" FontAttributes="Bold"
+                       TextColor="#2C2525"/>
+                <Label Text="Tap products to add to order" FontSize="12"
+                       TextColor="#B89292"/>
+            </VerticalStackLayout>
+            <Button Grid.Column="1" Text="✕" Clicked="OnCloseClicked"
+                    BackgroundColor="Transparent" TextColor="#B89292"
+                    FontSize="18" WidthRequest="40" HeightRequest="40"
+                    Padding="0"/>
+        </Grid>
+
+        <!-- Customer Name -->
+        <Border Grid.Row="1" StrokeShape="RoundRectangle 10"
+                BackgroundColor="#FDF5F5" Stroke="Transparent"
+                Padding="12,0" HeightRequest="44" Margin="0,0,0,10">
+            <Entry x:Name="NameEntry" Placeholder="Customer name (required)"
+                   PlaceholderColor="#B89292" TextColor="#2C2525"
+                   BackgroundColor="Transparent" FontSize="14"/>
+        </Border>
+
+        <!-- Category Chips -->
+        <ScrollView Grid.Row="2" Orientation="Horizontal"
+                    HorizontalScrollBarVisibility="Never" Margin="0,0,0,8">
+            <HorizontalStackLayout x:Name="CategoryChips" Spacing="6"/>
+        </ScrollView>
+
+        <!-- Product Grid -->
+        <RefreshView Grid.Row="3" x:Name="MenuRefreshView"
+                      Refreshing="OnMenuRefreshing" RefreshColor="#E27575">
+            <ScrollView>
+                <VerticalStackLayout x:Name="ProductContainer" Spacing="8"/>
+            </ScrollView>
+        </RefreshView>
+
+        <!-- Cart Bottom Bar -->
+        <Border Grid.Row="4" StrokeShape="RoundRectangle 16,16,0,0"
+                BackgroundColor="White" Stroke="#F0E0E0" StrokeThickness="1"
+                Padding="16,12" Margin="0,4,0,0">
+            <Grid RowDefinitions="Auto, Auto" RowSpacing="10">
+
+                <!-- Cart Items -->
+                <CollectionView x:Name="CartCollection" MaxHeightRequest="180">
+                    <CollectionView.EmptyView>
+                        <Label Text="Cart is empty — tap products above"
+                               FontSize="12" TextColor="#D4B8B8"
+                               HorizontalTextAlignment="Center"
+                               Padding="0,8"/>
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:CartItem">
+                            <Border StrokeShape="RoundRectangle 8"
+                                    BackgroundColor="#FDF5F5" Stroke="Transparent"
+                                    Padding="10,6" Margin="0,0,0,6">
+                                <Grid ColumnDefinitions="*, Auto, Auto, Auto"
+                                      ColumnSpacing="8">
+                                    <VerticalStackLayout Spacing="1">
+                                        <Label Text="{Binding DisplayText}"
+                                               FontSize="13" FontAttributes="Bold"
+                                               TextColor="#2C2525"
+                                               LineBreakMode="TailTruncation"/>
+                                        <Label Text="{Binding UnitPriceText}"
+                                               FontSize="10" TextColor="#B89292"/>
+                                    </VerticalStackLayout>
+                                    <Button Grid.Column="1" Text="−"
+                                            Clicked="OnCartDecrease"
+                                            BackgroundColor="#F5E8E8"
+                                            TextColor="#7D5A5A"
+                                            FontSize="14" FontAttributes="Bold"
+                                            WidthRequest="30" HeightRequest="30"
+                                            Padding="0" CornerRadius="15"/>
+                                    <Label Grid.Column="2" Text="{Binding Qty}"
+                                           FontSize="16" FontAttributes="Bold"
+                                           TextColor="#2C2525"
+                                           VerticalOptions="Center"
+                                           HorizontalTextAlignment="Center"
+                                           WidthRequest="28"/>
+                                    <Button Grid.Column="3" Text="+"
+                                            Clicked="OnCartIncrease"
+                                            BackgroundColor="#F5E8E8"
+                                            TextColor="#7D5A5A"
+                                            FontSize="14" FontAttributes="Bold"
+                                            WidthRequest="30" HeightRequest="30"
+                                            Padding="0" CornerRadius="15"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Summary + Submit -->
+                <Grid Grid.Row="1" ColumnDefinitions="*, Auto, Auto" ColumnSpacing="10">
+                    <Border StrokeShape="RoundRectangle 8"
+                            BackgroundColor="#FDF5F5" Stroke="Transparent"
+                            Padding="10,0" HeightRequest="40">
+                        <Entry x:Name="ContactEntry" Placeholder="Contact (opt)"
+                               PlaceholderColor="#B89292" TextColor="#2C2525"
+                               BackgroundColor="Transparent" FontSize="12"
+                               Keyboard="Telephone"/>
+                    </Border>
+                    <Label x:Name="TotalLabel" Grid.Column="1" Text="₱0.00"
+                           FontSize="22" FontAttributes="Bold"
+                           TextColor="#E27575" VerticalOptions="Center"/>
+                    <Button x:Name="SubmitBtn" Grid.Column="2" Text="Submit"
+                            Clicked="OnSubmitClicked"
+                            BackgroundColor="#E27575" TextColor="White"
+                            FontAttributes="Bold" FontSize="13"
+                            HeightRequest="40" Padding="20,0" CornerRadius="10"
+                            IsEnabled="False" Opacity="0.5"/>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</ContentPage>
