@@ -83,18 +83,11 @@
                 Padding="6">
             <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
                 <HorizontalStackLayout Spacing="4">
-                    <Border x:Name="FilterAllBorder" StrokeShape="RoundRectangle 12"
+                    <Border x:Name="FilterPendingBorder" StrokeShape="RoundRectangle 12"
                             BackgroundColor="#E27575" Stroke="Transparent">
-                        <Button x:Name="FilterAll" Text="All" Clicked="OnFilterClicked"
+                        <Button x:Name="FilterPending" Text="Pending" Clicked="OnFilterClicked"
                                 BackgroundColor="Transparent" TextColor="White"
                                 FontSize="11" FontAttributes="Bold" Padding="12,0" HeightRequest="28"/>
-                    </Border>
-                    <Border x:Name="FilterPendingBorder" StrokeShape="RoundRectangle 12"
-                            BackgroundColor="Transparent"
-                            Stroke="#E8D4D4" StrokeThickness="1">
-                        <Button x:Name="FilterPending" Text="Pending" Clicked="OnFilterClicked"
-                                BackgroundColor="Transparent" TextColor="#B89292"
-                                FontSize="11" Padding="12,0" HeightRequest="28"/>
                     </Border>
                     <Border x:Name="FilterPreparingBorder" StrokeShape="RoundRectangle 12"
                             BackgroundColor="Transparent"
@@ -103,10 +96,24 @@
                                 BackgroundColor="Transparent" TextColor="#B89292"
                                 FontSize="11" Padding="12,0" HeightRequest="28"/>
                     </Border>
+                    <Border x:Name="FilterToPayBorder" StrokeShape="RoundRectangle 12"
+                            BackgroundColor="Transparent"
+                            Stroke="#E8D4D4" StrokeThickness="1">
+                        <Button x:Name="FilterToPay" Text="To Pay" Clicked="OnFilterClicked"
+                                BackgroundColor="Transparent" TextColor="#B89292"
+                                FontSize="11" Padding="12,0" HeightRequest="28"/>
+                    </Border>
                     <Border x:Name="FilterCompletedBorder" StrokeShape="RoundRectangle 12"
                             BackgroundColor="Transparent"
                             Stroke="#E8D4D4" StrokeThickness="1">
                         <Button x:Name="FilterCompleted" Text="Completed" Clicked="OnFilterClicked"
+                                BackgroundColor="Transparent" TextColor="#B89292"
+                                FontSize="11" Padding="12,0" HeightRequest="28"/>
+                    </Border>
+                    <Border x:Name="FilterCancelledBorder" StrokeShape="RoundRectangle 12"
+                            BackgroundColor="Transparent"
+                            Stroke="#E8D4D4" StrokeThickness="1">
+                        <Button x:Name="FilterCancelled" Text="Cancelled" Clicked="OnFilterClicked"
                                 BackgroundColor="Transparent" TextColor="#B89292"
                                 FontSize="11" Padding="12,0" HeightRequest="28"/>
                     </Border>

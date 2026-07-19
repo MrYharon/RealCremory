@@ -18,7 +18,7 @@ namespace Cremory.App
         private readonly SignalRService _signalR;
         private readonly ObservableCollection<OrderSummary> _allOrders = [];
         private readonly ObservableCollection<KitchenItemGroup> _kitchenItems = [];
-        private string _activeFilter = "All";
+        private string _activeFilter = "Pending";
         private string _searchText = "";
         private bool _showArchives;
         private CancellationTokenSource? _searchCts;
@@ -146,12 +146,13 @@ namespace Cremory.App
                 _currentPage = 1;
                 _hasMorePages = true;
 
-                var (status, dateFrom, dateTo) = GetServerFilterParams();
+                var (status, dateFrom, dateTo, isArchived) = GetServerFilterParams();
 
                 var (dtos, totalCount) = await _api.GetOrdersPagedAsync(
                     status: status, search: string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
                     dateFrom: dateFrom, dateTo: dateTo,
-                    page: _currentPage, pageSize: 100);
+                    page: _currentPage, pageSize: 100,
+                    isArchived: isArchived);
 
                 _totalCount = totalCount;
                 _hasMorePages = dtos.Count >= 100;
@@ -204,12 +205,13 @@ namespace Cremory.App
             try
             {
                 _currentPage++;
-                var (status, dateFrom, dateTo) = GetServerFilterParams();
+                var (status, dateFrom, dateTo, isArchived) = GetServerFilterParams();
 
                 var (dtos, totalCount) = await _api.GetOrdersPagedAsync(
                     status: status, search: string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
                     dateFrom: dateFrom, dateTo: dateTo,
-                    page: _currentPage, pageSize: 100);
+                    page: _currentPage, pageSize: 100,
+                    isArchived: isArchived);
 
                 _totalCount = totalCount;
                 _hasMorePages = dtos.Count >= 100;
@@ -230,7 +232,7 @@ namespace Cremory.App
             }
         }
 
-        private (string? Status, DateTime? DateFrom, DateTime? DateTo) GetServerFilterParams()
+        private (string? Status, DateTime? DateFrom, DateTime? DateTo, bool? IsArchived) GetServerFilterParams()
         {
             if (_showArchives)
             {
@@ -250,17 +252,19 @@ namespace Cremory.App
                     "Cancelled" => "Cancelled",
                     _ => null
                 };
-                return (status, dateFrom, dateTo);
+                return (status, dateFrom, dateTo, true);
             }
 
             var activeStatus = _activeFilter switch
             {
                 "Pending" => "Pending",
                 "Preparing" => "Creating",
+                "To Pay" => "ToPay",
                 "Completed" => "Completed",
+                "Cancelled" => "Cancelled",
                 _ => null
             };
-            return (activeStatus, null, null);
+            return (activeStatus, null, null, null);
         }
 
         private async void OnLoadMore(object sender, EventArgs e)
@@ -281,7 +285,7 @@ namespace Cremory.App
 
             if (_showArchives)
             {
-                filtered = filtered.Where(o => o.Status == OrderStatus.Completed || o.Status == OrderStatus.Cancelled);
+                filtered = filtered.Where(o => o.IsArchived);
 
                 var statusFilter = ArchiveStatusPicker.SelectedItem as string;
                 if (statusFilter == "Completed")
@@ -291,13 +295,20 @@ namespace Cremory.App
             }
             else
             {
-                filtered = _activeFilter switch
+                filtered = filtered.Where(o => !o.IsArchived);
+
+                if (_activeFilter != "All")
                 {
-                    "Pending" => filtered.Where(o => o.Status == OrderStatus.Pending),
-                    "Preparing" => filtered.Where(o => o.Status == OrderStatus.Creating),
-                    "Completed" => filtered.Where(o => o.Status == OrderStatus.Completed),
-                    _ => filtered.Where(o => o.Status != OrderStatus.Completed && o.Status != OrderStatus.Cancelled)
-                };
+                    filtered = _activeFilter switch
+                    {
+                        "Pending" => filtered.Where(o => o.Status == OrderStatus.Pending),
+                        "Preparing" => filtered.Where(o => o.Status == OrderStatus.Creating),
+                        "To Pay" => filtered.Where(o => o.Status == OrderStatus.ToPay),
+                        "Completed" => filtered.Where(o => o.Status == OrderStatus.Completed),
+                        "Cancelled" => filtered.Where(o => o.Status == OrderStatus.Cancelled),
+                        _ => filtered
+                    };
+                }
             }
 
             FilteredOrders.Clear();
@@ -335,7 +346,7 @@ namespace Cremory.App
             }
         }
 
-        private void OnToggleArchives(object sender, TappedEventArgs e)
+        private async void OnToggleArchives(object sender, TappedEventArgs e)
         {
             _showArchives = !_showArchives;
             ArchiveFilterBar.IsVisible = _showArchives;
@@ -345,13 +356,13 @@ namespace Cremory.App
             ArchiveLabel.Text = _showArchives ? "Archives On" : "Archives";
             if (_showArchives)
                 ResetFilterChips();
-            ApplyFilter();
+            await LoadOrdersAsync();
         }
 
-        private void OnDateFilterChanged(object sender, EventArgs e)
+        private async void OnDateFilterChanged(object sender, EventArgs e)
         {
             if (_showArchives)
-                ApplyFilter();
+                await LoadOrdersAsync();
         }
 
         private async void OnImportClicked(object sender, EventArgs e)
@@ -382,8 +393,8 @@ namespace Cremory.App
 
         private void ResetFilterChips()
         {
-            var borders = new[] { FilterAllBorder, FilterPendingBorder, FilterPreparingBorder, FilterCompletedBorder };
-            var buttons = new[] { FilterAll, FilterPending, FilterPreparing, FilterCompleted };
+            var borders = new[] { FilterPendingBorder, FilterPreparingBorder, FilterToPayBorder, FilterCompletedBorder, FilterCancelledBorder };
+            var buttons = new[] { FilterPending, FilterPreparing, FilterToPay, FilterCompleted, FilterCancelled };
             for (int i = 0; i < borders.Length; i++)
             {
                 borders[i].BackgroundColor = Colors.Transparent;
@@ -393,7 +404,7 @@ namespace Cremory.App
             }
         }
 
-        private void OnFilterClicked(object sender, EventArgs e)
+        private async void OnFilterClicked(object sender, EventArgs e)
         {
             if (_showKitchenView)
             {
@@ -421,7 +432,8 @@ namespace Cremory.App
             ArchiveLabel.TextColor = Color.FromArgb("#B89292");
             ArchiveLabel.Text = "Archives";
             ArchiveFilterBar.IsVisible = false;
-            ApplyFilter();
+
+            await LoadOrdersAsync();
         }
 
         private void OnKitchenViewClicked(object sender, EventArgs e)

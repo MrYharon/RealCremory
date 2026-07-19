@@ -171,9 +171,10 @@ namespace Cremory.App.Services
         public async Task<(List<OrderDto> Orders, int TotalCount)> GetOrdersPagedAsync(
             string? status = null, string? search = null,
             DateTime? dateFrom = null, DateTime? dateTo = null,
-            int page = 1, int pageSize = 100)
+            int page = 1, int pageSize = 100,
+            bool? isArchived = null)
         {
-            var url = BuildOrdersUrl(status, search, dateFrom, dateTo, page, pageSize);
+            var url = BuildOrdersUrl(status, search, dateFrom, dateTo, page, pageSize, isArchived);
             try
             {
                 var response = await _httpClient.GetAsync(url);
@@ -198,22 +199,25 @@ namespace Cremory.App.Services
         public async Task<List<OrderDto>> GetOrdersRawAsync(
             string? status = null, string? search = null,
             DateTime? dateFrom = null, DateTime? dateTo = null,
-            int page = 1, int pageSize = 100)
+            int page = 1, int pageSize = 100,
+            bool? isArchived = null)
         {
-            var url = BuildOrdersUrl(status, search, dateFrom, dateTo, page, pageSize);
+            var url = BuildOrdersUrl(status, search, dateFrom, dateTo, page, pageSize, isArchived);
             return await HttpGetAsync<List<OrderDto>>(url, "orders") ?? [];
         }
 
         private static string BuildOrdersUrl(
             string? status, string? search,
             DateTime? dateFrom, DateTime? dateTo,
-            int page, int pageSize)
+            int page, int pageSize,
+            bool? isArchived = null)
         {
             var parts = new List<string>();
             if (!string.IsNullOrWhiteSpace(status)) parts.Add($"status={Uri.EscapeDataString(status)}");
             if (!string.IsNullOrWhiteSpace(search)) parts.Add($"search={Uri.EscapeDataString(search)}");
             if (dateFrom.HasValue) parts.Add($"dateFrom={dateFrom.Value:yyyy-MM-dd}");
             if (dateTo.HasValue) parts.Add($"dateTo={dateTo.Value:yyyy-MM-dd}");
+            if (isArchived.HasValue) parts.Add($"isArchived={isArchived.Value.ToString().ToLower()}");
             parts.Add($"page={page}");
             parts.Add($"pageSize={pageSize}");
 

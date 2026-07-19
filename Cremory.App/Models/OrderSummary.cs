@@ -7,7 +7,8 @@ namespace Cremory.App.Models
         Pending = 0,
         Creating = 1,
         Completed = 2,
-        Cancelled = 3
+        Cancelled = 3,
+        ToPay = 4
     }
 
     public class OrderDto
@@ -21,6 +22,9 @@ namespace Cremory.App.Models
         public string? CustomerContact { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public bool IsArchived { get; set; }
+        public string? DeliveryType { get; set; }
+        public string? PaymentStatus { get; set; }
     }
 
     public class OrderSummary : INotifyPropertyChanged
@@ -59,6 +63,9 @@ namespace Cremory.App.Models
         public string? CustomerContact { get; set; }
         public DateTime CreatedAtUtc { get; set; }
         public DateTime UpdatedAtUtc { get; set; }
+        public bool IsArchived { get; set; }
+        public string? DeliveryType { get; set; }
+        public string? PaymentStatus { get; set; }
 
         public static OrderSummary FromDto(OrderDto dto)
         {
@@ -73,6 +80,9 @@ namespace Cremory.App.Models
                 CustomerContact = dto.CustomerContact,
                 CreatedAtUtc = dto.CreatedAt,
                 UpdatedAtUtc = dto.UpdatedAt,
+                IsArchived = dto.IsArchived,
+                DeliveryType = dto.DeliveryType,
+                PaymentStatus = dto.PaymentStatus,
                 Timestamp = FormatRelativeTime(dto.CreatedAt),
                 IsJustReceived = dto.CreatedAt > DateTime.UtcNow.AddMinutes(-2)
             };
@@ -94,6 +104,7 @@ namespace Cremory.App.Models
             OrderStatus.Creating => "PREPARING",
             OrderStatus.Completed => "COMPLETE",
             OrderStatus.Cancelled => "CANCELLED",
+            OrderStatus.ToPay => "TO PAY",
             _ => "UNKNOWN"
         };
 
@@ -103,6 +114,7 @@ namespace Cremory.App.Models
             OrderStatus.Creating => "#E27575",
             OrderStatus.Completed => "#C4DFC4",
             OrderStatus.Cancelled => "#B89292",
+            OrderStatus.ToPay => "#FFD700",
             _ => "#B89292"
         };
 
@@ -112,13 +124,15 @@ namespace Cremory.App.Models
             OrderStatus.Creating => "Kitchen is working on this order",
             OrderStatus.Completed => "Order complete and ready",
             OrderStatus.Cancelled => "This order has been cancelled",
+            OrderStatus.ToPay => "Order is ready for payment",
             _ => ""
         };
 
         public string ActionButtonText => Status switch
         {
             OrderStatus.Pending => "▶ Start Preparing",
-            OrderStatus.Creating => "✓ Mark Complete",
+            OrderStatus.Creating => "✓ Mark Ready",
+            OrderStatus.ToPay => "✓ Pay & Complete",
             OrderStatus.Completed => "Completed",
             OrderStatus.Cancelled => "Cancelled",
             _ => "Unknown"
@@ -128,6 +142,7 @@ namespace Cremory.App.Models
         {
             OrderStatus.Pending => "#8D6E63",
             OrderStatus.Creating => "#6B8F71",
+            OrderStatus.ToPay => "#D4A017",
             OrderStatus.Completed => "#CCCCCC",
             OrderStatus.Cancelled => "#CCCCCC",
             _ => "#999999"
@@ -138,7 +153,8 @@ namespace Cremory.App.Models
         public static OrderStatus? NextStatus(OrderStatus current) => current switch
         {
             OrderStatus.Pending => OrderStatus.Creating,
-            OrderStatus.Creating => OrderStatus.Completed,
+            OrderStatus.Creating => OrderStatus.ToPay,
+            OrderStatus.ToPay => OrderStatus.Completed,
             _ => null
         };
 
@@ -150,6 +166,7 @@ namespace Cremory.App.Models
             OrderStatus.Creating => "#FBC4C4",
             OrderStatus.Completed => "#C4DFC4",
             OrderStatus.Cancelled => "#E0D0D0",
+            OrderStatus.ToPay => "#F5E6A3",
             _ => "#E0D0BC"
         };
     }

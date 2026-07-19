@@ -32,9 +32,15 @@ namespace Cremory.API.Controllers
             [FromQuery] DateTime? dateFrom = null,
             [FromQuery] DateTime? dateTo = null,
             [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 100)
+            [FromQuery] int pageSize = 100,
+            [FromQuery] bool? isArchived = null)
         {
             var query = _context.Orders.AsQueryable();
+
+            if (isArchived.HasValue)
+                query = query.Where(o => o.IsArchived == isArchived.Value);
+            else
+                query = query.Where(o => !o.IsArchived);
 
             if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<OrderStatus>(status, true, out var statusFilter))
                 query = query.Where(o => o.Status == statusFilter);
@@ -167,7 +173,8 @@ namespace Cremory.API.Controllers
             if (order == null)
                 return NotFound(new { message = $"Order with ID {id} not found." });
 
-            _context.Orders.Remove(order);
+            order.IsArchived = true;
+            order.UpdatedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 
             await _hubContext.Clients.All.SendAsync("OrderDeleted", id);

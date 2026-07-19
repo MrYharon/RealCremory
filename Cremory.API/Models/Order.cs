@@ -8,7 +8,8 @@ namespace Cremory.API.Models
         Pending = 0,
         Creating = 1,
         Completed = 2,
-        Cancelled = 3
+        Cancelled = 3,
+        ToPay = 4
     }
 
     [Table("ORDERS")]
@@ -50,5 +51,16 @@ namespace Cremory.API.Models
 
         [Column("UPDATED_AT")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        [Column("IS_ARCHIVED")]
+        public bool IsArchived { get; set; }
+
+        [Column("DELIVERY_TYPE")]
+        [StringLength(20)]
+        public string? DeliveryType { get; set; }
+
+        [Column("PAYMENT_STATUS")]
+        [StringLength(20)]
+        public string? PaymentStatus { get; set; }
     }
 }

@@ -57,7 +57,7 @@
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnDeleteTapped"/>
                     </Border.GestureRecognizers>
-                    <Label Text="Delete Order" FontSize="15" FontAttributes="Bold"
+                    <Label Text="Archive Order" FontSize="15" FontAttributes="Bold"
                            TextColor="#E27575"/>
                 </Border>
 

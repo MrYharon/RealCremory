@@ -61,7 +61,7 @@ namespace Cremory.App
 
         private async void OnCancelTapped(object? sender, TappedEventArgs e)
         {
-            if (_order.Status == OrderStatus.Completed || _order.Status == OrderStatus.Cancelled)
+            if (_order.Status is OrderStatus.Completed or OrderStatus.Cancelled)
             {
                 await Dismiss();
                 return;
@@ -91,14 +91,14 @@ namespace Cremory.App
             var page = GetCurrentPage();
             if (page == null) return;
 
-            var confirm = await page.DisplayAlert("Delete Order",
-                $"Permanently delete order for {_order.CustomerName}?\nThis cannot be undone.",
-                "Delete", "Cancel");
+            var confirm = await page.DisplayAlert("Archive Order",
+                $"Move order for {_order.CustomerName} to archives?",
+                "Archive", "Cancel");
             if (!confirm) return;
 
             var (success, error) = await _api.DeleteOrderAsync(_order.OrderId);
             if (!success)
-                await page.DisplayAlert("Error", $"Failed to delete: {error}", "OK");
+                await page.DisplayAlert("Error", $"Failed to archive: {error}", "OK");
         }
 
         private static Page? GetCurrentPage()
