@@ -57,15 +57,6 @@ builder.Services.Configure<MessengerOptions>(options =>
                 {
                     try
                     {
-                        db.Database.Migrate();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Database migration failed: {ex.Message}");
-                    }
-
-                    try
-                    {
                         db.Database.ExecuteSqlRaw("ALTER TABLE \"PRODUCTS\" ADD COLUMN IF NOT EXISTS \"UNIT\" varchar(20) NULL");
                         db.Database.ExecuteSqlRaw("ALTER TABLE \"PRODUCTS\" ADD COLUMN IF NOT EXISTS \"AUTO_DEDUCT\" boolean NOT NULL DEFAULT TRUE");
                         db.Database.ExecuteSqlRaw("ALTER TABLE \"PRODUCTS\" ADD COLUMN IF NOT EXISTS \"CURRENT_STOCK\" integer NOT NULL DEFAULT 0");
