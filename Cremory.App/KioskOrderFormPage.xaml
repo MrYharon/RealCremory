@@ -99,7 +99,7 @@
             <Grid RowDefinitions="Auto, Auto" RowSpacing="10">
 
                 <!-- Cart Items -->
-                <CollectionView x:Name="CartCollection" MaxHeightRequest="180">
+                <CollectionView x:Name="CartCollection" HeightRequest="180">
                     <CollectionView.EmptyView>
                         <Label Text="Cart is empty — tap products above"
                                FontSize="12" TextColor="#D4B8B8"

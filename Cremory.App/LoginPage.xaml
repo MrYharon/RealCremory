@@ -2,8 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Cremory.App.LoginPage"
-             BackgroundColor="#FFFDFD"
-             Shell.NavBarIsVisible="False">
+             BackgroundColor="#FFFDFD">
 
     <Grid RowDefinitions="*, Auto" Padding="32">
 

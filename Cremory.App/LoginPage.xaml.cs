@@ -14,17 +14,25 @@ namespace Cremory.App
             _biometricAuth = biometricAuth;
         }
 
-        protected override async void OnAppearing()
+        protected override void OnAppearing()
         {
             base.OnAppearing();
-            await TryBiometricAsync();
+            Dispatcher.Dispatch(async () =>
+            {
+                await Task.Delay(300);
+                await TryBiometricAsync();
+            });
         }
 
         private async Task TryBiometricAsync()
         {
-            var ok = await _biometricAuth.AuthenticateAsync("Scan fingerprint to unlock Cremory");
-            if (ok)
-                await NavigateToAppAsync();
+            try
+            {
+                var ok = await _biometricAuth.AuthenticateAsync("Scan fingerprint to unlock Cremory");
+                if (ok)
+                    await NavigateToAppAsync();
+            }
+            catch { }
         }
 
         private async void OnPasswordCompleted(object? sender, EventArgs e)
@@ -79,7 +87,9 @@ namespace Cremory.App
 
         private async Task NavigateToAppAsync()
         {
-            Application.Current!.MainPage = new AppShell();
+            var window = Application.Current?.Windows.FirstOrDefault();
+            if (window != null)
+                window.Page = new AppShell();
         }
     }
 }

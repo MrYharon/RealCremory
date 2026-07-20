@@ -1,6 +1,6 @@
 using AndroidX.Biometric;
 using AndroidX.Fragment.App;
-using Java.Util.Concurrent;
+using AndroidX.Core.Content;
 using Cremory.App.Services;
 
 namespace Cremory.App.Platforms.Android.Services
@@ -9,36 +9,36 @@ namespace Cremory.App.Platforms.Android.Services
     {
         public async Task<bool> AuthenticateAsync(string reason)
         {
-            var tcs = new TaskCompletionSource<bool>();
-
-            var activity = Platform.CurrentActivity;
-            if (activity is not FragmentActivity fragmentActivity)
+            try
             {
-                tcs.TrySetResult(false);
+                var activity = Platform.CurrentActivity;
+                if (activity is not FragmentActivity fragmentActivity)
+                    return false;
+
+                var biometricManager = BiometricManager.From(activity);
+                var canAuth = biometricManager.CanAuthenticate();
+                if (canAuth != BiometricManager.BiometricSuccess)
+                    return false;
+
+                var tcs = new TaskCompletionSource<bool>();
+                var executor = ContextCompat.GetMainExecutor(activity);
+                var prompt = new BiometricPrompt(fragmentActivity, executor!,
+                    new AuthCallback(tcs));
+
+                var promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                    .SetTitle("Cremory")
+                    .SetSubtitle(reason)
+                    .SetAllowedAuthenticators(BiometricManager.Authenticators.BiometricStrong)
+                    .Build();
+
+                prompt.Authenticate(promptInfo);
+
                 return await tcs.Task;
             }
-
-            var biometricManager = BiometricManager.From(activity);
-            var canAuth = biometricManager.CanAuthenticate(BiometricManager.Authenticators.BiometricStrong);
-            if (canAuth != BiometricManager.BiometricSuccess)
+            catch
             {
-                tcs.TrySetResult(false);
-                return await tcs.Task;
+                return false;
             }
-
-            var executor = Executors.NewSingleThreadExecutor()!;
-            var prompt = new BiometricPrompt(fragmentActivity, executor,
-                new AuthCallback(tcs));
-
-            var promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                .SetTitle("Cremory")
-                .SetSubtitle(reason)
-                .SetAllowedAuthenticators(BiometricManager.Authenticators.BiometricStrong)
-                .Build();
-
-            prompt.Authenticate(promptInfo);
-
-            return await tcs.Task;
         }
 
         private class AuthCallback : BiometricPrompt.AuthenticationCallback
