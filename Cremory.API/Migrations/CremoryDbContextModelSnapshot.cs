@@ -17,23 +17,6 @@ namespace Cremory.API.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
 
-            modelBuilder.Entity("Cremory.API.Models.AppSetting", b =>
-                {
-                    b.Property<string>("Key")
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT")
-                        .HasColumnName("KEY");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("VALUE");
-
-                    b.HasKey("Key");
-
-                    b.ToTable("APP_SETTINGS", (string)null);
-                });
-
             modelBuilder.Entity("Cremory.API.Models.Category", b =>
                 {
                     b.Property<int>("CategoryId")
@@ -56,36 +39,36 @@ namespace Cremory.API.Migrations
                     b.ToTable("CATEGORIES", (string)null);
                 });
 
-            modelBuilder.Entity("Cremory.API.Models.DeviceToken", b =>
+            modelBuilder.Entity("Cremory.API.Models.Ingredient", b =>
                 {
-                    b.Property<int>("TokenId")
+                    b.Property<int>("IngredientId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
-                        .HasColumnName("TOKEN_ID");
+                        .HasColumnName("INGREDIENT_ID");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT")
-                        .HasColumnName("CREATED_AT");
+                        .HasColumnName("NAME");
 
-                    b.Property<DateTime>("LastUsedAt")
+                    b.Property<decimal>("ReorderLevel")
                         .HasColumnType("TEXT")
-                        .HasColumnName("LAST_USED_AT");
+                        .HasColumnName("REORDER_LEVEL");
 
-                    b.Property<string>("Platform")
+                    b.Property<decimal>("StockQuantity")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("STOCK_QUANTITY");
+
+                    b.Property<string>("Unit")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("TEXT")
-                        .HasColumnName("PLATFORM");
+                        .HasColumnName("UNIT");
 
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("TEXT")
-                        .HasColumnName("TOKEN");
+                    b.HasKey("IngredientId");
 
-                    b.HasKey("TokenId");
-
-                    b.ToTable("DEVICE_TOKENS", (string)null);
+                    b.ToTable("INGREDIENTS", (string)null);
                 });
 
             modelBuilder.Entity("Cremory.API.Models.Order", b =>
@@ -94,11 +77,6 @@ namespace Cremory.API.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT")
                         .HasColumnName("ORDER_ID");
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(500)
-                        .HasColumnType("TEXT")
-                        .HasColumnName("ADDRESS");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT")
@@ -115,25 +93,11 @@ namespace Cremory.API.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("CUSTOMER_NAME");
 
-                    b.Property<string>("DeliveryType")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
-                        .HasColumnName("DELIVERY_TYPE");
-
-                    b.Property<bool>("IsArchived")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("IS_ARCHIVED");
-
                     b.Property<string>("Items")
                         .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("TEXT")
                         .HasColumnName("ITEMS");
-
-                    b.Property<string>("PaymentStatus")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
-                        .HasColumnName("PAYMENT_STATUS");
 
                     b.Property<string>("Source")
                         .IsRequired()
@@ -174,10 +138,6 @@ namespace Cremory.API.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("ADD_ON_PRICE_PER_UNIT");
 
-                    b.Property<bool>("AutoDeduct")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("AUTO_DEDUCT");
-
                     b.Property<decimal>("BasePrice")
                         .HasColumnType("TEXT")
                         .HasColumnName("BASE_PRICE");
@@ -213,11 +173,6 @@ namespace Cremory.API.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("NAME");
 
-                    b.Property<string>("Unit")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT")
-                        .HasColumnName("UNIT");
-
                     b.Property<string>("Variant")
                         .HasMaxLength(50)
                         .HasColumnType("TEXT")
@@ -230,30 +185,94 @@ namespace Cremory.API.Migrations
                     b.ToTable("PRODUCTS", (string)null);
                 });
 
+            modelBuilder.Entity("Cremory.API.Models.Recipe", b =>
+                {
+                    b.Property<int>("RecipeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("RECIPE_ID");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("DESCRIPTION");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("IS_ACTIVE");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("NAME");
+
+                    b.Property<decimal>("SellingPrice")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("SELLING_PRICE");
+
+                    b.HasKey("RecipeId");
+
+                    b.ToTable("RECIPES", (string)null);
+                });
+
+            modelBuilder.Entity("Cremory.API.Models.RecipeIngredient", b =>
+                {
+                    b.Property<int>("RecipeIngredientId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("RECIPE_INGREDIENT_ID");
+
+                    b.Property<int>("IngredientId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("INGREDIENT_ID");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("QUANTITY");
+
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("RECIPE_ID");
+
+                    b.HasKey("RecipeIngredientId");
+
+                    b.HasIndex("IngredientId");
+
+                    b.HasIndex("RecipeId");
+
+                    b.ToTable("RECIPE_INGREDIENTS", (string)null);
+                });
+
             modelBuilder.Entity("Cremory.API.Models.User", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("USER_ID");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DisplayName")
+                    b.Property<string>("AccountType")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ACCOUNT_TYPE");
 
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<string>("ContactNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("CONTACT_NUMBER");
 
-                    b.Property<string>("Role")
+                    b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("EMAIL");
 
-                    b.Property<string>("Username")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("NAME");
 
                     b.HasKey("UserId");
 
@@ -269,6 +288,30 @@ namespace Cremory.API.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Cremory.API.Models.RecipeIngredient", b =>
+                {
+                    b.HasOne("Cremory.API.Models.Ingredient", "Ingredient")
+                        .WithMany()
+                        .HasForeignKey("IngredientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Cremory.API.Models.Recipe", "Recipe")
+                        .WithMany("RecipeIngredients")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ingredient");
+
+                    b.Navigation("Recipe");
+                });
+
+            modelBuilder.Entity("Cremory.API.Models.Recipe", b =>
+                {
+                    b.Navigation("RecipeIngredients");
                 });
 #pragma warning restore 612, 618
         }
